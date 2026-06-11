@@ -18,7 +18,7 @@ export const lesson02: Lesson = {
         'Spend the most time on **static vs dynamic** — it underpins every later topic',
         'Draw the compilation pipeline on the board: **.cs → Roslyn → IL → CLR/JIT → machine code**',
         '**Compile error vs runtime error** is daily vocab — make students name both before moving on',
-        'Demo the Python vs C# `name + 5` side-by-side if you can — visual impact',
+        'Demo the Python vs C# `name - 5` side-by-side if you can — visual impact',
         'Connect **.dll** and **.exe** to files they\'ve seen on Windows',
       ],
     },
@@ -60,16 +60,16 @@ export const lesson02: Lesson = {
       filename: 'Python',
       language: 'python',
       code: `name = "Alice"
-name = name + 5
-# At runtime: TypeError: can only concatenate str (not "int") to str`,
+total = name - 5
+# At runtime: TypeError: unsupported operand type(s) for -: 'str' and 'int'`,
     },
     {
       kind: 'code',
       filename: 'C#',
       language: 'csharp',
       code: `string name = "Alice";
-name = name + 5;
-// CS0019: Operator '+' cannot be applied
+var total = name - 5;
+// CS0019: Operator '-' cannot be applied
 // to operands of type 'string' and 'int'`,
     },
     {
@@ -103,19 +103,20 @@ name = name + 5;
       kind: 'twoColumn',
       cards: [
         {
-          title: '.exe — executable',
+          title: '.exe — the launcher',
           items: [
-            'Contains IL + an entry point (a Main method)',
+            'On modern .NET, a small native launcher the SDK builds for your OS',
+            'Holds no IL itself — it just finds and starts your `.dll`',
             'Can be run directly: double-click or type its name',
-            'What you ship to end users',
+            'What you double-click to start the app',
           ],
         },
         {
-          title: '.dll — library',
+          title: '.dll — your compiled code',
           items: [
-            'Contains IL but no entry point',
-            'Cannot run on its own',
-            'Used by other programs as reusable code',
+            'Contains your IL, including the `Main` entry point',
+            'Run it with `dotnet YourApp.dll`',
+            'A library .dll has no entry point and is used by other programs',
             'Every NuGet package is a .dll',
           ],
         },
@@ -135,7 +136,7 @@ name = name + 5;
         'C# compiles into **IL** (Intermediate Language), packaged in a `.dll` or `.exe`',
         'The **CLR** loads the IL; the **JIT** compiles it to native code as the program runs',
         'IL exists so the same compiled program runs on **any CPU and OS** the runtime supports',
-        '`.exe` = runnable, has `Main`. `.dll` = library, used by other code',
+        'Your compiled IL (including `Main`) lives in the `.dll`; the `.exe` is just a native launcher that starts it',
         '**Compile errors** are caught before running; **runtime errors** crash mid-execution',
       ],
     },
@@ -161,7 +162,7 @@ name = name + 5;
         'When the C# compiler is done, what does it produce?',
       options: [
         { label: 'Native machine code straight away' },
-        { label: 'Intermediate Language (IL) packaged in a .dll or .exe', correct: true },
+        { label: 'Intermediate Language (IL) packaged in a .dll', correct: true },
         { label: 'A Python-like interpreted script' },
         { label: 'A zip file containing the source code' },
       ],
@@ -172,7 +173,7 @@ name = name + 5;
       id: 'q3',
       kind: 'mcq',
       prompt:
-        "You see a red squiggly line under `name + 5` in VS Code before you've run the program. Which kind of error is this?",
+        "You see a red squiggly line under `name - 5` (where `name` is a string) in VS Code before you've run the program. Which kind of error is this?",
       options: [
         { label: 'A compile error', correct: true },
         { label: 'A runtime error' },
@@ -190,10 +191,10 @@ name = name + 5;
       difficulty: 'easy',
       title: 'Inspect the build output',
       prompt:
-        "Run `dotnet build` on your `HelloCSharp` project from Lesson 3. Look in `bin/Debug/net8.0/`. List the files you see in a comment at the top of `Program.cs`. Identify which one is the IL-containing executable.",
+        "After you finish Lesson 3's setup, come back and run `dotnet build` on your `HelloCSharp` project. Look in `bin/Debug/` (inside the `netX.0` folder). List the files you see in a comment at the top of `Program.cs`, and identify which file contains your compiled IL.",
       hints: [
-        'You\'ll see at least a `.dll`, a `.pdb`, and a `.deps.json`.',
-        'On Windows, look for `HelloCSharp.exe` or `HelloCSharp.dll` as the runnable assembly.',
+        'You\'ll see at least a `.dll`, a `.pdb`, and a `.deps.json` — plus an `.exe` on Windows.',
+        'The IL lives in `HelloCSharp.dll`. The `.exe` is just a native launcher that starts that .dll.',
       ],
     },
     {

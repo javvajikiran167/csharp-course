@@ -17,7 +17,7 @@ export const lesson01: Lesson = {
       items: [
         '**Convention vs requirement** — the compiler will accept any name; conventions are about team readability',
         'Show that **Microsoft, .NET runtime team, and every major library follow the same rules** — that\'s why they feel universal',
-        'Drop the link to the official docs: aka.ms/csharp-conventions',
+        'Drop the link to the official docs: learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions',
         'Frame this as **the rules you must know to pass any C# code review**',
         "Each later lesson focuses on **one category** — don't try to cover everything at once",
       ],

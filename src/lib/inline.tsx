@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react';
 
 // Tiny inline markdown — author-controlled content only, no user input.
-// Supports: **bold**, *italic*, `code`. No links, no images, no HTML.
+// Supports: **bold**, *italic*, `code`, and [text](https://url) links.
+// No images, no HTML. Only http(s) link targets are honored.
 //
 // Behavior: splits the string into a flat array of strings and React elements.
-// We tokenize one syntax at a time (code → bold → italic) so they nest cleanly
-// without a real parser.
+// We tokenize one syntax at a time (link → code → bold → italic) so they nest
+// cleanly without a real parser.
 export function inline(text: string): ReactNode[] {
-  // Tokens: `code`, **bold**, *italic*
+  // Tokens: [text](url), `code`, **bold**, *italic*
   const result: ReactNode[] = [];
   let i = 0;
   let buf = '';
@@ -21,6 +22,34 @@ export function inline(text: string): ReactNode[] {
   while (i < text.length) {
     const ch = text[i];
     const rest = text.slice(i);
+
+    // [label](url) — only http(s) targets; anything else falls through as plain text.
+    if (ch === '[') {
+      const close = text.indexOf('](', i + 1);
+      if (close > i) {
+        const urlEnd = text.indexOf(')', close + 2);
+        if (urlEnd > close) {
+          const label = text.slice(i + 1, close);
+          const url = text.slice(close + 2, urlEnd);
+          if (/^https?:\/\//i.test(url)) {
+            flush();
+            result.push(
+              <a
+                key={`l${result.length}`}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-amber-800 underline decoration-amber-300 underline-offset-2 hover:decoration-amber-600"
+              >
+                {label}
+              </a>,
+            );
+            i = urlEnd + 1;
+            continue;
+          }
+        }
+      }
+    }
 
     if (ch === '`') {
       const end = text.indexOf('`', i + 1);

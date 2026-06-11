@@ -273,7 +273,7 @@ string result = a ?? b ?? c;`,
       difficulty: 'medium',
       title: 'Friendly username',
       prompt:
-        "Ask the user for their name. If they press Enter without typing, use `Friend` as the default — using `??` (not `if/else`). Then greet them.",
+        "Ask the user for their name. Use `??` to turn the `string?` from `Console.ReadLine()` into a non-null string, then use a ternary with `string.IsNullOrWhiteSpace` to substitute `Friend` when they just pressed Enter. (Notice why `??` alone is not enough: an empty Enter gives `\"\"`, not `null`.)",
       hints: [
         '`Console.ReadLine()` returns `string?` in modern .NET.',
         '`string? typed = Console.ReadLine(); string name = string.IsNullOrWhiteSpace(typed) ? "Friend" : typed;` — combine with a ternary because `??` only catches null, not empty strings.',

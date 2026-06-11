@@ -193,7 +193,7 @@ decimal total        = productPrice * (1 + taxRate);
 Console.WriteLine($"Distance : {distanceKm} km");
 Console.WriteLine($"Price    : \${productPrice:F2}");
 Console.WriteLine($"Total    : \${total:F2}");
-Console.WriteLine($"Tax      : {taxRate:P}");`,
+Console.WriteLine($"Tax      : {taxRate:P2}");`,
     },
     {
       kind: 'output',
@@ -497,6 +497,7 @@ Console.WriteLine(n);`,
       prompt:
         "Write a program that asks the user for their age. If they enter something that isn't a valid whole number, print *'That's not a valid age.'* and exit cleanly. If it's valid, print *'Next year you will be X.'*.",
       hints: [
+        'Read a line of text with `string? input = Console.ReadLine();` — full coverage comes in Lesson 7.',
         'Use `int.TryParse` — not `int.Parse`.',
         'TryParse signature: `bool int.TryParse(string s, out int result)`.',
         'A `return;` at the top level exits the program.',
@@ -507,9 +508,9 @@ Console.WriteLine(n);`,
       difficulty: 'hard',
       title: 'Money totals — int, double, decimal compared',
       prompt:
-        "Add `0.10 + 0.20 + 0.30` three different ways: as `double`, as `decimal`, and as `int` cents (i.e. `10 + 20 + 30` then divide by 100). Print each result with `:F4` to see exact differences. Comment on what each version teaches you about choosing the right type for money.",
+        "Add `0.10 + 0.20 + 0.30` three different ways: as `double`, as `decimal`, and as `int` cents (i.e. `10 + 20 + 30` then divide by 100). Print each result twice — once plain with `Console.WriteLine(sum)`, and once with `:F17` — to see exactly where `double` drifts. Comment on what each version teaches you about choosing the right type for money.",
       hints: [
-        '`double` will produce something like `0.6000000000000001`.',
+        '`double` will produce something like `0.6000000000000001` when printed plain with `Console.WriteLine`.',
         '`decimal` gives an exact `0.6000`.',
         'Cents-as-int avoids the issue entirely but requires conversion at display time.',
       ],

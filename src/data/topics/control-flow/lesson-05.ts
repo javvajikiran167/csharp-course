@@ -16,7 +16,7 @@ export const lesson05: Lesson = {
       kind: 'teachingNotes',
       items: [
         '**The shape is reversed**: `value switch { pattern => result, ... }` — the variable comes first',
-        '`_` (discard) is the **default** case — and is **required by the compiler** unless every case is exhaustive',
+        '`_` (discard) is the default case — omitting it on a non-exhaustive switch is a compiler *warning*, and unmatched values throw `SwitchExpressionException` at runtime',
         'Show `>=`, `<`, and tuple patterns side-by-side — three of the most-used pattern shapes',
         '**The whole expression returns a value** — assign it to a variable or `return` it',
         'Mention property patterns briefly; deep dive happens in OOP topic',
@@ -55,7 +55,7 @@ Console.WriteLine(name);   // Wednesday`,
     {
       kind: 'paragraph',
       text:
-        '**`_` is the default case.** The compiler tracks which values you have covered and **requires** the discard (or some other catch-all) unless every possible value has its own arm.',
+        '**`_` is the default case.** The compiler tracks which values you have covered — if the arms are not exhaustive it issues a warning (CS8509), and an unmatched value throws `SwitchExpressionException` at runtime. Always include `_` (or otherwise cover every value) for open-ended types like `int` and `string`.',
     },
 
     {
@@ -152,11 +152,10 @@ string fb = n switch
           code: `int age = 25;
 string bracket = age switch
 {
-    < 13      => "child",
-    >= 13 and < 20  => "teen",
-    >= 20 and < 65  => "adult",
-    >= 65     => "senior",
-    _         => "?"
+    < 13           => "child",
+    >= 13 and < 20 => "teen",
+    >= 20 and < 65 => "adult",
+    _              => "senior"   // >= 65 — covers the rest, keeps the switch exhaustive
 };`,
         },
       ],

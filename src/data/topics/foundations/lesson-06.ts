@@ -76,7 +76,7 @@ Console.WriteLine($"F2 : {price:F2}");   // 2 decimals
 Console.WriteLine($"N0 : {price:N0}");   // thousands separator
 Console.WriteLine($"N2 : {price:N2}");   // thousands + 2 decimals
 Console.WriteLine($"C  : {price:C}");    // currency
-Console.WriteLine($"P  : {rate:P}");     // percentage
+Console.WriteLine($"P  : {rate:P2}");    // percentage, 2 decimals
 Console.WriteLine($"P1 : {rate:P1}");    // percentage, 1 decimal`,
     },
     {
@@ -95,7 +95,7 @@ P1 : 8.5%`,
       tone: 'tip',
       title: 'Try it yourself',
       text:
-        'Open VS Code. Make a `double subtotal = 99.95;` and a `double tax = 0.085;`. Print the subtotal as currency (`:C`), the tax as a percentage (`:P`), and the total (`subtotal + subtotal * tax`) as currency. Confirm the cents line up.',
+        'Open VS Code. Make a `double subtotal = 99.95;` and a `double tax = 0.085;`. Print the subtotal as currency (`:C`), the tax as a percentage (`:P2`), and the total (`subtotal + subtotal * tax`) as currency. Confirm the cents line up.',
     },
 
     /* ── Date format specifiers ─────────────────────── */
@@ -217,15 +217,15 @@ C:\\Users\\alex`,
       kind: 'predict',
       prompt: 'What does this print?',
       code: `double price = 0.085;
-Console.WriteLine($"Tax: {price:P}");`,
+Console.WriteLine($"Tax: {price:P2}");`,
       options: [
         { label: 'Tax: 0.085' },
-        { label: 'Tax: 8.50 %', correct: true },
+        { label: 'Tax: 8.50%', correct: true },
         { label: 'Tax: 0.085P' },
         { label: 'Tax: 85%' },
       ],
       explanation:
-        '`:P` formats the number as a percentage. C# multiplies by 100 and appends the locale\'s percent symbol with two decimal places by default.',
+        '`:P2` multiplies by 100, keeps 2 decimal places, and appends the culture\'s percent symbol.',
     },
     {
       id: 'q2',
@@ -260,7 +260,7 @@ Console.WriteLine($"Tax: {price:P}");`,
       prompt:
         "Hard-code three product names and three prices. Print a receipt with columns aligned, prices formatted with `:F2`, and a total at the bottom. Aim for visual clarity — the columns should line up.",
       hints: [
-        'Combine `:F2` with a width specifier like `:F2,10` to pad to 10 characters.',
+        'Combine width and format as `{price,10:F2}` — alignment before the colon, format after.',
         'Or just use spaces in your format strings.',
       ],
     },

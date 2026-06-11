@@ -161,7 +161,7 @@ i = i + 1;     // skip the header row in the CSV`,
       difficulty: 'easy',
       title: 'Refactor magic numbers',
       prompt:
-        "Take this code and refactor it so every magic number is a named constant. Add comments where they explain *why*, not *what*.\n\n```cs\ndouble total = subtotal * 1.18;\nif (retries < 3) { /* retry */ }\nif (temperature > 100.0) { /* alert */ }\n```",
+        "Refactor a small program so every magic number becomes a named constant. Given `double total = subtotal * 1.18;`, `if (retries < 3) { ... }`, and `if (temperature > 100.0) { ... }`, replace `1.18`, `3`, and `100.0` with well-named constants, and add a comment on each that explains *why* the value is what it is, not *what* the line does.",
       hints: [
         'Names like `TaxRate`, `MaxRetries`, `BoilingPointCelsius`.',
         '`const` for compile-time constants. Use `decimal` if any of these are money.',

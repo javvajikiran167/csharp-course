@@ -246,9 +246,14 @@ for (int i = 0; i < a.Length; i += 2)
     },
     {
       id: 'q3',
-      kind: 'mcq',
+      kind: 'predict',
       prompt:
         'What happens with this code?',
+      code: `int[] a = { 10, 20, 30, 40, 50 };
+for (int i = 0; i <= a.Length; i++)
+{
+    Console.WriteLine(a[i]);
+}`,
       options: [
         { label: 'Prints `a[0]` through `a[4]`' },
         {
@@ -282,7 +287,7 @@ for (int i = 0; i < a.Length; i += 2)
         'Use a single `for` loop to sum all even numbers from 0 to 99 (inclusive of 0, exclusive of 100). Print the total.',
       hints: [
         '`for (int i = 0; i < 100; i += 2)` — step by 2.',
-        'Or `if (i % 2 == 0) continue;` with `i++` — same result, more code.',
+        'Or `if (i % 2 != 0) continue;` with `i++` — same result, more code.',
       ],
     },
     {

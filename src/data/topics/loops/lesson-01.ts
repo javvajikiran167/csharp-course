@@ -255,8 +255,13 @@ while (i < 5)
     },
     {
       id: 'q2',
-      kind: 'mcq',
-      prompt: 'What happens with this loop?',
+      kind: 'predict',
+      prompt: 'What happens when you run this?',
+      code: `int i = 0;
+while (i < 5)
+{
+    Console.WriteLine(i);
+}`,
       options: [
         { label: 'Compiles and prints `0` once' },
         {

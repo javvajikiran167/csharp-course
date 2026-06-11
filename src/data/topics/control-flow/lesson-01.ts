@@ -232,10 +232,10 @@ Console.WriteLine(a == b);`,
       difficulty: 'easy',
       title: 'Voting age check',
       prompt:
-        'Read the user\'s age. Print `Can vote` if they are **18 or older**, otherwise `Cannot vote`. Use a single bool variable for the decision.',
+        'Read the user\'s age (or hard-code it for now). Compute `bool canVote = age >= 18;` and print it with a label, for example `Console.WriteLine($"Can vote: {canVote}");` — the output will be `Can vote: True` or `Can vote: False`. (You\'ll turn this into a proper two-way message next lesson.)',
       hints: [
         'Use `>= 18`.',
-        '`Console.WriteLine` accepts a bool but prints `True/False` — print a label string instead.',
+        '`Console.WriteLine` accepts a bool and prints `True`/`False` — embed it in an interpolated string with a label.',
       ],
     },
     {
