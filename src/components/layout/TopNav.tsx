@@ -16,14 +16,19 @@ export function TopNav() {
       <div className="container-page flex h-12 items-center justify-between">
         <Link
           to="/"
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-2.5 group"
           aria-label="Back to home"
         >
           <span className="inline-flex h-6 w-6 items-center justify-center bg-amber-600 font-serif font-bold text-white text-[13px] leading-none">
             C
           </span>
-          <span className="font-serif font-semibold text-[15px] text-ink group-hover:text-amber-700 transition-colors">
-            c# craft
+          <span className="flex items-baseline gap-1.5">
+            <span className="font-serif font-semibold text-[15px] text-ink group-hover:text-amber-700 transition-colors">
+              C# Course
+            </span>
+            <span className="hidden sm:inline text-eyebrow text-ink-400">
+              crafted by Kiran Javvaji
+            </span>
           </span>
         </Link>
       </div>

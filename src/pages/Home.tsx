@@ -37,7 +37,7 @@ export function Home() {
       {/* ── Hero ─────────────────────────────────────── */}
       <section className="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
         <div className="space-y-6">
-          <Eyebrow>A self-paced C# course</Eyebrow>
+          <Eyebrow>A C# course · crafted by Kiran Javvaji</Eyebrow>
           <Display>
             Learn modern C#<br />
             from first <em className="italic text-amber-700">principles</em>.
