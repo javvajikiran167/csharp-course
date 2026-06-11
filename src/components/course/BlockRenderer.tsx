@@ -21,9 +21,9 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case 'heading':
       return block.level === 2 ? (
-        <H2 className={block.id ? 'scroll-mt-24' : undefined}>{block.text}</H2>
+        <H2 className={block.id ? 'scroll-mt-24' : undefined}>{inline(block.text)}</H2>
       ) : (
-        <H3>{block.text}</H3>
+        <H3>{inline(block.text)}</H3>
       );
 
     case 'list':
@@ -53,7 +53,7 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case 'callout':
       return (
-        <Callout tone={block.tone} title={block.title}>
+        <Callout tone={block.tone} title={block.title ? inline(block.title) : undefined}>
           {inline(block.text)}
         </Callout>
       );
@@ -65,7 +65,7 @@ export function BlockRenderer({ block }: { block: Block }) {
             <Card key={i} padded="md" accent>
               <div className="flex items-center gap-2 mb-3">
                 <Pill tone="accent">{`0${i + 1}`.slice(-2)}</Pill>
-                <h3 className="font-sans font-semibold text-h3 text-ink">{c.title}</h3>
+                <h3 className="font-sans font-semibold text-h3 text-ink">{inline(c.title)}</h3>
               </div>
               <ul className="space-y-2 text-body text-ink-600 leading-relaxed">
                 {c.items.map((it, j) => (
@@ -116,7 +116,7 @@ export function BlockRenderer({ block }: { block: Block }) {
               <div key={i} className="border border-hairline bg-white">
                 <div className="flex items-center gap-2 px-4 py-2 border-b border-hairline bg-cream-200">
                   <Pill tone="dim">Ex {`0${i + 1}`.slice(-2)}</Pill>
-                  <span className="text-caption text-ink font-medium">{ex.label}</span>
+                  <span className="text-caption text-ink font-medium">{inline(ex.label)}</span>
                 </div>
                 <div className="px-1">
                   <CodeBlock code={ex.code} />

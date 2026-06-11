@@ -3,6 +3,7 @@ import { Check, ArrowRight, Sparkles, BookOpen, Code2 } from 'lucide-react';
 import type { Lesson, Topic } from '@/data/types';
 import { useProgress, type LessonStatus } from '@/store/progress';
 import { Pill } from '@/components/primitives';
+import { inline } from '@/lib/inline';
 import { cn } from '@/lib/cn';
 
 type Props = {
@@ -96,7 +97,7 @@ function LessonRow({
               status === 'completed' ? 'text-ink-600' : 'text-ink',
             )}
           >
-            {lesson.title}
+            {inline(lesson.title)}
           </h3>
           {status === 'completed' && quizScore !== undefined && (
             <Pill tone="ok">{quizScore}/{totalQuestions}</Pill>
@@ -104,7 +105,7 @@ function LessonRow({
         </div>
 
         <p className="mt-1 text-caption text-ink-400 leading-relaxed pr-6">
-          {lesson.objective}
+          {inline(lesson.objective)}
         </p>
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-eyebrow text-ink-400">

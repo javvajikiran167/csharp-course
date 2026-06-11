@@ -15,6 +15,7 @@ import {
 import { BlockRenderer } from '@/components/course/BlockRenderer';
 import { QuizBlock } from '@/components/course/QuizBlock';
 import { ChallengeList } from '@/components/course/ChallengeList';
+import { inline } from '@/lib/inline';
 
 // The lesson page is the place a student spends most of their time. Width,
 // rhythm, and chrome are all tuned for one job: focused reading.
@@ -77,7 +78,7 @@ export function Lesson() {
           </Pill>
         )}
         <H1>{lesson.title}</H1>
-        <Lead className="mt-4">{lesson.objective}</Lead>
+        <Lead className="mt-4">{inline(lesson.objective)}</Lead>
       </header>
 
       {/* The lesson itself */}

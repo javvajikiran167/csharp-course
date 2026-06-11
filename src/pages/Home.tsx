@@ -13,6 +13,7 @@ import {
   Eyebrow,
   ProgressBar,
 } from '@/components/primitives';
+import { inline } from '@/lib/inline';
 import { cn } from '@/lib/cn';
 
 export function Home() {
@@ -104,10 +105,10 @@ export function Home() {
                   </span>
                 </div>
                 <h3 className="mt-1 font-sans font-semibold text-h3 text-ink">
-                  {resume.lesson.title}
+                  {inline(resume.lesson.title)}
                 </h3>
                 <p className="mt-1 text-caption text-ink-400 leading-relaxed pr-4">
-                  {resume.lesson.objective}
+                  {inline(resume.lesson.objective)}
                 </p>
               </div>
               <Link to={`/topic/${resume.topic.slug}/${resume.lesson.slug}`}>

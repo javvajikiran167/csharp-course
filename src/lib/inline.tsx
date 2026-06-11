@@ -74,7 +74,7 @@ export function inline(text: string): ReactNode[] {
         flush();
         result.push(
           <strong key={`b${result.length}`} className="font-semibold text-ink">
-            {text.slice(i + 2, end)}
+            {inline(text.slice(i + 2, end))}
           </strong>,
         );
         i = end + 2;
@@ -88,7 +88,7 @@ export function inline(text: string): ReactNode[] {
         flush();
         result.push(
           <em key={`i${result.length}`} className="italic">
-            {text.slice(i + 1, end)}
+            {inline(text.slice(i + 1, end))}
           </em>,
         );
         i = end + 1;

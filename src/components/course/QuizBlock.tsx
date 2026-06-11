@@ -3,6 +3,7 @@ import { Check, X, RotateCcw } from 'lucide-react';
 import { Button, Pill, Eyebrow } from '@/components/primitives';
 import { CodeBlock } from '@/components/primitives/Code';
 import { useProgress } from '@/store/progress';
+import { inline } from '@/lib/inline';
 import { cn } from '@/lib/cn';
 import type {
   Question,
@@ -85,7 +86,7 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
         <Eyebrow>Check yourself</Eyebrow>
         <Pill tone="dim">{index + 1} / {total}</Pill>
       </div>
-      <h3 className="mt-2 font-serif font-semibold text-h2 text-ink">{current.prompt}</h3>
+      <h3 className="mt-2 font-serif font-semibold text-h2 text-ink">{inline(current.prompt)}</h3>
 
       {/*
         key={current.id} is critical — it forces React to remount the
@@ -162,7 +163,7 @@ function MultipleChoice({
                    revealed && picked && !isCorrect ? <X className="h-4 w-4" /> :
                    String.fromCharCode(65 + i)}
                 </span>
-                <span className="text-body text-ink">{opt.label}</span>
+                <span className="text-body text-ink">{inline(opt.label)}</span>
               </button>
             </li>
           );
@@ -230,7 +231,7 @@ function CodePredict({
                    revealed && picked && !isCorrect ? <X className="h-4 w-4" /> :
                    String.fromCharCode(65 + i)}
                 </span>
-                <span className="whitespace-pre-wrap">{opt.label}</span>
+                <span className="whitespace-pre-wrap">{inline(opt.label)}</span>
               </button>
             </li>
           );
@@ -322,7 +323,7 @@ function Reveal({
   return (
     <div className="mt-5 border-l-2 border-amber-600 bg-amber-50 px-4 py-3">
       <Eyebrow>Why</Eyebrow>
-      <p className="mt-1 text-body text-ink-600">{explanation}</p>
+      <p className="mt-1 text-body text-ink-600">{inline(explanation)}</p>
       <div className="mt-4">
         <Button tone="primary" onClick={onNext}>
           Next

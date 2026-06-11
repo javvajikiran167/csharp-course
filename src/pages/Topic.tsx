@@ -12,6 +12,7 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
+import { inline } from '@/lib/inline';
 
 export function Topic() {
   const { slug = '' } = useParams();
@@ -41,7 +42,7 @@ export function Topic() {
         <div className="mt-8 max-w-prose">
           <Eyebrow>Coming soon · Locked</Eyebrow>
           <Display className="mt-2">{topic.title}</Display>
-          <Lead className="mt-4">{topic.subtitle}</Lead>
+          <Lead className="mt-4">{inline(topic.subtitle)}</Lead>
         </div>
 
         {outline.length > 0 && (
@@ -54,9 +55,9 @@ export function Topic() {
                     {`0${stub.number}`.slice(-2)}
                   </span>
                   <div className="flex-1">
-                    <div className="font-sans font-semibold text-ink">{stub.title}</div>
+                    <div className="font-sans font-semibold text-ink">{inline(stub.title)}</div>
                     <p className="mt-1 text-caption text-ink-400 leading-relaxed">
-                      {stub.objective}
+                      {inline(stub.objective)}
                     </p>
                   </div>
                 </li>
@@ -100,7 +101,7 @@ export function Topic() {
         <div>
           <Eyebrow>Topic</Eyebrow>
           <Display className="mt-2">{topic.title}</Display>
-          <Lead className="mt-4">{topic.subtitle}</Lead>
+          <Lead className="mt-4">{inline(topic.subtitle)}</Lead>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to={`/topic/${topic.slug}/${firstUndone.slug}`}>
               <Button tone="primary" size="lg">

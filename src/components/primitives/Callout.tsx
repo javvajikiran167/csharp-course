@@ -33,7 +33,7 @@ const iconColors = {
 };
 
 export type CalloutProps = VariantProps<typeof callout> & {
-  title?: string;
+  title?: ReactNode;
   children: ReactNode;
 };
 
