@@ -1,0 +1,61 @@
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/crimson-pro/400.css';
+@import '@fontsource/crimson-pro/600.css';
+@import '@fontsource/crimson-pro/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html, body, #root {
+    @apply bg-cream text-ink font-sans antialiased;
+    min-height: 100vh;
+  }
+
+  body {
+    border-top: 3px solid theme('colors.amber.600');
+  }
+
+  ::selection {
+    background: theme('colors.amber.200');
+    color: theme('colors.ink.700');
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: theme('colors.cream.200'); }
+  ::-webkit-scrollbar-thumb {
+    background: theme('colors.cream.500');
+    border: 2px solid theme('colors.cream.200');
+  }
+  ::-webkit-scrollbar-thumb:hover { background: theme('colors.amber.600'); }
+
+  a { @apply text-inherit no-underline; }
+
+  /* Focus-visible — accessible, on-brand */
+  *:focus-visible {
+    outline: 2px solid theme('colors.amber.600');
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .container-page {
+    @apply mx-auto w-full max-w-page px-6 sm:px-8;
+  }
+
+  .container-prose {
+    @apply mx-auto w-full max-w-prose;
+  }
+}
