@@ -208,7 +208,7 @@ Console.WriteLine(pos);    // (1, 1)`,
       tone: 'tip',
       title: 'Best fix for nested loops: extract a method',
       text:
-        'When nested loops need a clean exit, the cleanest move is **extract them into a method and use `return`**. Reads better, tests easier, and avoids both flag flags and `goto`. This is a frequent code-review suggestion.',
+        'When nested loops need a clean exit, the cleanest move is **extract them into a method and use `return`**. It reads better, is easier to test, and avoids both flag variables and `goto`. This is a frequent code-review suggestion.',
     },
 
     {

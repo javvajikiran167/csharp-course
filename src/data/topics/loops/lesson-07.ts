@@ -48,7 +48,7 @@ export const lesson07: Lesson = {
       tone: 'warn',
       title: 'The order matters',
       text:
-        'You **must check the "both" case first**. If you check `% 3 == 0` first, `15` will print `Fizz` and never reach the `FizzBuzz` branch. Reverse-order means most specific → least specific.',
+        'You **must check the "both" case first**. If you check `% 3 == 0` first, `15` will print `Fizz` and never reach the `FizzBuzz` branch. Order your checks from most specific to least specific — `% 15` before `% 3` and `% 5`.',
     },
 
     {

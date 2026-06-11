@@ -10,7 +10,7 @@ export const lesson02: Lesson = {
     {
       kind: 'lead',
       text:
-        '**`for`** packages init, condition, and update into one tight header. When you know how many times to loop — *"do this 10 times"*, *"walk every index of the array"* — `for` is the natural fit. It is the most-typed loop in C#.',
+        '**`for`** packages init, condition, and update into one tight header. When you know how many times to loop — *"do this 10 times"*, *"walk every index of the array"* — `for` is the natural fit. It is the workhorse of numeric loops.',
     },
     {
       kind: 'teachingNotes',

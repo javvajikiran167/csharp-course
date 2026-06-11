@@ -8,6 +8,26 @@ import { cn } from '@/lib/cn';
 const diffPill = (d: Challenge['difficulty']) =>
   d === 'easy' ? 'ok' : d === 'medium' ? 'accent' : 'err';
 
+// Prompts may carry real newlines (e.g. a "• ..." bullet list). A single
+// inline() span collapses them to spaces, so render each line on its own row;
+// lines starting with a bullet/dash get hanging indentation.
+function Multiline({ text }: { text: string }) {
+  const lines = text.split('\n');
+  if (lines.length === 1) return <>{inline(text)}</>;
+  return (
+    <>
+      {lines.map((line, i) => {
+        const bullet = /^\s*[•\-]\s+/.test(line);
+        return (
+          <span key={i} className={cn('block', bullet && 'pl-4 -indent-4')}>
+            {inline(line)}
+          </span>
+        );
+      })}
+    </>
+  );
+}
+
 export function ChallengeList({ challenges }: { challenges: Challenge[] }) {
   return (
     <section className="mt-12 border-t border-hairline pt-10">
@@ -48,7 +68,7 @@ function ChallengeItem({ challenge }: { challenge: Challenge }) {
             <span className="font-sans font-semibold text-ink">{challenge.title}</span>
           </span>
           <span className="mt-1 block text-body text-ink-600 leading-relaxed pr-4">
-            {inline(challenge.prompt)}
+            <Multiline text={challenge.prompt} />
           </span>
         </span>
         {hasHints && (

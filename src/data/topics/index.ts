@@ -5,7 +5,7 @@ import { loops } from './loops';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
-//  Complete C# course outline — 14 topics from basics → job-ready
+//  Complete C# course outline — 16 topics from basics → job-ready
 //
 //  Locked topics list their lesson outlines so students see the
 //  exact path forward. To unlock a topic, author its lessons and
@@ -49,13 +49,13 @@ export const topics: Topic[] = [
     'Collections',
     'Arrays, List<T>, Dictionary<TKey,TValue>, HashSet<T>, and Queue/Stack — the data containers every C# developer uses daily.',
     [
-      lesson(1, 'arrays', 'Arrays — Fixed-Size Sequences', 'Declare, access, iterate, and resize arrays — and know their performance trade-offs.'),
+      lesson(1, 'arrays', 'Arrays — Fixed-Size Sequences', 'Declare, access, and iterate arrays — and understand why "resizing" really means allocating a new array (the reason List<T> exists).'),
       lesson(2, 'multi-arrays', 'Multidimensional & Jagged Arrays', 'Represent grids and tables with int[,] and int[][] — used in interviews and matrix problems.'),
       lesson(3, 'list', 'List<T> — The Default Resizable Collection', 'The collection you reach for 90% of the time — Add, Remove, Find, Sort, performance.'),
       lesson(4, 'dictionary', 'Dictionary<TKey,TValue> — Key/Value Lookups', 'O(1) lookups by key — the bread and butter of caches, indexes, and grouping.'),
       lesson(5, 'hashset', 'HashSet<T> — Unique Items, Fast Lookup', 'Deduplicate, test membership, set operations — the secret weapon of interview solutions.'),
       lesson(6, 'stack-queue', 'Stack<T> & Queue<T>', 'LIFO and FIFO data structures — used in parsers, schedulers, BFS/DFS.'),
-      lesson(7, 'iterating', 'Iterating, Sorting, and Filtering', 'Compare loops vs LINQ for the same operation — what to use when.'),
+      lesson(7, 'iterating', 'Iterating, Sorting, and Filtering', 'Compare manual loops vs built-in helpers (Sort, FindAll, Contains) — and preview that LINQ will generalize this later.'),
       lesson(8, 'mini-project-collections', 'Mini-Project — Contact Book', 'Build an in-memory contact app that adds, searches, sorts, and deletes records.'),
     ],
   ),
@@ -100,7 +100,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 07 · Exception Handling ──
+  // ── 08 · Exception Handling ──
   stub(
     'exceptions',
     'Exception Handling',
@@ -114,7 +114,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 08 · Files & Serialization ──
+  // ── 09 · Files & Serialization ──
   stub(
     'files',
     'Files & Serialization',
@@ -129,7 +129,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 09 · Generics & LINQ ──
+  // ── 10 · Generics & LINQ ──
   stub(
     'generics-linq',
     'Generics & LINQ',
@@ -146,7 +146,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 10 · Delegates, Events & Lambdas ──
+  // ── 11 · Delegates, Events & Lambdas ──
   stub(
     'delegates',
     'Delegates, Events & Lambdas',
@@ -160,7 +160,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 11 · Async / Await ──
+  // ── 12 · Async / Await ──
   stub(
     'async',
     'Async & Await',
@@ -175,7 +175,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 12 · Databases & EF Core ──
+  // ── 13 · Databases & EF Core ──
   stub(
     'databases',
     'Databases & EF Core',
@@ -187,11 +187,11 @@ export const topics: Topic[] = [
       lesson(4, 'querying', 'Querying with LINQ to EF', 'Where, Include, OrderBy — how queries translate to SQL.'),
       lesson(5, 'crud', 'Insert, Update, Delete', 'The state-tracking model EF uses for changes.'),
       lesson(6, 'relationships', 'One-to-Many & Many-to-Many', 'Model real-world relationships in code.'),
-      lesson(7, 'mini-project-db', 'Mini-Project — Blog with SQLite', 'Build a working blog API backed by a real database.'),
+      lesson(7, 'mini-project-db', 'Mini-Project — Blog with SQLite', 'Build a console blog app backed by a real SQLite database — you\'ll wrap it in a Web API in the next topic.'),
     ],
   ),
 
-  // ── 13 · ASP.NET Core Web API ──
+  // ── 14 · ASP.NET Core Web API ──
   stub(
     'web-api',
     'Building a Web API',
@@ -208,7 +208,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 14 · Testing & Design Patterns ──
+  // ── 15 · Testing & Design Patterns ──
   stub(
     'testing-patterns',
     'Testing & Design Patterns',
@@ -223,7 +223,7 @@ export const topics: Topic[] = [
     ],
   ),
 
-  // ── 15 · Job Prep & Capstone ──
+  // ── 16 · Job Prep & Capstone ──
   stub(
     'capstone',
     'Job Prep & Capstone',

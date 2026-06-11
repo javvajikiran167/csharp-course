@@ -425,7 +425,7 @@ No input`,
       tone: 'tip',
       title: "When in doubt, parenthesize",
       text:
-        "Nobody memorizes the full precedence table. Smart developers add parentheses to make intent obvious — `(a + b) * c` reads better than `a + b * c`, even if they happen to mean the same thing in some cases. Code is read 10× more than it's written.",
+        "Nobody memorizes the full precedence table. Smart developers add parentheses to make intent obvious — `a + (b * c)` says explicitly what `a + b * c` only implies. Code is read 10× more than it's written.",
     },
     {
       kind: 'code',

@@ -200,7 +200,7 @@ for (int i = 0; i < points.Length; i++)
 }`,
         },
         {
-          label: 'Spiral / matrix traversal',
+          label: 'Fill, then print a matrix',
           code: `int[,] m = new int[3, 3];
 int k = 1;
 for (int r = 0; r < 3; r++)

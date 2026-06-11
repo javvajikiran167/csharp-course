@@ -37,7 +37,7 @@ export const lesson01: Lesson = {
     {
       kind: 'heading',
       level: 2,
-      text: 'The five conventions you must know',
+      text: 'The conventions you must know',
     },
     {
       kind: 'twoColumn',

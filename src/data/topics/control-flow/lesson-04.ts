@@ -260,7 +260,7 @@ switch (day)
     {
       id: 'q3',
       kind: 'mcq',
-      prompt: "Which `switch` value type is **not** allowed?",
+      prompt: "Which of these will **not** compile in a `switch`?",
       options: [
         { label: '`int`' },
         { label: '`string`' },
