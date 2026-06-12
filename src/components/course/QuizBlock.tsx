@@ -44,7 +44,12 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
       setIndex(index + 1);
     } else {
       setPhase('done');
-      markLessonComplete(lessonSlug, score, total);
+      // Only count the lesson complete on a passing score (>= 60%). Clicking
+      // through with wrong answers should not mark mastery. The attempt itself
+      // is still recorded per-question via recordResult.
+      if (total > 0 && score / total >= 0.6) {
+        markLessonComplete(lessonSlug, score, total);
+      }
       onComplete?.();
     }
   };
@@ -144,6 +149,7 @@ function MultipleChoice({
               <button
                 type="button"
                 disabled={revealed}
+                aria-pressed={picked}
                 onClick={() => setPick(i)}
                 className={cn(
                   'w-full text-left flex items-center gap-3 px-4 py-3 border bg-white transition-colors',
@@ -212,6 +218,7 @@ function CodePredict({
               <button
                 type="button"
                 disabled={revealed}
+                aria-pressed={picked}
                 onClick={() => setPick(i)}
                 className={cn(
                   'w-full text-left flex items-center gap-3 px-4 py-3 border bg-white font-mono text-code transition-colors',
@@ -321,7 +328,7 @@ function Reveal({
     );
   }
   return (
-    <div className="mt-5 border-l-2 border-amber-600 bg-amber-50 px-4 py-3">
+    <div className="mt-5 border-l-2 border-amber-600 bg-amber-50 px-4 py-3" role="status" aria-live="polite">
       <Eyebrow>Why</Eyebrow>
       <p className="mt-1 text-body text-ink-600">{inline(explanation)}</p>
       <div className="mt-4">

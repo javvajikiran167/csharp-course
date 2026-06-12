@@ -27,7 +27,7 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case 'heading':
       return block.level === 2 ? (
-        <H2 className={block.id ? 'scroll-mt-24' : undefined}>{inline(block.text)}</H2>
+        <H2 id={block.id}>{inline(block.text)}</H2>
       ) : (
         <H3>{inline(block.text)}</H3>
       );

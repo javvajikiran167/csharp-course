@@ -48,9 +48,9 @@ export function H1({ children, className }: { children: ReactNode; className?: s
   );
 }
 
-export function H2({ children, className }: { children: ReactNode; className?: string }) {
+export function H2({ children, className, id }: { children: ReactNode; className?: string; id?: string }) {
   return (
-    <h2 className={cn('font-sans font-semibold text-h2 text-ink mt-12 mb-4 scroll-mt-24', className)}>
+    <h2 id={id} className={cn('font-sans font-semibold text-h2 text-ink mt-12 mb-4 scroll-mt-24', className)}>
       {children}
     </h2>
   );
