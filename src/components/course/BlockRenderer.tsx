@@ -4,10 +4,16 @@ import { inline } from '@/lib/inline';
 import { H2, H3, Lead, Callout, Card, CodeBlock, OutputBlock } from '@/components/primitives';
 import { Pill } from '@/components/primitives';
 import { TeachingNotes } from './TeachingNotes';
+import { usePrefs } from '@/store/prefs';
 
 // All blocks fill the parent container's width. The lesson page enforces
 // a single max-width on the article, so nothing here needs its own.
 export function BlockRenderer({ block }: { block: Block }) {
+  const teacherMode = usePrefs((s) => s.teacherMode);
+
+  // teachingNotes are instructor-facing — hidden unless Teacher Mode is on.
+  if (block.kind === 'teachingNotes' && !teacherMode) return null;
+
   switch (block.kind) {
     case 'lead':
       return <Lead className="!max-w-none my-6">{inline(block.text)}</Lead>;

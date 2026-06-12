@@ -1,10 +1,15 @@
 import { Link, useLocation } from 'react-router-dom';
+import { GraduationCap } from 'lucide-react';
+import { usePrefs } from '@/store/prefs';
+import { cn } from '@/lib/cn';
 
 // Deliberately minimal: just enough to get home, never enough to distract.
 export function TopNav() {
   const location = useLocation();
   const isLessonPage =
     /^\/topic\/[^/]+\/[^/]+/.test(location.pathname);
+  const teacherMode = usePrefs((s) => s.teacherMode);
+  const toggleTeacherMode = usePrefs((s) => s.toggleTeacherMode);
 
   return (
     <header
@@ -31,6 +36,26 @@ export function TopNav() {
             </span>
           </span>
         </Link>
+
+        <button
+          type="button"
+          onClick={toggleTeacherMode}
+          aria-pressed={teacherMode}
+          title={
+            teacherMode
+              ? 'Teacher mode on — teaching notes are visible. Click to hide.'
+              : 'Teacher mode off — teaching notes are hidden. Click to show.'
+          }
+          className={cn(
+            'inline-flex items-center gap-1.5 border px-2.5 py-1 text-eyebrow font-semibold uppercase transition-colors',
+            teacherMode
+              ? 'border-amber-400 bg-amber-100 text-amber-800'
+              : 'border-hairline bg-white text-ink-400 hover:border-amber-400 hover:text-amber-700',
+          )}
+        >
+          <GraduationCap className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Teacher</span>
+        </button>
       </div>
     </header>
   );
