@@ -95,6 +95,13 @@ Console.WriteLine($"Hello, {name}!");`,
       ],
     },
     {
+      kind: 'callout',
+      tone: 'note',
+      title: 'Why VS Code underlines this line',
+      text:
+        "`ReadLine` officially returns `string?` — it can be `null` if the input stream ends. In a default .NET 8 project (nullable enabled), assigning it to a plain `string` shows warning **CS8600**, which is the squiggle you may see under `string name = Console.ReadLine();`. To silence it, write `string name = Console.ReadLine() ?? \"\";` (use an empty string when null) or declare `string? name` — full nullability comes later.",
+    },
+    {
       kind: 'heading',
       level: 2,
       text: 'Parsing input to numbers',

@@ -120,6 +120,13 @@ do
 }
 while (choice != "q");`,
     },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: 'That `break` is NOT a loop break',
+      text:
+        "Lesson 1 said `break` exits the loop — but the `break` in each `case` above ends the **`switch` case**, not the loop. The menu keeps going; it stops only when the condition `choice != \"q\"` becomes false on the next check. To leave the loop from *inside* a `switch` case, set a flag the condition tests, or call a method and `return`. (`break` doing two different jobs depending on where it sits is a classic source of confusion.)",
+    },
 
     {
       kind: 'heading',

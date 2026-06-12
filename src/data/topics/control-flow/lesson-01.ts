@@ -126,6 +126,13 @@ Console.WriteLine(good);`,
         },
       ],
     },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: '`=` assigns, `==` compares',
+      text:
+        'Typing `if (count = 5)` is a **compile error** in C# — `count = 5` produces an `int`, not a `bool` (CS0029), so the compiler saves you (unlike C). But beware bools: `if (isReady = true)` **compiles** and silently assigns `true` to `isReady` before testing it — a real bug. If a condition contains a single `=`, stop and look twice.',
+    },
 
     {
       kind: 'heading',
@@ -159,6 +166,42 @@ Console.WriteLine(arr1.SequenceEqual(arr2));  // True (content comparison)`,
       title: 'Interview-classic question',
       text:
         '"What does `==` compare for reference types?" Answer: **reference identity by default**. Custom classes can override `Equals` and `==` to compare contents instead — you will see this in the OOP topic.',
+    },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: 'Never compare doubles with `==`',
+      text:
+        '`0.1 + 0.2 == 0.3` is **false** in C# — binary floating-point cannot store those values exactly (the 0.1 + 0.2 money problem from Foundations Lesson 4). Compare with a tolerance instead: `Math.Abs(a - b) < 1e-9`, or use `decimal` when exact values matter. Raw `==` on `double`/`float` is an instant code-review reject — and a favorite interview trap.',
+    },
+
+    {
+      kind: 'heading',
+      level: 2,
+      text: 'Coming from Python?',
+    },
+    {
+      kind: 'twoColumn',
+      cards: [
+        {
+          title: 'Logic & truth',
+          items: [
+            'Python `and` → C# `&&`',
+            'Python `or` → C# `||`',
+            'Python `not x` → C# `!x`',
+            'Python `True`/`False` → C# `true`/`false` (lowercase)',
+          ],
+        },
+        {
+          title: 'Math operators',
+          items: [
+            'Python `**` → C# `Math.Pow(a, b)` (returns a `double`)',
+            'Python `//` floor division → C# integer division: `int / int` already truncates',
+            'Comparisons return a `bool`, exactly like Python',
+            'No chaining: `0 < x < 10` is a compile error — use `0 < x && x < 10`',
+          ],
+        },
+      ],
     },
 
     {

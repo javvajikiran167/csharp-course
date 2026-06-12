@@ -205,6 +205,13 @@ Tax      : 8.75%`,
     {
       kind: 'callout',
       tone: 'warn',
+      title: "Forgetting the m suffix is a compile error",
+      text:
+        "Writing `decimal price = 49.99;` without the `m` does **not** compile — a bare `49.99` is a `double` literal, and C# refuses to silently convert `double` to `decimal`. You'll see error **CS0664** (\"Literal of type double cannot be implicitly converted to type decimal\"). The fix is almost always the same: add the `m` — `decimal price = 49.99m;`.",
+    },
+    {
+      kind: 'callout',
+      tone: 'warn',
       title: 'The 0.1 + 0.2 problem',
       text:
         "`double` and `float` use binary floating-point — they cannot store `0.1` exactly. So `0.1 + 0.2` produces `0.30000000000000004`. This is fine for physics, graphics, sensor data. It is **NOT** fine for money. For currency, taxes, or anything that has to total to exact pennies, use `decimal`.",

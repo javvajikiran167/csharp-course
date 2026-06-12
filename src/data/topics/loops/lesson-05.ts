@@ -208,7 +208,7 @@ Console.WriteLine(pos);    // (1, 1)`,
       tone: 'tip',
       title: 'Best fix for nested loops: extract a method',
       text:
-        'When nested loops need a clean exit, the cleanest move is **extract them into a method and use `return`**. It reads better, is easier to test, and avoids both flag variables and `goto`. This is a frequent code-review suggestion.',
+        'When nested loops need a clean exit, the cleanest move is **extract them into a method and use `return`**. It reads better, is easier to test, and avoids both flag variables and `goto`. This is a frequent code-review suggestion. As for `goto`: recognize it, but **if you write it in a real pull request, expect it to be rejected** — it survives in the language for generated code and rare state machines, not for everyday application logic.',
     },
 
     {

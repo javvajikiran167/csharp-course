@@ -121,7 +121,8 @@ while (total < 100)
     total += n;
     n++;
 }
-Console.WriteLine($"Stopped at n={n - 1}, total={total}");`,
+Console.WriteLine($"Stopped at n={n - 1}, total={total}");
+// Stopped at n=14, total=105 — overshoots 100`,
         },
         {
           label: 'Two variables advancing — Fibonacci',
@@ -146,6 +147,14 @@ while (a < 50)
 }`,
         },
       ],
+    },
+
+    {
+      kind: 'callout',
+      tone: 'note',
+      title: 'The condition is checked only at the top',
+      text:
+        'A `while` loop does **not** stop the instant its condition becomes false — the condition is tested **only at the top of each iteration**. If it goes false halfway through the body, the rest of the body still runs and the loop exits at the *next* check. That is why the accumulator above stops at `total=105`, not exactly `100`: it adds `n`, the body finishes, and only then does `total < 100` fail. The check happens *between* iterations, not continuously.',
     },
 
     {

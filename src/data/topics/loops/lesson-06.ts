@@ -79,10 +79,25 @@ for (int row = 1; row <= 5; row++)
             '**Duplicate detection** — use a HashSet (O(N) instead of O(N²))',
             '**Lookup by key** — use a Dictionary (O(1) instead of O(N))',
             '**Counting frequencies** — use a Dictionary (O(N))',
+            '**Building a string with `+=` in a loop** — each `+=` copies the whole string (strings are immutable), a hidden O(N²); use `StringBuilder`',
             'Large N (10K+) with nested loops → seconds become minutes',
           ],
         },
       ],
+    },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: 'Use different names — and watch the update clause',
+      text:
+        "The inner loop variable is created fresh on every outer iteration, so give the loops **different names**. Two classic bugs: reusing the outer name — declaring `int i` again inside an outer `i` loop — is a compile error (**CS0136**, a name already in scope); and accidentally updating the *outer* counter in the *inner* header, like `for (int j = 0; j < 3; i++)`, compiles fine and **loops forever** because `j` never changes. When a nested loop hangs, check that each header updates its own variable.",
+    },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: 'The other hidden N² — string `+=` in a loop',
+      text:
+        "Strings are **immutable**: `result += word;` inside a loop doesn't extend the string, it allocates a brand-new one and copies everything across each time. Build a 10,000-line report that way and you've quietly written O(N²). Use **`StringBuilder`** — `var sb = new StringBuilder(); sb.Append(word);` — then `sb.ToString()` once at the end. Every .NET reviewer flags `+=`-in-a-loop on sight.",
     },
 
     {

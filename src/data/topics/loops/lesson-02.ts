@@ -85,6 +85,13 @@ Index 4: 88`,
       text:
         "**`<` with `Length` and `0`-indexed** is the safe combination. `<= scores.Length` would crash on the last iteration — there is no index `5` for an array of length `5`. **Always use `<` and start at `0`.**",
     },
+    {
+      kind: 'callout',
+      tone: 'note',
+      title: '`i` dies with the loop',
+      text:
+        'A variable declared in the `for` header exists **only inside the loop**. Writing `Console.WriteLine(i);` after the closing brace is a **compile error (CS0103)** — unlike Python, where the loop variable leaks and survives afterwards. If you need the final value, declare it before the loop: `int i; for (i = 0; i < n; i++) { ... }` — now `i` is still in scope below.',
+    },
 
     {
       kind: 'heading',

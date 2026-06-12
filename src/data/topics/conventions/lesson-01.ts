@@ -46,6 +46,7 @@ export const lesson01: Lesson = {
           title: 'Naming',
           items: [
             '**PascalCase** for classes, methods, properties, constants, public fields, enums, namespaces',
+            '**No ALL_CAPS constants** — Python\'s `TAX_RATE` is C#\'s `TaxRate`; constants are PascalCase too',
             '**camelCase** for local variables and parameters',
             '**`_camelCase`** for private instance fields (with underscore prefix)',
             '**`I` prefix** for interfaces: `IDisposable`, `IComparable`',
@@ -63,6 +64,13 @@ export const lesson01: Lesson = {
           ],
         },
       ],
+    },
+    {
+      kind: 'callout',
+      tone: 'warn',
+      title: 'Coming from Python? Retrain two reflexes',
+      text:
+        "Python's `calculate_total` becomes `CalculateTotal` in C# — methods (and types) are **PascalCase**, never snake_case. And `order_id` becomes `orderId` — locals and parameters are **camelCase**. The compiler accepts snake_case, but it instantly marks code as written by someone new to C#, and it's the first thing a reviewer will flag.",
     },
 
     {
@@ -113,10 +121,49 @@ public record Order(int Id, decimal Subtotal);  // PascalCase record`,
     },
     {
       kind: 'callout',
+      tone: 'note',
+      title: 'Look closely at one line',
+      text:
+        "`decimal subtotal = order.Subtotal;` — that's **two different names**. C# is case-sensitive, so `Subtotal` (the property) and `subtotal` (the local) coexist happily. This is idiomatic C#, not a mistake: same word, different casing, different role. The constructor's `_orders = orders;` is the same trick with the underscore.",
+    },
+    {
+      kind: 'callout',
       tone: 'tip',
       title: 'Try it yourself',
       text:
         "Open one of your earlier exercises. Identify three places where the naming follows the conventions you just saw. If you spot any names that don't fit, rename them — your code will instantly look more professional.",
+    },
+
+    {
+      kind: 'heading',
+      level: 2,
+      text: 'Recognize these — but never write them',
+    },
+    {
+      kind: 'paragraph',
+      text:
+        "You will meet these styles in old codebases, decade-old Stack Overflow answers, and tutorials ported from C++ or Java. They are not C# style. Learn to read them, then leave them behind.",
+    },
+    {
+      kind: 'twoColumn',
+      cards: [
+        {
+          title: 'Legacy naming you may see',
+          items: [
+            '**Hungarian notation** — `strName`, `iCount`, `bIsActive`, `btnSave`. The type is baked into the name. The Framework Design Guidelines explicitly forbid it',
+            '**`m_` member prefixes** — `m_count`, `m_orders`. A C++ habit; C# uses a plain `_count` for private fields',
+            '**SCREAMING_SNAKE_CASE constants** — `TAX_RATE`, `MAX_SIZE`. A C / Java / Python habit; C# constants are `PascalCase` (`TaxRate`, `MaxSize`)',
+          ],
+        },
+        {
+          title: 'Why C# dropped them',
+          items: [
+            'Modern IDEs show a value\'s type on hover, so encoding it in the name (`strName`) is just noise that lies when the type changes',
+            'One consistent casing system (`PascalCase` / `camelCase` / `_camelCase`) is easier to read than several competing prefix schemes',
+            'Consistency *is* the point — code that follows the Guidelines reads the same across every team and library you will ever touch',
+          ],
+        },
+      ],
     },
 
     {

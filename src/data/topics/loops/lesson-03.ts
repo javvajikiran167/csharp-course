@@ -144,6 +144,18 @@ foreach (var n in evens)
         },
       ],
     },
+    {
+      kind: 'paragraph',
+      text:
+        'Notice the **trailing `-`** in the string example: the output is `h-e-l-l-o-`, not `h-e-l-l-o`. The loop writes a separator after *every* character, but `n` items need only `n-1` separators between them. This is the **fencepost problem** (you build a fence of 5 posts with only 4 rails). Two clean fixes: write the separator **before** every item except the first — `if (!first) Console.Write("-"); Console.Write(c); first = false;` — or skip the manual loop entirely and use `string.Join("-", word.ToCharArray())`, which places separators only between items.',
+    },
+    {
+      kind: 'callout',
+      tone: 'note',
+      title: 'Legacy collections you may see online',
+      text:
+        'Old answers and pre-2005 codebases use **`ArrayList`** and **`Hashtable`** — the untyped ancestors of `List<T>` and `Dictionary<K,V>`. They compile, but everything comes out as `object`, so the compiler cannot catch type mistakes. **Recognize them in old code; never write them in new code.** Generics replaced them in 2005.',
+    },
 
     {
       kind: 'heading',
