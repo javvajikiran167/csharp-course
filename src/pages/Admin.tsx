@@ -194,8 +194,10 @@ export function Admin() {
   const [newDisplayName, setNewDisplayName] = useState('');
   const [newPassword, setNewPassword] = useState(genPassword());
   const [newTopics, setNewTopics] = useState<string[]>([]);
+  const [newIsAdmin, setNewIsAdmin] = useState(false);
   const [creating, setCreating] = useState(false);
   const [createdCreds, setCreatedCreds] = useState<Credentials | null>(null);
+  const [createdRole, setCreatedRole] = useState<'student' | 'instructor'>('student');
 
   // Per-student reset password reveal: { [studentId]: Credentials }
   const [resetCreds, setResetCreds] = useState<Record<string, Credentials>>({});
@@ -314,17 +316,20 @@ export function Admin() {
         username,
         password: newPassword,
         display_name: newDisplayName.trim(),
-        topics: newTopics,
+        is_admin: newIsAdmin,
+        topics: newIsAdmin ? [] : newTopics,
       });
       setCreatedCreds({
         username: (json.username as string) ?? username,
         password: (json.password as string) ?? newPassword,
       });
-      // Clear the form for the next student.
+      setCreatedRole(newIsAdmin ? 'instructor' : 'student');
+      // Clear the form for the next person.
       setNewUsername('');
       setNewDisplayName('');
       setNewPassword(genPassword());
       setNewTopics([]);
+      setNewIsAdmin(false);
       await refetch();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create student.');
@@ -611,36 +616,68 @@ export function Admin() {
                 </div>
               </div>
 
-              <fieldset className="space-y-3">
-                <legend className="text-caption font-semibold text-ink">
-                  Unlock chapters now{' '}
-                  <span className="font-normal text-ink-400">(optional)</span>
-                </legend>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {chapters.map((c) => {
-                    const checked = newTopics.includes(c.slug);
-                    return (
-                      <label
-                        key={c.slug}
-                        className={cn(
-                          'flex cursor-pointer items-center gap-2 border px-3 py-2 text-body',
-                          checked
-                            ? 'border-amber-300 bg-amber-50 text-ink'
-                            : 'border-hairline bg-white text-ink-600',
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 accent-amber-700"
-                          checked={checked}
-                          onChange={() => toggleNewTopic(c.slug)}
-                        />
-                        <span>{c.title}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
+              <label
+                className={cn(
+                  'flex cursor-pointer items-start gap-2.5 border px-3 py-3 text-body',
+                  newIsAdmin
+                    ? 'border-amber-300 bg-amber-50 text-ink'
+                    : 'border-hairline bg-white text-ink-600',
+                )}
+              >
+                <input
+                  type="checkbox"
+                  className="mt-0.5 h-4 w-4 accent-amber-700"
+                  checked={newIsAdmin}
+                  onChange={(e) => setNewIsAdmin(e.target.checked)}
+                />
+                <span>
+                  <span className="font-semibold text-ink">
+                    Make this an instructor
+                  </span>
+                  <span className="block text-caption text-ink-400">
+                    Full access to every chapter and to this Console. Use only for
+                    co-teachers — not students.
+                  </span>
+                </span>
+              </label>
+
+              {newIsAdmin ? (
+                <p className="border-l-2 border-amber-300 bg-amber-50/60 px-3 py-2 text-caption text-ink-600">
+                  Instructors can see every chapter, so there&apos;s nothing to
+                  unlock here.
+                </p>
+              ) : (
+                <fieldset className="space-y-3">
+                  <legend className="text-caption font-semibold text-ink">
+                    Unlock chapters now{' '}
+                    <span className="font-normal text-ink-400">(optional)</span>
+                  </legend>
+                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {chapters.map((c) => {
+                      const checked = newTopics.includes(c.slug);
+                      return (
+                        <label
+                          key={c.slug}
+                          className={cn(
+                            'flex cursor-pointer items-center gap-2 border px-3 py-2 text-body',
+                            checked
+                              ? 'border-amber-300 bg-amber-50 text-ink'
+                              : 'border-hairline bg-white text-ink-600',
+                          )}
+                        >
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 accent-amber-700"
+                            checked={checked}
+                            onChange={() => toggleNewTopic(c.slug)}
+                          />
+                          <span>{c.title}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              )}
 
               <div>
                 <Button
@@ -650,16 +687,33 @@ export function Admin() {
                   disabled={creating || !newUsername.trim()}
                 >
                   <UserPlus className="h-4 w-4" aria-hidden />
-                  {creating ? 'Creating…' : 'Create student'}
+                  {creating
+                    ? 'Creating…'
+                    : newIsAdmin
+                    ? 'Create instructor'
+                    : 'Create student'}
                 </Button>
               </div>
             </form>
 
             {createdCreds && (
-              <CredentialsPanel
-                creds={createdCreds}
-                heading="Student created — credentials"
-              />
+              <>
+                <CredentialsPanel
+                  creds={createdCreds}
+                  heading={
+                    createdRole === 'instructor'
+                      ? 'Instructor created — credentials'
+                      : 'Student created — credentials'
+                  }
+                />
+                {createdRole === 'instructor' && (
+                  <p className="mt-2 text-caption text-ink-400">
+                    They log in with the username above (just the username — no
+                    email). Instructors don&apos;t appear in the Students list
+                    below.
+                  </p>
+                )}
+              </>
             )}
           </Card>
 

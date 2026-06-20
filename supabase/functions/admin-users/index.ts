@@ -89,20 +89,25 @@ Deno.serve(async (req) => {
       const username = String(body.username ?? '').trim().toLowerCase();
       const password = String(body.password ?? '');
       const display_name = String(body.display_name ?? '') || username;
+      const isAdmin = Boolean(body.is_admin);
       const topics: string[] = Array.isArray(body.topics) ? body.topics : [];
       if (!username) return json({ error: 'Username is required.' }, 400);
       if (password.length < 6)
         return json({ error: 'Password must be at least 6 characters.' }, 400);
+      // Username is the only identifier anyone ever types; the email is an
+      // internal, never-shown detail required by Supabase Auth.
       const email = `${username}@${EMAIL_DOMAIN}`;
       const { data, error } = await admin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
-        user_metadata: { username, display_name, is_admin: false },
+        user_metadata: { username, display_name, is_admin: isAdmin },
       });
       if (error) return json({ error: error.message }, 400);
       const studentId = data.user.id;
-      if (topics.length) {
+      // Instructors see every chapter, so per-chapter grants only apply to
+      // students.
+      if (!isAdmin && topics.length) {
         const rows = topics.map((t) => ({
           student_id: studentId,
           topic_slug: t,
@@ -113,7 +118,7 @@ Deno.serve(async (req) => {
           .upsert(rows, { onConflict: 'student_id,topic_slug' });
         if (aerr) return json({ error: aerr.message }, 400);
       }
-      return json({ ok: true, studentId, username, email, password });
+      return json({ ok: true, studentId, username, email, password, is_admin: isAdmin });
     }
 
     if (action === 'reset-password') {

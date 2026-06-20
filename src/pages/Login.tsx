@@ -48,7 +48,7 @@ export function Login() {
                 htmlFor="username"
                 className="block text-caption font-semibold text-ink"
               >
-                Username or email
+                Username
               </label>
               <input
                 id="username"
