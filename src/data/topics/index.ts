@@ -3,6 +3,7 @@ import { programmingFoundations } from './programming-foundations';
 import { foundations } from './foundations';
 import { controlFlow } from './control-flow';
 import { loops } from './loops';
+import { methods } from './methods';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -47,7 +48,10 @@ export const topics: Topic[] = [
   // ── 03 · Loops & Iteration (UNLOCKED — full content authored) ──
   loops,
 
-  // ── 04 · Collections ──
+  // ── 04 · Methods & Reusability (UNLOCKED — full content authored) ──
+  methods,
+
+  // ── 05 · Collections ──
   stub(
     'collections',
     'Collections',
@@ -61,22 +65,6 @@ export const topics: Topic[] = [
       lesson(6, 'stack-queue', 'Stack<T> & Queue<T>', 'LIFO and FIFO data structures — used in parsers, schedulers, BFS/DFS.'),
       lesson(7, 'iterating', 'Iterating, Sorting, and Filtering', 'Compare manual loops vs built-in helpers (Sort, FindAll, Contains) — and preview that LINQ will generalize this later.'),
       lesson(8, 'mini-project-collections', 'Mini-Project — Contact Book', 'Build an in-memory contact app that adds, searches, sorts, and deletes records.'),
-    ],
-  ),
-
-  // ── 05 · Methods ──
-  stub(
-    'methods',
-    'Methods & Reusability',
-    'Define, call, overload, and reason about methods — including ref/out/in, default arguments, params, and local functions.',
-    [
-      lesson(1, 'defining', 'Defining & Calling Methods', 'The signature, parameters, return type, and how the runtime locates a method.'),
-      lesson(2, 'value-reference', 'Pass by Value vs Pass by Reference', 'The single most common C# interview question. Reference types passed by value vs ref/out/in.'),
-      lesson(3, 'overloading', 'Method Overloading', 'Multiple methods, same name, different signatures — and how the compiler picks one.'),
-      lesson(4, 'defaults', 'Default & Named Arguments', 'Cleaner call sites; common in modern .NET APIs.'),
-      lesson(5, 'params', 'params Arrays & Variadic Methods', 'Methods that take any number of arguments — like Console.WriteLine itself.'),
-      lesson(6, 'local-functions', 'Local Functions', 'Methods inside methods — the modern way to extract helpers without polluting the class.'),
-      lesson(7, 'mini-project-methods', 'Mini-Project — Calculator With Methods', 'Refactor the Tip Calculator into a real method-based calculator.'),
     ],
   ),
 
