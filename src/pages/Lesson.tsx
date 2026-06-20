@@ -32,11 +32,15 @@ export function Lesson() {
   const isComplete = result ? isLessonComplete(result.lesson, record) : false;
 
   useEffect(() => {
+    // Only on actual lesson navigation — NOT on every re-render. `result` is a
+    // fresh object each render, so depending on it re-ran this effect (and
+    // jumped to the top) whenever any state changed, e.g. ticking a checkbox.
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     if (result) {
       markLessonVisited(lessonSlug);
     }
-  }, [topicSlug, lessonSlug, result, markLessonVisited]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topicSlug, lessonSlug]);
 
   if (!result) {
     return (
@@ -92,17 +96,8 @@ export function Lesson() {
       </article>
 
       <div className={LESSON_CONTAINER}>
-        <QuizBlock
-          lessonSlug={lesson.slug}
-          questions={lesson.questions}
-          onComplete={() => {
-            setTimeout(() => {
-              document
-                .getElementById(lesson.challenges?.length ? 'challenges' : 'lesson-nav')
-                ?.scrollIntoView({ behavior: 'smooth' });
-            }, 300);
-          }}
-        />
+        {/* No auto-scroll on finish — the learner stays where they are. */}
+        <QuizBlock lessonSlug={lesson.slug} questions={lesson.questions} />
 
         {lesson.challenges && lesson.challenges.length > 0 && (
           <div id="challenges">
