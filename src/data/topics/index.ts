@@ -5,6 +5,7 @@ import { controlFlow } from './control-flow';
 import { loops } from './loops';
 import { methods } from './methods';
 import { collections } from './collections';
+import { oop } from './oop';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -55,29 +56,11 @@ export const topics: Topic[] = [
   // ── 05 · Collections (UNLOCKED — full content authored) ──
   collections,
 
-  // ── 06 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
-  conventions,
+  // ── 06 · Object-Oriented Programming (UNLOCKED — full content authored) ──
+  oop,
 
-  // ── 07 · Object-Oriented Programming ──
-  stub(
-    'oop',
-    'Object-Oriented Programming',
-    'Classes, inheritance, interfaces, polymorphism, encapsulation — the heart of every C# job interview and every real-world codebase.',
-    [
-      lesson(1, 'classes', 'Classes & Objects', 'The blueprint and the instance — fields, methods, the new keyword.'),
-      lesson(2, 'constructors', 'Constructors & Initialization', 'Multiple constructors, chaining, parameter validation, primary constructors (C# 12).'),
-      lesson(3, 'properties', 'Properties — Get, Set, Init', 'Auto-properties, expression-bodied properties, init-only setters.'),
-      lesson(4, 'static', 'Static Members & static class', 'When to make something static — and the consequences.'),
-      lesson(5, 'access-modifiers', 'Access Modifiers', 'public, private, protected, internal, file — what each one means and when to use it.'),
-      lesson(6, 'inheritance', 'Inheritance', 'base classes, derived classes, base() constructor calls, the protected keyword.'),
-      lesson(7, 'virtual-override', 'virtual, override, sealed', 'Polymorphism in practice — the single most-asked OOP interview topic.'),
-      lesson(8, 'abstract', 'Abstract Classes', 'Half-built blueprints — when abstract beats interfaces.'),
-      lesson(9, 'interfaces', 'Interfaces', 'Contracts without implementation — and C# 8+ default interface methods.'),
-      lesson(10, 'polymorphism', 'Polymorphism in Practice', 'Why a List<Shape> can hold Circles and Squares and call Draw() on each.'),
-      lesson(11, 'records', 'Records & Value Equality', 'C# 9+ records — the modern way to model data.'),
-      lesson(12, 'mini-project-oop', 'Mini-Project — Shape Hierarchy', 'Build a polymorphic shape calculator — the classic OOP interview problem.'),
-    ],
-  ),
+  // ── 07 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
+  conventions,
 
   // ── 08 · Exception Handling ──
   stub(
