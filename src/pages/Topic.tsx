@@ -40,7 +40,7 @@ export function Topic() {
     return (
       <div className="container-page py-12 sm:py-16">
         <Breadcrumbs items={[{ label: 'Home', to: '/' }, { label: topic.title }]} />
-        <div className="mt-8 max-w-prose">
+        <div className="mt-8">
           <Eyebrow>Coming soon · Locked</Eyebrow>
           <Display className="mt-2">{topic.title}</Display>
           <Lead className="mt-4">{inline(topic.subtitle)}</Lead>

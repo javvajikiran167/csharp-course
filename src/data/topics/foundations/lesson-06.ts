@@ -75,7 +75,7 @@ Console.WriteLine($"F1 : {price:F1}");   // 1 decimal
 Console.WriteLine($"F2 : {price:F2}");   // 2 decimals
 Console.WriteLine($"N0 : {price:N0}");   // thousands separator
 Console.WriteLine($"N2 : {price:N2}");   // thousands + 2 decimals
-Console.WriteLine($"C  : {price:C}");    // currency
+Console.WriteLine($"C  : {price:C}");    // currency (uses your machine's region)
 Console.WriteLine($"P  : {rate:P2}");    // percentage, 2 decimals
 Console.WriteLine($"P1 : {rate:P1}");    // percentage, 1 decimal`,
     },
@@ -89,6 +89,13 @@ N2 : 1,250.75
 C  : $1,250.75
 P  : 8.50%
 P1 : 8.5%`,
+    },
+    {
+      kind: 'callout',
+      tone: 'note',
+      title: '`:C` follows your computer\'s region',
+      text:
+        'The `:C` currency output depends on your machine\'s culture. On a US system you get `$1,250.75`; in the UK `£1,250.75`; in India `₹1,250.75`. To force a specific currency regardless of the machine, pass a culture: `price.ToString("C", new CultureInfo("en-US"))` (needs `using System.Globalization;`).',
     },
     {
       kind: 'callout',

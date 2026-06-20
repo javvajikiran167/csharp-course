@@ -15,10 +15,9 @@ import type {
 type Props = {
   lessonSlug: string;
   questions: Question[];
-  onComplete?: () => void;
 };
 
-export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
+export function QuizBlock({ lessonSlug, questions }: Props) {
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [phase, setPhase] = useState<'asking' | 'done'>('asking');
@@ -47,7 +46,6 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
       // Record the score as a hint; completion is marked manually by the learner
       // in the "Track your progress" card. The per-question log is via recordResult.
       recordQuizScore(lessonSlug, score, total);
-      onComplete?.();
     }
   };
 
@@ -61,7 +59,7 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
     const pct = Math.round((score / total) * 100);
     const passing = pct >= 60;
     return (
-      <section className="mt-12 border border-hairline bg-white p-8" id="quiz">
+      <section className="mt-12 border border-hairline bg-white p-5 sm:p-8" id="quiz">
         <Eyebrow>Quiz complete</Eyebrow>
         <h3 className="mt-2 font-serif font-semibold text-h1 text-ink">
           {passing ? 'Nice work.' : 'Solid try.'}
@@ -83,7 +81,7 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
   }
 
   return (
-    <section className="mt-12 border border-hairline bg-white p-8" id="quiz">
+    <section className="mt-12 border border-hairline bg-white p-5 sm:p-8" id="quiz">
       <div className="flex items-center justify-between">
         <Eyebrow>Check yourself</Eyebrow>
         <Pill tone="dim">{index + 1} / {total}</Pill>
@@ -129,7 +127,7 @@ function MultipleChoice({
 
   return (
     <div>
-      <ul className="space-y-2">
+      <ul className="space-y-2" role="radiogroup" aria-label="Answer options">
         {q.options.map((opt, i) => {
           const isCorrect = i === correctIdx;
           const picked = pick === i;
@@ -146,10 +144,11 @@ function MultipleChoice({
               <button
                 type="button"
                 disabled={revealed}
-                aria-pressed={picked}
+                role="radio"
+                aria-checked={picked}
                 onClick={() => setPick(i)}
                 className={cn(
-                  'w-full text-left flex items-center gap-3 px-4 py-3 border bg-white transition-colors',
+                  'w-full min-w-0 text-left flex items-center gap-3 px-4 py-3 border bg-white transition-colors',
                   visualState,
                 )}
               >
@@ -166,13 +165,13 @@ function MultipleChoice({
                    revealed && picked && !isCorrect ? <X className="h-4 w-4" /> :
                    String.fromCharCode(65 + i)}
                 </span>
-                <span className="text-body text-ink">{inline(opt.label)}</span>
+                <span className="min-w-0 break-words text-body text-ink">{inline(opt.label)}</span>
               </button>
             </li>
           );
         })}
       </ul>
-      <Reveal revealed={revealed} explanation={q.explanation} onSubmit={submit} onNext={onNext} canSubmit={pick !== null} />
+      <Reveal revealed={revealed} explanation={q.explanation} onSubmit={submit} onNext={onNext} canSubmit={pick !== null} correct={revealed ? pick === correctIdx : undefined} />
     </div>
   );
 }
@@ -198,7 +197,7 @@ function CodePredict({
     <div>
       <CodeBlock code={q.code} language="csharp" filename="Program.cs" showCopy={false} />
       <p className="text-body text-ink-600">Predict the output:</p>
-      <ul className="mt-3 space-y-2">
+      <ul className="mt-3 space-y-2" role="radiogroup" aria-label="Answer options">
         {q.options.map((opt, i) => {
           const isCorrect = i === correctIdx;
           const picked = pick === i;
@@ -215,10 +214,11 @@ function CodePredict({
               <button
                 type="button"
                 disabled={revealed}
-                aria-pressed={picked}
+                role="radio"
+                aria-checked={picked}
                 onClick={() => setPick(i)}
                 className={cn(
-                  'w-full text-left flex items-center gap-3 px-4 py-3 border bg-white font-mono text-code transition-colors',
+                  'w-full min-w-0 text-left flex items-center gap-3 px-4 py-3 border bg-white font-mono text-code transition-colors',
                   style,
                 )}
               >
@@ -235,13 +235,13 @@ function CodePredict({
                    revealed && picked && !isCorrect ? <X className="h-4 w-4" /> :
                    String.fromCharCode(65 + i)}
                 </span>
-                <span className="whitespace-pre-wrap">{inline(opt.label)}</span>
+                <span className="min-w-0 whitespace-pre-wrap break-words">{inline(opt.label)}</span>
               </button>
             </li>
           );
         })}
       </ul>
-      <Reveal revealed={revealed} explanation={q.explanation} onSubmit={submit} onNext={onNext} canSubmit={pick !== null} />
+      <Reveal revealed={revealed} explanation={q.explanation} onSubmit={submit} onNext={onNext} canSubmit={pick !== null} correct={revealed ? pick === correctIdx : undefined} />
     </div>
   );
 }
@@ -308,12 +308,14 @@ function Reveal({
   onSubmit,
   onNext,
   canSubmit,
+  correct,
 }: {
   revealed: boolean;
   explanation: string;
   onSubmit: () => void;
   onNext: () => void;
   canSubmit: boolean;
+  correct?: boolean;
 }) {
   if (!revealed) {
     return (
@@ -326,6 +328,9 @@ function Reveal({
   }
   return (
     <div className="mt-5 border-l-2 border-amber-600 bg-amber-50 px-4 py-3" role="status" aria-live="polite">
+      {typeof correct === 'boolean' && (
+        <p className="font-semibold text-ink">{correct ? 'Correct' : 'Not quite'}</p>
+      )}
       <Eyebrow>Why</Eyebrow>
       <p className="mt-1 text-body text-ink-600">{inline(explanation)}</p>
       <div className="mt-4">

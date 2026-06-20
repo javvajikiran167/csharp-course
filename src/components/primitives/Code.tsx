@@ -57,22 +57,23 @@ export function CodeBlock({ code, language = 'csharp', filename, showCopy = true
           )}
         </div>
       )}
-      <SyntaxHighlighter
-        language={language}
-        style={vscDarkPlus}
-        showLineNumbers={false}
-        wrapLongLines
-        customStyle={{
-          margin: 0,
-          padding: '16px 18px',
-          background: 'transparent',
-          fontSize: '13.5px',
-          lineHeight: '1.7',
-        }}
-        codeTagProps={{ style: { fontFamily: 'JetBrains Mono, ui-monospace, monospace' } }}
-      >
-        {code.replace(/\n$/, '')}
-      </SyntaxHighlighter>
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          language={language}
+          style={vscDarkPlus}
+          showLineNumbers={false}
+          customStyle={{
+            margin: 0,
+            padding: '16px 18px',
+            background: 'transparent',
+            fontSize: '0.875rem',
+            lineHeight: '1.65',
+          }}
+          codeTagProps={{ style: { fontFamily: 'JetBrains Mono, ui-monospace, monospace' } }}
+        >
+          {code.replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 }

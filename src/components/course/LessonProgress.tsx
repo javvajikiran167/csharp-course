@@ -27,7 +27,7 @@ export function LessonProgress({ lesson }: { lesson: Lesson }) {
   const practiceHint = `${challengeCount} challenge${challengeCount === 1 ? '' : 's'}`;
 
   return (
-    <section className="mt-12 border border-hairline bg-cream-50 p-6" aria-label="Lesson progress">
+    <section id="lesson-progress" className="mt-12 border border-hairline bg-cream-50 p-6" aria-label="Lesson progress">
       <div className="flex items-center justify-between">
         <Eyebrow>Track your progress</Eyebrow>
         {complete ? (
@@ -89,7 +89,7 @@ function CheckRow({
         aria-checked={checked}
         onClick={onToggle}
         className={cn(
-          'group flex w-full items-center gap-3 border bg-white px-4 py-3 text-left transition-colors',
+          'group flex w-full flex-wrap items-center gap-3 border bg-white px-4 py-3 text-left transition-colors',
           checked ? 'border-ok bg-ok-soft/40' : 'border-hairline hover:border-amber-400',
         )}
       >
@@ -101,8 +101,8 @@ function CheckRow({
         >
           <Check className="h-3.5 w-3.5" />
         </span>
-        <span className="font-sans font-medium text-ink">{label}</span>
-        <span className="ml-auto text-caption text-ink-400">{hint}</span>
+        <span className="min-w-0 font-sans font-medium text-ink">{label}</span>
+        <span className="ml-auto shrink-0 text-caption text-ink-400">{hint}</span>
       </button>
     </li>
   );

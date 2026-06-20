@@ -242,6 +242,14 @@ export const topics: Topic[] = [
 export const findTopic = (slug: string): Topic | undefined =>
   topics.find((t) => t.slug === slug);
 
+// The next unlocked topic after `slug` — so finishing a topic's last lesson
+// can point forward instead of dead-ending on the topic overview.
+export const findNextTopic = (slug: string): Topic | undefined => {
+  const idx = topics.findIndex((t) => t.slug === slug);
+  if (idx === -1) return undefined;
+  return topics.slice(idx + 1).find((t) => t.status === 'unlocked');
+};
+
 export const findLesson = (topicSlug: string, lessonSlug: string) => {
   const topic = findTopic(topicSlug);
   if (!topic) return undefined;

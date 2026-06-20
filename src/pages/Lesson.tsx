@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
-import { findLesson } from '@/data/topics';
+import { findLesson, findNextTopic } from '@/data/topics';
 import { useProgress } from '@/store/progress';
 import {
   Breadcrumbs,
@@ -20,8 +20,9 @@ import { inline } from '@/lib/inline';
 import { isLessonComplete } from '@/lib/completion';
 
 // The lesson page is the place a student spends most of their time. Width,
-// rhythm, and chrome are all tuned for one job: focused reading.
-const LESSON_CONTAINER = 'mx-auto w-full max-w-3xl';
+// rhythm, and chrome are all tuned for one job: focused reading. The column is
+// held near the ~68ch prose measure so lines don't run too wide to track.
+const LESSON_CONTAINER = 'mx-auto w-full max-w-prose';
 
 export function Lesson() {
   const { topicSlug = '', lessonSlug = '' } = useParams();
@@ -57,6 +58,9 @@ export function Lesson() {
   const { topic, lesson, index, prev, next } = result;
   const lessonNumber = `0${lesson.number}`.slice(-2);
   const totalPadded = `0${topic.lessons.length}`.slice(-2);
+  // On the last lesson of a topic, point forward to the next unlocked topic
+  // instead of dead-ending.
+  const nextTopic = next ? undefined : findNextTopic(topic.slug);
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -96,8 +100,9 @@ export function Lesson() {
       </article>
 
       <div className={LESSON_CONTAINER}>
-        {/* No auto-scroll on finish — the learner stays where they are. */}
-        <QuizBlock lessonSlug={lesson.slug} questions={lesson.questions} />
+        {/* key forces a fresh quiz per lesson — without it, index/score/phase
+            leak across lessons. No auto-scroll on finish; learner stays put. */}
+        <QuizBlock key={lesson.slug} lessonSlug={lesson.slug} questions={lesson.questions} />
 
         {lesson.challenges && lesson.challenges.length > 0 && (
           <div id="challenges">
@@ -113,14 +118,14 @@ export function Lesson() {
           aria-label="Lesson navigation"
         >
           {prev ? (
-            <Link to={`/topic/${topic.slug}/${prev.slug}`} className="sm:flex-1">
+            <Link to={`/topic/${topic.slug}/${prev.slug}`} className="block w-full sm:flex-1 sm:w-auto">
               <Button tone="ghost" className="!justify-start w-full sm:w-auto">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="truncate">Previous · {prev.title}</span>
               </Button>
             </Link>
           ) : (
-            <Link to={`/topic/${topic.slug}`} className="sm:flex-1">
+            <Link to={`/topic/${topic.slug}`} className="block w-full sm:flex-1 sm:w-auto">
               <Button tone="ghost" className="!justify-start w-full sm:w-auto">
                 <ArrowLeft className="h-4 w-4" />
                 Topic overview
@@ -128,9 +133,16 @@ export function Lesson() {
             </Link>
           )}
           {next ? (
-            <Link to={`/topic/${topic.slug}/${next.slug}`}>
+            <Link to={`/topic/${topic.slug}/${next.slug}`} className="block w-full sm:w-auto">
               <Button tone="primary" className="w-full sm:w-auto">
                 <span className="truncate">Next · {next.title}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          ) : nextTopic ? (
+            <Link to={`/topic/${nextTopic.slug}`} className="block w-full sm:w-auto">
+              <Button tone="primary" className="w-full sm:w-auto">
+                <span className="truncate">Next topic · {nextTopic.title}</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -138,10 +150,10 @@ export function Lesson() {
             <Button
               tone="primary"
               className="w-full sm:w-auto"
-              onClick={() => navigate(`/topic/${topic.slug}`)}
+              onClick={() => navigate('/')}
             >
               <Check className="h-4 w-4" />
-              Finish topic
+              Finish course
             </Button>
           )}
         </nav>
