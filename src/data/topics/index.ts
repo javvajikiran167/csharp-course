@@ -1,4 +1,5 @@
 import type { Topic, LessonStub } from '@/data/types';
+import { programmingFoundations } from './programming-foundations';
 import { foundations } from './foundations';
 import { controlFlow } from './control-flow';
 import { loops } from './loops';
@@ -34,6 +35,9 @@ const lesson = (number: number, slug: string, title: string, objective: string):
 });
 
 export const topics: Topic[] = [
+  // ── 00 · Programming Foundations (UNLOCKED — pre-C#, language-agnostic) ──
+  programmingFoundations,
+
   // ── 01 · Foundations (UNLOCKED — full content authored) ──
   foundations,
 
