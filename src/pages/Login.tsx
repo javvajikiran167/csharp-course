@@ -101,6 +101,19 @@ export function Login() {
               {busy ? 'Signing in…' : 'Sign in'}
             </Button>
           </form>
+
+          <div className="mt-5 border-t border-hairline pt-4 text-caption text-ink-400 space-y-2">
+            <p className="font-semibold text-ink">How to log in</p>
+            <ol className="list-decimal space-y-1 pl-4">
+              <li>Your instructor gives you a username and a password.</li>
+              <li>Type them in the boxes above, exactly as written.</li>
+              <li>Tap <span className="font-semibold text-ink">Sign in</span>.</li>
+            </ol>
+            <p>
+              Passwords are case-sensitive — capital and small letters matter, and
+              don&apos;t add spaces. Login not working? Ask your instructor.
+            </p>
+          </div>
         </div>
 
         <p className="mt-6 text-center text-caption text-ink-400">

@@ -9,6 +9,8 @@ import {
   Check,
   Inbox,
   RefreshCw,
+  ExternalLink,
+  HelpCircle,
 } from 'lucide-react';
 import { supabase, ADMIN_FN_URL } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
@@ -49,6 +51,11 @@ type UnlockRequest = {
 
 // Credentials we surface once after creating / resetting (never retrievable later).
 type Credentials = { username: string; password: string };
+
+// Supabase dashboard — Authentication → Users for this project. Used for
+// managing logins directly (e.g. changing the instructor's own password).
+const SUPABASE_DASHBOARD =
+  'https://supabase.com/dashboard/project/mhwlivofbcxqwoedgikk/auth/users';
 
 // Only authored topics can be gated.
 const chapters: Topic[] = topics.filter(isAuthored);
@@ -426,7 +433,7 @@ export function Admin() {
           Create logins, review unlock requests, and control which chapters each
           student can see.
         </Lead>
-        <div>
+        <div className="flex flex-wrap gap-2">
           <Button
             tone="ghost"
             size="sm"
@@ -435,8 +442,82 @@ export function Admin() {
           >
             <RefreshCw className="h-4 w-4" aria-hidden /> Refresh
           </Button>
+          <a
+            href={SUPABASE_DASHBOARD}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 border border-ink bg-white px-3 h-8 text-caption font-medium text-ink transition-colors hover:bg-cream-200"
+          >
+            <ExternalLink className="h-4 w-4" aria-hidden /> Supabase dashboard
+          </a>
         </div>
       </header>
+
+      {/* Always-on guide — so you never need a separate README, and it reads
+          fine on a phone. Collapsed by default to stay out of the way. */}
+      <details className="group border border-hairline bg-white">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-body font-semibold text-ink">
+          <HelpCircle className="h-4 w-4 text-amber-700" aria-hidden />
+          How this works
+          <span className="ml-auto text-caption font-normal text-ink-400 group-open:hidden">
+            Tap to open
+          </span>
+        </summary>
+        <div className="space-y-4 border-t border-hairline px-4 py-4 text-body text-ink-600">
+          <div>
+            <p className="font-semibold text-ink">1. Create a student login</p>
+            <p className="mt-1">
+              In <span className="font-medium text-ink">Add a student</span>, type a
+              username (lowercase, no spaces). A password is generated for you — or
+              type your own. Tick any chapters to unlock right away, then
+              <span className="font-medium text-ink"> Create student</span>.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-ink">2. Give them the credentials</p>
+            <p className="mt-1">
+              A card shows the username and password. Tap{' '}
+              <span className="font-medium text-ink">Copy</span> and send it to the
+              student (WhatsApp, message, on paper — whatever works). They sign in at
+              the same website address you use. The password can&apos;t be viewed
+              again later — only reset.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-ink">3. Release chapters one by one</p>
+            <p className="mt-1">
+              Under <span className="font-medium text-ink">Students</span>, tap a
+              chapter chip to unlock it for that student; tap again to re-lock. The
+              change shows up the next time they open the page.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-ink">4. Unlock requests</p>
+            <p className="mt-1">
+              When a student taps &ldquo;Ask instructor to unlock,&rdquo; it appears
+              under <span className="font-medium text-ink">Unlock requests</span>.
+              Tap <span className="font-medium text-ink">Grant</span> to unlock it,
+              or <span className="font-medium text-ink">Dismiss</span> to ignore.
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-ink">Changing your own password</p>
+            <p className="mt-1">
+              Use the{' '}
+              <a
+                href={SUPABASE_DASHBOARD}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-amber-700 underline underline-offset-2"
+              >
+                Supabase dashboard
+              </a>{' '}
+              → Authentication → Users → <code>instructor@class.local</code> → reset
+              password. (Student passwords you can reset right here, per student.)
+            </p>
+          </div>
+        </div>
+      </details>
 
       {error && (
         <Callout tone="warn" title="Something went wrong">
