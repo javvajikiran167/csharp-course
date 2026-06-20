@@ -16,6 +16,7 @@ import { BlockRenderer } from '@/components/course/BlockRenderer';
 import { QuizBlock } from '@/components/course/QuizBlock';
 import { ChallengeList } from '@/components/course/ChallengeList';
 import { LessonProgress } from '@/components/course/LessonProgress';
+import { OnThisPage } from '@/components/course/OnThisPage';
 import { inline } from '@/lib/inline';
 import { isLessonComplete } from '@/lib/completion';
 
@@ -90,6 +91,7 @@ export function Lesson() {
         )}
         <H1>{lesson.title}</H1>
         <Lead className="mt-4">{inline(lesson.objective)}</Lead>
+        <OnThisPage lesson={lesson} />
       </header>
 
       {/* The lesson itself */}

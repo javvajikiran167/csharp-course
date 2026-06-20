@@ -1,6 +1,7 @@
 import { CheckCircle2 } from 'lucide-react';
 import type { Block } from '@/data/types';
 import { inline } from '@/lib/inline';
+import { slugify } from '@/lib/slug';
 import { H2, H3, Lead, Callout, Card, CodeBlock, OutputBlock } from '@/components/primitives';
 import { Pill } from '@/components/primitives';
 import { TeachingNotes } from './TeachingNotes';
@@ -27,7 +28,9 @@ export function BlockRenderer({ block }: { block: Block }) {
 
     case 'heading':
       return block.level === 2 ? (
-        <H2 id={block.id}>{inline(block.text)}</H2>
+        // Auto-id level-2 headings (when no explicit id) so the "On this page"
+        // nav has a stable anchor target for every section.
+        <H2 id={block.id ?? slugify(block.text)}>{inline(block.text)}</H2>
       ) : (
         <H3>{inline(block.text)}</H3>
       );
