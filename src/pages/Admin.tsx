@@ -11,12 +11,14 @@ import {
   RefreshCw,
   ExternalLink,
   HelpCircle,
+  BarChart3,
 } from 'lucide-react';
 import { supabase, ADMIN_FN_URL } from '@/lib/supabase';
 import { useAuth } from '@/store/auth';
 import { topics } from '@/data/topics';
 import type { Topic } from '@/data/types';
 import { isAuthored } from '@/lib/access';
+import { isLessonComplete } from '@/lib/completion';
 import {
   Button,
   Card,
@@ -26,6 +28,7 @@ import {
   H2,
   Lead,
   Callout,
+  ProgressBar,
 } from '@/components/primitives';
 import { cn } from '@/lib/cn';
 
@@ -47,6 +50,13 @@ type UnlockRequest = {
   student_id: string;
   topic_slug: string;
   created_at: string;
+};
+
+type ProgressRow = {
+  student_id: string;
+  lesson_slug: string;
+  quiz_done: boolean;
+  practice_done: boolean;
 };
 
 // Credentials we surface once after creating / resetting (never retrievable later).
@@ -185,6 +195,7 @@ export function Admin() {
   const [students, setStudents] = useState<Student[]>([]);
   const [access, setAccess] = useState<AccessRow[]>([]);
   const [requests, setRequests] = useState<UnlockRequest[]>([]);
+  const [progress, setProgress] = useState<ProgressRow[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -210,7 +221,7 @@ export function Admin() {
   const refetch = useCallback(async () => {
     setError(null);
     try {
-      const [studentsRes, accessRes, requestsRes] = await Promise.all([
+      const [studentsRes, accessRes, requestsRes, progressRes] = await Promise.all([
         supabase
           .from('profiles')
           .select('id, username, display_name, created_at')
@@ -222,15 +233,20 @@ export function Admin() {
           .select('id, student_id, topic_slug, created_at')
           .eq('status', 'pending')
           .order('created_at', { ascending: true }),
+        supabase
+          .from('lesson_progress')
+          .select('student_id, lesson_slug, quiz_done, practice_done'),
       ]);
 
       if (studentsRes.error) throw studentsRes.error;
       if (accessRes.error) throw accessRes.error;
       if (requestsRes.error) throw requestsRes.error;
+      if (progressRes.error) throw progressRes.error;
 
       setStudents((studentsRes.data ?? []) as Student[]);
       setAccess((accessRes.data ?? []) as AccessRow[]);
       setRequests((requestsRes.data ?? []) as UnlockRequest[]);
+      setProgress((progressRes.data ?? []) as ProgressRow[]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load data.');
     }
@@ -264,6 +280,40 @@ export function Admin() {
     for (const s of students) map.set(s.id, s);
     return map;
   }, [students]);
+
+  // Map: studentId -> (lessonSlug -> completion flags)
+  const progressByStudent = useMemo(() => {
+    const map = new Map<string, Map<string, { quizDone: boolean; practiceDone: boolean }>>();
+    for (const r of progress) {
+      let m = map.get(r.student_id);
+      if (!m) {
+        m = new Map();
+        map.set(r.student_id, m);
+      }
+      m.set(r.lesson_slug, { quizDone: r.quiz_done, practiceDone: r.practice_done });
+    }
+    return map;
+  }, [progress]);
+
+  // Completion stats for one student, computed the same way the learner's own
+  // pages do (isLessonComplete), across every authored chapter.
+  const studentStats = (studentId: string) => {
+    const recs = progressByStudent.get(studentId);
+    let completed = 0;
+    let total = 0;
+    const perTopic = chapters.map((topic) => {
+      let tc = 0;
+      for (const lesson of topic.lessons) {
+        total++;
+        if (isLessonComplete(lesson, recs?.get(lesson.slug))) {
+          completed++;
+          tc++;
+        }
+      }
+      return { slug: topic.slug, title: topic.title, completed: tc, total: topic.lessons.length };
+    });
+    return { completed, total, pct: total ? Math.round((completed / total) * 100) : 0, perTopic };
+  };
 
   // ── Mutations ─────────────────────────────────────────────────────────────
   async function grantAccess(studentId: string, slug: string) {
@@ -880,6 +930,73 @@ export function Admin() {
                           heading="New password — share it now"
                         />
                       )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Card>
+
+          {/* ── Section 4: Student progress ──────────────────────────────── */}
+          <Card padded="lg">
+            <div className="flex items-center gap-3">
+              <BarChart3 className="h-5 w-5 text-amber-700" aria-hidden />
+              <H2 className="mt-0 mb-0">Student progress</H2>
+            </div>
+
+            {students.length === 0 ? (
+              <p className="mt-6 text-body text-ink-400">
+                No students yet — progress shows up here once they start.
+              </p>
+            ) : (
+              <ul className="mt-6 space-y-6">
+                {students.map((student) => {
+                  const st = studentStats(student.id);
+                  return (
+                    <li
+                      key={student.id}
+                      className="border-t border-hairline pt-5 first:border-t-0 first:pt-0"
+                    >
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <div>
+                          <span className="font-mono text-body text-ink">
+                            @{student.username}
+                          </span>
+                          {student.display_name && (
+                            <span className="ml-2 text-caption text-ink-400">
+                              {student.display_name}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-caption text-ink-600">
+                          {st.completed} / {st.total} lessons ·{' '}
+                          <span className="font-semibold text-amber-700">{st.pct}%</span>
+                        </span>
+                      </div>
+                      <div className="mt-2">
+                        <ProgressBar value={st.completed} max={st.total || 1} thin />
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {st.perTopic.map((t) => {
+                          const done = t.total > 0 && t.completed === t.total;
+                          const started = t.completed > 0 && !done;
+                          return (
+                            <span
+                              key={t.slug}
+                              className={cn(
+                                'inline-flex items-center gap-1 border px-2 py-0.5 text-caption',
+                                done
+                                  ? 'border-ok bg-ok-soft/50 text-ok-text'
+                                  : started
+                                  ? 'border-amber-300 bg-amber-50 text-amber-800'
+                                  : 'border-hairline bg-white text-ink-400',
+                              )}
+                            >
+                              {t.title} {t.completed}/{t.total}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </li>
                   );
                 })}
