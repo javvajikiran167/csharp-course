@@ -29,3 +29,6 @@ dist-ssr
 .review-briefs/
 .vercel
 .review2.json
+
+# Playwright MCP test artifacts
+.playwright-mcp/
