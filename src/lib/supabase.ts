@@ -19,10 +19,15 @@ export const supabase = createClient(url, key, {
   },
 });
 
-// Students log in with a plain username; we map it to a synthetic email so we
-// can use Supabase's email/password auth without asking students for an email.
+// Students log in with a plain username, mapped to a synthetic email so we can
+// use Supabase's email/password auth without asking students for an email.
+// But an account created directly in Supabase with a REAL email (e.g. another
+// instructor) must be able to log in with that full email too — so if the input
+// already contains "@", we use it as-is instead of appending the class domain.
 export const EMAIL_DOMAIN = 'class.local';
-export const usernameToEmail = (u: string) =>
-  `${u.trim().toLowerCase()}@${EMAIL_DOMAIN}`;
+export const usernameToEmail = (u: string) => {
+  const v = u.trim().toLowerCase();
+  return v.includes('@') ? v : `${v}@${EMAIL_DOMAIN}`;
+};
 
 export const ADMIN_FN_URL = `${url}/functions/v1/admin-users`;
