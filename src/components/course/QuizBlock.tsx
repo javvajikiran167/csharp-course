@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Check, X, RotateCcw } from 'lucide-react';
 import { Button, Pill, Eyebrow } from '@/components/primitives';
 import { CodeBlock } from '@/components/primitives/Code';
-import { useProgress } from '@/store/progress';
+import { QUIZ_PASS_PCT } from '@/lib/completion';
 import { inline } from '@/lib/inline';
 import { cn } from '@/lib/cn';
 import type {
@@ -13,28 +13,23 @@ import type {
 } from './quiz-types';
 
 type Props = {
-  lessonSlug: string;
   questions: Question[];
+  // Called once, when the learner finishes the run, with their score.
+  onFinish?: (score: number, total: number) => void;
 };
 
-export function QuizBlock({ lessonSlug, questions }: Props) {
+// A self-contained quiz runner. Presentational: it owns the index/score/phase
+// of one run and reports the result via onFinish; persistence is the caller's
+// job. Used by the per-topic Quiz page (and reusable anywhere).
+export function Quiz({ questions, onFinish }: Props) {
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [phase, setPhase] = useState<'asking' | 'done'>('asking');
-
-  const recordQuizScore = useProgress((s) => s.recordQuizScore);
-  const recordResult = useProgress((s) => s.recordResult);
 
   const total = questions.length;
   const current = questions[index];
 
   const handleAnswer = (correct: boolean) => {
-    recordResult({
-      lessonSlug,
-      questionId: current.id,
-      correct,
-      attemptedAt: new Date().toISOString(),
-    });
     if (correct) setScore((s) => s + 1);
   };
 
@@ -43,9 +38,7 @@ export function QuizBlock({ lessonSlug, questions }: Props) {
       setIndex(index + 1);
     } else {
       setPhase('done');
-      // Record the score as a hint; completion is marked manually by the learner
-      // in the "Track your progress" card. The per-question log is via recordResult.
-      recordQuizScore(lessonSlug, score, total);
+      onFinish?.(score, total);
     }
   };
 
@@ -55,20 +48,26 @@ export function QuizBlock({ lessonSlug, questions }: Props) {
     setPhase('asking');
   };
 
+  if (total === 0) {
+    return (
+      <p className="text-body text-ink-600">This topic's quiz is coming soon.</p>
+    );
+  }
+
   if (phase === 'done') {
     const pct = Math.round((score / total) * 100);
-    const passing = pct >= 60;
+    const passing = pct >= QUIZ_PASS_PCT;
     return (
-      <section className="mt-12 border border-hairline bg-white p-5 sm:p-8" id="quiz">
+      <section className="border border-hairline bg-white p-5 sm:p-8" id="quiz-result">
         <Eyebrow>Quiz complete</Eyebrow>
         <h3 className="mt-2 font-serif font-semibold text-h1 text-ink">
-          {passing ? 'Nice work.' : 'Solid try.'}
+          {passing ? 'Nice work — you passed.' : 'Solid try.'}
         </h3>
         <p className="mt-3 text-body text-ink-600">
           You scored <strong className="font-semibold text-ink">{score}/{total}</strong> ({pct}%).
           {passing
-            ? ' When you’re happy with it, tick “Quiz completed” below.'
-            : ' Worth a re-read — retry whenever you like, then tick it off below.'}
+            ? ` ${QUIZ_PASS_PCT}% or above counts as a pass — this topic's quiz is marked complete.`
+            : ` You need ${QUIZ_PASS_PCT}% to pass. Re-read the lessons and retry whenever you like.`}
         </p>
         <div className="mt-6 flex gap-3">
           <Button tone="secondary" onClick={restart}>
@@ -81,9 +80,9 @@ export function QuizBlock({ lessonSlug, questions }: Props) {
   }
 
   return (
-    <section className="mt-12 border border-hairline bg-white p-5 sm:p-8" id="quiz">
+    <section className="border border-hairline bg-white p-5 sm:p-8" id="quiz">
       <div className="flex items-center justify-between">
-        <Eyebrow>Check yourself</Eyebrow>
+        <Eyebrow>Question</Eyebrow>
         <Pill tone="dim">{index + 1} / {total}</Pill>
       </div>
       <h3 className="mt-2 font-serif font-semibold text-h2 text-ink">{inline(current.prompt)}</h3>

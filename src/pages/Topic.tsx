@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ListChecks, Dumbbell, CheckCircle2 } from 'lucide-react';
 import { findTopic } from '@/data/topics';
 import { useProgress } from '@/store/progress';
 import {
@@ -9,11 +10,12 @@ import {
   Eyebrow,
   Display,
   Lead,
+  Pill,
   ProgressBar,
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
 import { inline } from '@/lib/inline';
-import { isLessonComplete } from '@/lib/completion';
+import { isLessonComplete, isTopicComplete } from '@/lib/completion';
 
 export function Topic() {
   const { slug = '' } = useParams();
@@ -22,6 +24,8 @@ export function Topic() {
   // Subscribe to the whole lessons map so any update (visit, completion) re-renders.
   const lessonRecords = useProgress((s) => s.lessons);
   const topicProgress = useProgress((s) => s.topicProgress);
+  const quizPassed = useProgress((s) => s.topicQuizPassed(slug));
+  const practiceDone = useProgress((s) => s.topicPractice[slug] ?? false);
 
   if (!topic) {
     return (
@@ -81,7 +85,7 @@ export function Topic() {
   const stats = topicProgress(topic.lessons);
 
   const firstUndoneIdx = topic.lessons.findIndex(
-    (l) => !isLessonComplete(l, lessonRecords[l.slug]),
+    (l) => !isLessonComplete(lessonRecords[l.slug]),
   );
   const firstUndone =
     firstUndoneIdx >= 0 ? topic.lessons[firstUndoneIdx] : topic.lessons[0];
@@ -92,6 +96,15 @@ export function Topic() {
       : stats.completed === stats.total
       ? 'Review'
       : 'Continue';
+
+  const hasQuiz = (topic.quiz?.length ?? 0) > 0;
+  const hasPractice = (topic.practice?.length ?? 0) > 0 || (topic.projects?.length ?? 0) > 0;
+  const topicComplete = isTopicComplete({
+    topic,
+    lessonsRead: stats.completed,
+    quizPassed,
+    practiceDone,
+  });
 
   return (
     <div className="container-page py-12 sm:py-16">
@@ -133,12 +146,12 @@ export function Topic() {
           </div>
 
           <dl className="mt-6 divide-y divide-hairline border-t border-hairline">
-            <StatRow k="Started" v={`${stats.visited - stats.completed}`} />
-            <StatRow k="Completed" v={`${stats.completed}`} />
-            <StatRow k="Not started" v={`${stats.total - stats.visited}`} />
-            {stats.avgQuizScorePct !== null && (
-              <StatRow k="Avg quiz score" v={`${stats.avgQuizScorePct}%`} accent />
+            <StatRow k="Lessons read" v={`${stats.completed} / ${stats.total}`} />
+            {hasQuiz && <StatRow k="Quiz" v={quizPassed ? 'Passed' : 'Not passed'} accent={quizPassed} />}
+            {hasPractice && (
+              <StatRow k="Practice" v={practiceDone ? 'Done' : 'Not done'} accent={practiceDone} />
             )}
+            {topicComplete && <StatRow k="Topic" v="Complete ✓" accent />}
           </dl>
         </Card>
       </header>
@@ -155,7 +168,76 @@ export function Topic() {
           <LessonTimeline topic={topic} />
         </div>
       </section>
+
+      {/* ── Assess: Quiz + Practice ──────────────────── */}
+      {(hasQuiz || hasPractice) && (
+        <section className="mt-14">
+          <Eyebrow>Test yourself</Eyebrow>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {hasQuiz && (
+              <AssessCard
+                to={`/topic/${topic.slug}/quiz`}
+                icon={<ListChecks className="h-5 w-5" />}
+                title="Topic quiz"
+                desc={`${topic.quiz!.length} questions across the whole topic. ${quizPassed ? '' : 'Score 60% to pass.'}`}
+                done={quizPassed}
+                doneLabel="Passed"
+              />
+            )}
+            {hasPractice && (
+              <AssessCard
+                to={`/topic/${topic.slug}/practice`}
+                icon={<Dumbbell className="h-5 w-5" />}
+                title="Practice & projects"
+                desc={`${topic.practice?.length ?? 0} problems + ${topic.projects?.length ?? 0} projects to build in your editor.`}
+                done={practiceDone}
+                doneLabel="Done"
+              />
+            )}
+          </div>
+        </section>
+      )}
     </div>
+  );
+}
+
+function AssessCard({
+  to,
+  icon,
+  title,
+  desc,
+  done,
+  doneLabel,
+}: {
+  to: string;
+  icon: ReactNode;
+  title: string;
+  desc: string;
+  done: boolean;
+  doneLabel: string;
+}) {
+  return (
+    <Link to={to}>
+      <Card padded="md" interactive accent className="h-full flex flex-col">
+        <div className="flex items-start justify-between">
+          <span className="inline-flex h-10 w-10 items-center justify-center bg-amber-600 text-white">
+            {icon}
+          </span>
+          {done ? (
+            <Pill tone="ok" dot>
+              <CheckCircle2 className="h-3 w-3" /> {doneLabel}
+            </Pill>
+          ) : (
+            <Pill tone="accent">Available</Pill>
+          )}
+        </div>
+        <h3 className="mt-3 font-sans font-semibold text-h3 text-ink">{title}</h3>
+        <p className="mt-1 text-caption text-ink-400 leading-relaxed flex-1">{desc}</p>
+        <span className="mt-4 inline-flex items-center gap-1.5 text-eyebrow font-semibold text-amber-700">
+          Open <ArrowRight className="h-3.5 w-3.5" />
+        </span>
+      </Card>
+    </Link>
   );
 }
 

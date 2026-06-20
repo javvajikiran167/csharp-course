@@ -55,7 +55,9 @@ export function TopNav() {
           )}
         >
           <GraduationCap className="h-3.5 w-3.5" aria-hidden />
-          <span className="hidden sm:inline">Teacher</span>
+          {/* Always show the label — a bare graduation-cap icon read as a
+              mysterious badge on mobile. The word makes the toggle's job obvious. */}
+          <span>Teacher</span>
         </button>
       </div>
     </header>

@@ -13,8 +13,6 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { BlockRenderer } from '@/components/course/BlockRenderer';
-import { QuizBlock } from '@/components/course/QuizBlock';
-import { ChallengeList } from '@/components/course/ChallengeList';
 import { LessonProgress } from '@/components/course/LessonProgress';
 import { OnThisPage } from '@/components/course/OnThisPage';
 import { inline } from '@/lib/inline';
@@ -31,7 +29,7 @@ export function Lesson() {
   const result = findLesson(topicSlug, lessonSlug);
   const record = useProgress((s) => s.lessons[lessonSlug]);
   const markLessonVisited = useProgress((s) => s.markLessonVisited);
-  const isComplete = result ? isLessonComplete(result.lesson, record) : false;
+  const isComplete = isLessonComplete(record);
 
   useEffect(() => {
     // Only on actual lesson navigation — NOT on every re-render. `result` is a
@@ -62,6 +60,7 @@ export function Lesson() {
   // On the last lesson of a topic, point forward to the next unlocked topic
   // instead of dead-ending.
   const nextTopic = next ? undefined : findNextTopic(topic.slug);
+  const hasQuiz = (topic.quiz?.length ?? 0) > 0;
 
   return (
     <div className="container-page py-10 sm:py-14">
@@ -102,16 +101,6 @@ export function Lesson() {
       </article>
 
       <div className={LESSON_CONTAINER}>
-        {/* key forces a fresh quiz per lesson — without it, index/score/phase
-            leak across lessons. No auto-scroll on finish; learner stays put. */}
-        <QuizBlock key={lesson.slug} lessonSlug={lesson.slug} questions={lesson.questions} />
-
-        {lesson.challenges && lesson.challenges.length > 0 && (
-          <div id="challenges">
-            <ChallengeList challenges={lesson.challenges} />
-          </div>
-        )}
-
         <LessonProgress lesson={lesson} />
 
         <nav
@@ -138,6 +127,14 @@ export function Lesson() {
             <Link to={`/topic/${topic.slug}/${next.slug}`} className="block w-full sm:w-auto">
               <Button tone="primary" className="w-full sm:w-auto">
                 <span className="truncate">Next · {next.title}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          ) : hasQuiz ? (
+            // Last lesson → send the learner into the topic quiz.
+            <Link to={`/topic/${topic.slug}/quiz`} className="block w-full sm:w-auto">
+              <Button tone="primary" className="w-full sm:w-auto">
+                <span className="truncate">Take the quiz</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
