@@ -4,6 +4,7 @@ import { foundations } from './foundations';
 import { controlFlow } from './control-flow';
 import { loops } from './loops';
 import { methods } from './methods';
+import { collections } from './collections';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -51,22 +52,8 @@ export const topics: Topic[] = [
   // ── 04 · Methods & Reusability (UNLOCKED — full content authored) ──
   methods,
 
-  // ── 05 · Collections ──
-  stub(
-    'collections',
-    'Collections',
-    'Arrays, List<T>, Dictionary<TKey,TValue>, HashSet<T>, and Queue/Stack — the data containers every C# developer uses daily.',
-    [
-      lesson(1, 'arrays', 'Arrays — Fixed-Size Sequences', 'Declare, access, and iterate arrays — and understand why "resizing" really means allocating a new array (the reason List<T> exists).'),
-      lesson(2, 'multi-arrays', 'Multidimensional & Jagged Arrays', 'Represent grids and tables with int[,] and int[][] — used in interviews and matrix problems.'),
-      lesson(3, 'list', 'List<T> — The Default Resizable Collection', 'The collection you reach for 90% of the time — Add, Remove, Find, Sort, performance.'),
-      lesson(4, 'dictionary', 'Dictionary<TKey,TValue> — Key/Value Lookups', 'O(1) lookups by key — the bread and butter of caches, indexes, and grouping.'),
-      lesson(5, 'hashset', 'HashSet<T> — Unique Items, Fast Lookup', 'Deduplicate, test membership, set operations — the secret weapon of interview solutions.'),
-      lesson(6, 'stack-queue', 'Stack<T> & Queue<T>', 'LIFO and FIFO data structures — used in parsers, schedulers, BFS/DFS.'),
-      lesson(7, 'iterating', 'Iterating, Sorting, and Filtering', 'Compare manual loops vs built-in helpers (Sort, FindAll, Contains) — and preview that LINQ will generalize this later.'),
-      lesson(8, 'mini-project-collections', 'Mini-Project — Contact Book', 'Build an in-memory contact app that adds, searches, sorts, and deletes records.'),
-    ],
-  ),
+  // ── 05 · Collections (UNLOCKED — full content authored) ──
+  collections,
 
   // ── 06 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
   conventions,
