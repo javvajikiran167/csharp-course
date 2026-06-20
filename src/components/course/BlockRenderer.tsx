@@ -6,14 +6,18 @@ import { H2, H3, Lead, Callout, Card, CodeBlock, OutputBlock } from '@/component
 import { Pill } from '@/components/primitives';
 import { TeachingNotes } from './TeachingNotes';
 import { usePrefs } from '@/store/prefs';
+import { useAuth } from '@/store/auth';
 
 // All blocks fill the parent container's width. The lesson page enforces
 // a single max-width on the article, so nothing here needs its own.
 export function BlockRenderer({ block }: { block: Block }) {
   const teacherMode = usePrefs((s) => s.teacherMode);
+  const isAdmin = useAuth((s) => s.isAdmin);
 
-  // teachingNotes are instructor-facing — hidden unless Teacher Mode is on.
-  if (block.kind === 'teachingNotes' && !teacherMode) return null;
+  // teachingNotes are instructor-facing — shown only to an instructor who has
+  // Teacher Mode on. The isAdmin check means a student can never see them, even
+  // if Teacher Mode was left on in their browser before this gate existed.
+  if (block.kind === 'teachingNotes' && !(teacherMode && isAdmin)) return null;
 
   switch (block.kind) {
     case 'lead':
