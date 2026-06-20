@@ -13,6 +13,7 @@ import {
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
 import { inline } from '@/lib/inline';
+import { isLessonComplete } from '@/lib/completion';
 
 export function Topic() {
   const { slug = '' } = useParams();
@@ -77,11 +78,10 @@ export function Topic() {
 
   // Reading lessonRecords above forces a re-subscribe — the call below is fresh.
   void lessonRecords;
-  const lessonSlugs = topic.lessons.map((l) => l.slug);
-  const stats = topicProgress(lessonSlugs);
+  const stats = topicProgress(topic.lessons);
 
   const firstUndoneIdx = topic.lessons.findIndex(
-    (l) => !lessonRecords[l.slug]?.completed,
+    (l) => !isLessonComplete(l, lessonRecords[l.slug]),
   );
   const firstUndone =
     firstUndoneIdx >= 0 ? topic.lessons[firstUndoneIdx] : topic.lessons[0];

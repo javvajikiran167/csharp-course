@@ -23,7 +23,7 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
   const [score, setScore] = useState(0);
   const [phase, setPhase] = useState<'asking' | 'done'>('asking');
 
-  const markLessonComplete = useProgress((s) => s.markLessonComplete);
+  const recordQuizScore = useProgress((s) => s.recordQuizScore);
   const recordResult = useProgress((s) => s.recordResult);
 
   const total = questions.length;
@@ -44,12 +44,9 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
       setIndex(index + 1);
     } else {
       setPhase('done');
-      // Only count the lesson complete on a passing score (>= 60%). Clicking
-      // through with wrong answers should not mark mastery. The attempt itself
-      // is still recorded per-question via recordResult.
-      if (total > 0 && score / total >= 0.6) {
-        markLessonComplete(lessonSlug, score, total);
-      }
+      // Record the score as a hint; completion is marked manually by the learner
+      // in the "Track your progress" card. The per-question log is via recordResult.
+      recordQuizScore(lessonSlug, score, total);
       onComplete?.();
     }
   };
@@ -72,8 +69,8 @@ export function QuizBlock({ lessonSlug, questions, onComplete }: Props) {
         <p className="mt-3 text-body text-ink-600">
           You scored <strong className="font-semibold text-ink">{score}/{total}</strong> ({pct}%).
           {passing
-            ? ' Lesson marked complete — you can move on whenever you like.'
-            : ' Worth a re-read before moving on.'}
+            ? ' When you’re happy with it, tick “Quiz completed” below.'
+            : ' Worth a re-read — retry whenever you like, then tick it off below.'}
         </p>
         <div className="mt-6 flex gap-3">
           <Button tone="secondary" onClick={restart}>

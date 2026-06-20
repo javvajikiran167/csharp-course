@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import type { Lesson } from '@/data/types';
+import { isLessonComplete } from '@/lib/completion';
 
 export type QuizResult = {
   lessonSlug: string;
@@ -10,29 +12,34 @@ export type QuizResult = {
 
 export type LessonRecord = {
   visited: boolean;
-  completed: boolean;
+  // Completion is fully manual: the learner ticks these two boxes. A lesson
+  // counts as complete when both are true (see lib/completion for the
+  // challenge/quiz-aware rule). quizScore is kept only as an informational hint.
+  quizDone: boolean;
+  practiceDone: boolean;
   quizScore: number;
   totalQuestions: number;
   visitedAt?: string;
-  completedAt?: string;
 };
 
-export type LessonStatus = 'not-started' | 'visited' | 'completed';
+// Minimal shape topicProgress needs to derive completion per lesson.
+type LessonLike = Pick<Lesson, 'slug' | 'questions' | 'challenges'>;
 
 type ProgressState = {
   lessons: Record<string, LessonRecord>;
   results: QuizResult[];
 
   markLessonVisited: (lessonSlug: string) => void;
-  markLessonComplete: (lessonSlug: string, quizScore: number, totalQuestions: number) => void;
+  recordQuizScore: (lessonSlug: string, quizScore: number, totalQuestions: number) => void;
   recordResult: (r: QuizResult) => void;
+  setQuizDone: (lessonSlug: string, done: boolean) => void;
+  setPracticeDone: (lessonSlug: string, done: boolean) => void;
+  resetLesson: (lessonSlug: string) => void;
   reset: () => void;
 
   // Selectors
-  isLessonComplete: (slug: string) => boolean;
-  getLessonStatus: (slug: string) => LessonStatus;
   getLessonRecord: (slug: string) => LessonRecord | undefined;
-  topicProgress: (lessonSlugs: string[]) => {
+  topicProgress: (lessons: LessonLike[]) => {
     visited: number;
     completed: number;
     total: number;
@@ -43,7 +50,8 @@ type ProgressState = {
 
 const emptyRecord = (): LessonRecord => ({
   visited: false,
-  completed: false,
+  quizDone: false,
+  practiceDone: false,
   quizScore: 0,
   totalQuestions: 0,
 });
@@ -56,36 +64,32 @@ export const useProgress = create<ProgressState>()(
 
       markLessonVisited: (lessonSlug) => {
         const existing = get().lessons[lessonSlug];
-        // Don't overwrite completed records and don't bump visitedAt every render.
-        if (existing?.completed) return;
-        if (existing?.visited) return;
+        if (existing?.visited) return; // don't bump visitedAt every render
         set((s) => ({
           lessons: {
             ...s.lessons,
             [lessonSlug]: {
               ...(existing ?? emptyRecord()),
               visited: true,
-              visitedAt: new Date().toISOString(),
+              visitedAt: existing?.visitedAt ?? new Date().toISOString(),
             },
           },
         }));
       },
 
-      markLessonComplete: (lessonSlug, quizScore, totalQuestions) => {
+      // Records the latest quiz outcome (keeping the best score). This is a
+      // display hint only — it does NOT mark the lesson complete.
+      recordQuizScore: (lessonSlug, quizScore, totalQuestions) => {
         set((s) => {
           const existing = s.lessons[lessonSlug] ?? emptyRecord();
-          // Keep the BEST score across retries.
-          const bestScore = Math.max(existing.quizScore, quizScore);
           return {
             lessons: {
               ...s.lessons,
               [lessonSlug]: {
                 ...existing,
                 visited: true,
-                completed: true,
-                quizScore: bestScore,
+                quizScore: Math.max(existing.quizScore, quizScore),
                 totalQuestions,
-                completedAt: existing.completedAt ?? new Date().toISOString(),
               },
             },
           };
@@ -94,37 +98,60 @@ export const useProgress = create<ProgressState>()(
 
       recordResult: (r) => set((s) => ({ results: [...s.results, r] })),
 
+      setQuizDone: (lessonSlug, done) =>
+        set((s) => ({
+          lessons: {
+            ...s.lessons,
+            [lessonSlug]: { ...(s.lessons[lessonSlug] ?? emptyRecord()), visited: true, quizDone: done },
+          },
+        })),
+
+      setPracticeDone: (lessonSlug, done) =>
+        set((s) => ({
+          lessons: {
+            ...s.lessons,
+            [lessonSlug]: { ...(s.lessons[lessonSlug] ?? emptyRecord()), visited: true, practiceDone: done },
+          },
+        })),
+
+      // Clears completion + recorded score for one lesson, keeping "visited".
+      resetLesson: (lessonSlug) =>
+        set((s) => {
+          const existing = s.lessons[lessonSlug];
+          return {
+            lessons: {
+              ...s.lessons,
+              [lessonSlug]: {
+                ...emptyRecord(),
+                visited: existing?.visited ?? false,
+                visitedAt: existing?.visitedAt,
+              },
+            },
+            results: s.results.filter((r) => r.lessonSlug !== lessonSlug),
+          };
+        }),
+
       reset: () => set({ lessons: {}, results: [] }),
-
-      isLessonComplete: (slug) => Boolean(get().lessons[slug]?.completed),
-
-      getLessonStatus: (slug) => {
-        const rec = get().lessons[slug];
-        if (!rec) return 'not-started';
-        if (rec.completed) return 'completed';
-        if (rec.visited) return 'visited';
-        return 'not-started';
-      },
 
       getLessonRecord: (slug) => get().lessons[slug],
 
-      topicProgress: (lessonSlugs) => {
-        const lessons = get().lessons;
+      topicProgress: (lessons) => {
+        const records = get().lessons;
         let visited = 0;
         let completed = 0;
         let scoreSum = 0;
         let scoreMax = 0;
-        for (const s of lessonSlugs) {
-          const r = lessons[s];
+        for (const lesson of lessons) {
+          const r = records[lesson.slug];
           if (!r) continue;
           if (r.visited) visited++;
-          if (r.completed) {
-            completed++;
+          if (isLessonComplete(lesson, r)) completed++;
+          if (r.totalQuestions > 0) {
             scoreSum += r.quizScore;
             scoreMax += r.totalQuestions;
           }
         }
-        const total = lessonSlugs.length;
+        const total = lessons.length;
         return {
           visited,
           completed,
@@ -136,18 +163,23 @@ export const useProgress = create<ProgressState>()(
     }),
     {
       name: 'csharp-course-progress',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
-      // Migrate from v1 (no `visited` field) — fill defaults
       migrate: (persisted: any, version) => {
-        if (version < 2 && persisted?.lessons) {
+        if (!persisted?.lessons) return persisted;
+        // v1/v2 stored a derived `completed` flag and auto-marked on quiz finish.
+        // Map any prior completion onto the new manual flags so progress survives.
+        if (version < 3) {
           const lessons: Record<string, LessonRecord> = {};
           for (const [slug, r] of Object.entries<any>(persisted.lessons)) {
+            const wasComplete = Boolean(r.completed);
             lessons[slug] = {
-              visited: true, // any persisted record means they've been there
-              completed: Boolean(r.completed),
+              visited: Boolean(r.visited ?? r.completed ?? true),
+              quizDone: wasComplete,
+              practiceDone: wasComplete,
               quizScore: r.quizScore ?? 0,
               totalQuestions: r.totalQuestions ?? 0,
+              visitedAt: r.visitedAt,
             };
           }
           return { ...persisted, lessons };

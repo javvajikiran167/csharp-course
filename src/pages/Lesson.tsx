@@ -15,7 +15,9 @@ import {
 import { BlockRenderer } from '@/components/course/BlockRenderer';
 import { QuizBlock } from '@/components/course/QuizBlock';
 import { ChallengeList } from '@/components/course/ChallengeList';
+import { LessonProgress } from '@/components/course/LessonProgress';
 import { inline } from '@/lib/inline';
+import { isLessonComplete } from '@/lib/completion';
 
 // The lesson page is the place a student spends most of their time. Width,
 // rhythm, and chrome are all tuned for one job: focused reading.
@@ -25,8 +27,9 @@ export function Lesson() {
   const { topicSlug = '', lessonSlug = '' } = useParams();
   const navigate = useNavigate();
   const result = findLesson(topicSlug, lessonSlug);
-  const isComplete = useProgress((s) => s.isLessonComplete(lessonSlug));
+  const record = useProgress((s) => s.lessons[lessonSlug]);
   const markLessonVisited = useProgress((s) => s.markLessonVisited);
+  const isComplete = result ? isLessonComplete(result.lesson, record) : false;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -106,6 +109,8 @@ export function Lesson() {
             <ChallengeList challenges={lesson.challenges} />
           </div>
         )}
+
+        <LessonProgress lesson={lesson} />
 
         <nav
           id="lesson-nav"

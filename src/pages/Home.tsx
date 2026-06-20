@@ -14,6 +14,7 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { inline } from '@/lib/inline';
+import { isLessonComplete } from '@/lib/completion';
 import { cn } from '@/lib/cn';
 
 export function Home() {
@@ -24,8 +25,8 @@ export function Home() {
   const unlocked = topics.filter((t) => t.status === 'unlocked');
 
   // Cross-topic totals
-  const allUnlockedSlugs = unlocked.flatMap((t) => t.lessons.map((l) => l.slug));
-  const overall = topicProgress(allUnlockedSlugs);
+  const allUnlockedLessons = unlocked.flatMap((t) => t.lessons);
+  const overall = topicProgress(allUnlockedLessons);
 
   // Find the "next" lesson to resume from — first un-completed unlocked lesson,
   // preferring one already visited over one untouched.
@@ -228,7 +229,7 @@ function TopicCard({
 }: {
   topic: Topic;
   number: string;
-  topicProgress: (slugs: string[]) => {
+  topicProgress: (lessons: Lesson[]) => {
     visited: number;
     completed: number;
     total: number;
@@ -237,9 +238,7 @@ function TopicCard({
   };
 }) {
   const locked = topic.status === 'locked';
-  const stats = locked
-    ? null
-    : topicProgress(topic.lessons.map((l) => l.slug));
+  const stats = locked ? null : topicProgress(topic.lessons);
   const isFinished = stats !== null && stats.completed === stats.total;
   const isInProgress = stats !== null && stats.visited > 0 && !isFinished;
 
@@ -345,7 +344,7 @@ type ResumeTarget = {
 // 3. Else (everything done), the first lesson (review mode).
 function findResumeLesson(
   unlockedTopics: Topic[],
-  records: Record<string, { visited: boolean; completed: boolean }>,
+  records: Record<string, { visited: boolean; quizDone: boolean; practiceDone: boolean }>,
 ): ResumeTarget {
   if (unlockedTopics.length === 0) return null;
 
@@ -353,7 +352,7 @@ function findResumeLesson(
   for (const topic of unlockedTopics) {
     for (const lesson of topic.lessons) {
       const r = records[lesson.slug];
-      if (r?.visited && !r.completed) {
+      if (r?.visited && !isLessonComplete(lesson, r)) {
         return { topic, lesson, kind: 'continue' };
       }
     }
@@ -363,7 +362,7 @@ function findResumeLesson(
   for (const topic of unlockedTopics) {
     for (const lesson of topic.lessons) {
       const r = records[lesson.slug];
-      if (!r?.completed) {
+      if (!isLessonComplete(lesson, r)) {
         const hasAnyVisit = Object.values(records).some((rec) => rec?.visited);
         return { topic, lesson, kind: hasAnyVisit ? 'continue' : 'start' };
       }

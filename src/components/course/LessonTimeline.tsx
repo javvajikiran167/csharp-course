@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Check, ArrowRight, Sparkles, BookOpen, Code2 } from 'lucide-react';
 import type { Lesson, Topic } from '@/data/types';
-import { useProgress, type LessonStatus } from '@/store/progress';
+import { useProgress } from '@/store/progress';
+import { isLessonComplete } from '@/lib/completion';
 import { Pill } from '@/components/primitives';
 import { inline } from '@/lib/inline';
 import { cn } from '@/lib/cn';
+
+type LessonStatus = 'not-started' | 'visited' | 'completed';
 
 type Props = {
   topic: Topic;
@@ -15,12 +18,18 @@ type Props = {
 // same row shape so the page rhythm stays consistent.
 export function LessonTimeline({ topic }: Props) {
   const lessons = topic.lessons;
-  const getLessonStatus = useProgress((s) => s.getLessonStatus);
-  const getLessonRecord = useProgress((s) => s.getLessonRecord);
+  const records = useProgress((s) => s.lessons);
+
+  const statusOf = (lesson: Lesson): LessonStatus => {
+    const rec = records[lesson.slug];
+    if (isLessonComplete(lesson, rec)) return 'completed';
+    if (rec?.visited) return 'visited';
+    return 'not-started';
+  };
 
   // First lesson that is not completed = the "current" one to highlight.
   // (Visited but unfinished beats not-started; if everything is done, no highlight.)
-  const nextUpIdx = lessons.findIndex((l) => getLessonStatus(l.slug) !== 'completed');
+  const nextUpIdx = lessons.findIndex((l) => statusOf(l) !== 'completed');
 
   return (
     <ol className="relative space-y-2">
@@ -31,8 +40,8 @@ export function LessonTimeline({ topic }: Props) {
       />
 
       {lessons.map((lesson, i) => {
-        const status = getLessonStatus(lesson.slug);
-        const record = getLessonRecord(lesson.slug);
+        const status = statusOf(lesson);
+        const record = records[lesson.slug];
         const isNextUp = i === nextUpIdx && status !== 'completed';
 
         return (
