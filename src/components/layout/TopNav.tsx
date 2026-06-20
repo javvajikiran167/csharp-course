@@ -60,27 +60,30 @@ export function TopNav() {
             </Link>
           )}
 
-          {/* Teacher mode toggle (teaching notes) */}
-          <button
-            type="button"
-            onClick={toggleTeacherMode}
-            aria-pressed={teacherMode}
-            aria-label={teacherMode ? 'Teacher mode on, hide teaching notes' : 'Teacher mode off, show teaching notes'}
-            title={
-              teacherMode
-                ? 'Teacher mode on — teaching notes are visible. Click to hide.'
-                : 'Teacher mode off — teaching notes are hidden. Click to show.'
-            }
-            className={cn(
-              'inline-flex items-center gap-1.5 border px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase transition-colors',
-              teacherMode
-                ? 'border-amber-400 bg-amber-100 text-amber-800'
-                : 'border-hairline bg-white text-ink-500 hover:border-amber-400 hover:text-amber-700',
-            )}
-          >
-            <GraduationCap className="h-3.5 w-3.5" aria-hidden />
-            <span className="hidden sm:inline">Teacher</span>
-          </button>
+          {/* Teacher mode toggle (reveals teaching notes) — instructors only,
+              so students can never surface the instructor-facing notes. */}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={toggleTeacherMode}
+              aria-pressed={teacherMode}
+              aria-label={teacherMode ? 'Teacher mode on, hide teaching notes' : 'Teacher mode off, show teaching notes'}
+              title={
+                teacherMode
+                  ? 'Teacher mode on — teaching notes are visible. Click to hide.'
+                  : 'Teacher mode off — teaching notes are hidden. Click to show.'
+              }
+              className={cn(
+                'inline-flex items-center gap-1.5 border px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase transition-colors',
+                teacherMode
+                  ? 'border-amber-400 bg-amber-100 text-amber-800'
+                  : 'border-hairline bg-white text-ink-500 hover:border-amber-400 hover:text-amber-700',
+              )}
+            >
+              <GraduationCap className="h-3.5 w-3.5" aria-hidden />
+              <span className="hidden sm:inline">Teacher</span>
+            </button>
+          )}
 
           {/* Signed-in identity + sign out */}
           {username && (
