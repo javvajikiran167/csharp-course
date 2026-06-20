@@ -27,3 +27,4 @@ dist-ssr
 # Local review artifacts (not part of the course)
 .review-findings.json
 .review-briefs/
+.vercel

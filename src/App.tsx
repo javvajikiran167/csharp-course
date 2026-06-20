@@ -6,7 +6,7 @@ import { Lesson } from '@/pages/Lesson';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Shell>
         <Routes>
           <Route path="/" element={<Home />} />
