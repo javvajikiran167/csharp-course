@@ -7,6 +7,25 @@
     <meta name="theme-color" content="#0D0D0D" />
     <meta name="description" content="A 1-on-1 C# course for engineers. From the workshop to the compiler." />
     <title>C# Course — Crafted by Kiran Javvaji</title>
+    <!-- Decode the path the 404.html SPA fallback encoded, before the app boots. -->
+    <script type="text/javascript">
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search
+            .slice(1)
+            .split('&')
+            .map(function (s) {
+              return s.replace(/~and~/g, '&');
+            })
+            .join('?');
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash,
+          );
+        }
+      })(window.location);
+    </script>
   </head>
   <body>
     <div id="root"></div>

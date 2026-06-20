@@ -16,13 +16,20 @@ import {
 import { inline } from '@/lib/inline';
 import { isLessonComplete } from '@/lib/completion';
 import { cn } from '@/lib/cn';
+import { useAuth } from '@/store/auth';
+import { topicState, type TopicState } from '@/lib/access';
 
 export function Home() {
   // Subscribe to the lesson record map so any visit/completion re-renders.
   const lessonRecords = useProgress((s) => s.lessons);
   const topicProgress = useProgress((s) => s.topicProgress);
 
-  const unlocked = topics.filter((t) => t.status === 'unlocked');
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const grantedTopics = useAuth((s) => s.grantedTopics);
+  const ctx = { isAdmin, grantedTopics };
+
+  // Topics this student can actually open right now (admins: all authored).
+  const unlocked = topics.filter((t) => topicState(t, ctx) === 'open');
 
   // Cross-topic totals
   const allUnlockedLessons = unlocked.flatMap((t) => t.lessons);
@@ -60,14 +67,14 @@ export function Home() {
               </Link>
             ) : (
               <Button tone="primary" size="lg" disabled>
-                No content available yet
+                {isAdmin ? 'No content available yet' : 'Waiting for your instructor'}
               </Button>
             )}
-            <Link to="/topic/foundations">
+            <a href="#syllabus">
               <Button tone="secondary" size="lg">
                 View syllabus
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -123,7 +130,7 @@ export function Home() {
       )}
 
       {/* ── Syllabus ─────────────────────────────────── */}
-      <section className="mt-16">
+      <section id="syllabus" className="mt-16 scroll-mt-16">
         <div className="flex items-baseline justify-between mb-6">
           <H2 className="mt-0">The syllabus</H2>
           <Pill tone="dim">{topics.length} topics</Pill>
@@ -134,6 +141,7 @@ export function Home() {
               <TopicCard
                 topic={t}
                 number={`0${i + 1}`.slice(-2)}
+                state={topicState(t, ctx)}
                 topicProgress={topicProgress}
               />
             </li>
@@ -225,10 +233,12 @@ function CourseOverviewPanel({
 function TopicCard({
   topic,
   number,
+  state,
   topicProgress,
 }: {
   topic: Topic;
   number: string;
+  state: TopicState;
   topicProgress: (lessons: Lesson[]) => {
     visited: number;
     completed: number;
@@ -237,39 +247,46 @@ function TopicCard({
     avgQuizScorePct: number | null;
   };
 }) {
-  const locked = topic.status === 'locked';
-  const stats = locked ? null : topicProgress(topic.lessons);
+  const open = state === 'open';
+  const perStudentLocked = state === 'locked';
+  const stats = open ? topicProgress(topic.lessons) : null;
   const isFinished = stats !== null && stats.completed === stats.total;
   const isInProgress = stats !== null && stats.visited > 0 && !isFinished;
 
   const card = (
     <Card
       padded="md"
-      interactive={!locked}
-      accent={!locked}
+      interactive={open || perStudentLocked}
+      accent={open}
       className={cn('h-full flex flex-col', isInProgress && 'ring-1 ring-amber-300')}
     >
       <div className="flex items-start justify-between">
         <span className="font-serif text-h1 text-ink-400 leading-none">{number}</span>
-        {locked ? (
-          <Lock className="h-4 w-4 text-ink-400" aria-hidden />
-        ) : isFinished ? (
-          <Pill tone="ok" dot>
-            <BookOpenCheck className="h-3 w-3" /> Done
-          </Pill>
-        ) : isInProgress ? (
-          <Pill tone="accent" dot pulse>
-            In progress
+        {open ? (
+          isFinished ? (
+            <Pill tone="ok" dot>
+              <BookOpenCheck className="h-3 w-3" /> Done
+            </Pill>
+          ) : isInProgress ? (
+            <Pill tone="accent" dot pulse>
+              In progress
+            </Pill>
+          ) : (
+            <Pill tone="accent">Available</Pill>
+          )
+        ) : perStudentLocked ? (
+          <Pill tone="dim">
+            <Lock className="h-3 w-3" /> Locked
           </Pill>
         ) : (
-          <Pill tone="accent">Available</Pill>
+          <Lock className="h-4 w-4 text-ink-400" aria-hidden />
         )}
       </div>
 
       <h3
         className={cn(
           'mt-3 font-sans font-semibold text-h3',
-          locked ? 'text-ink-400' : 'text-ink',
+          open ? 'text-ink' : 'text-ink-400',
         )}
       >
         {topic.title}
@@ -279,17 +296,7 @@ function TopicCard({
       </p>
       <div className="flex-1" />
 
-      {locked ? (
-        <div className="mt-4 flex items-center gap-2 text-caption text-ink-400">
-          <span>Coming soon</span>
-          {topic.outline && topic.outline.length > 0 && (
-            <>
-              <span>·</span>
-              <span>{topic.outline.length} planned lessons</span>
-            </>
-          )}
-        </div>
-      ) : stats ? (
+      {open && stats ? (
         <div className="mt-4">
           <div className="flex items-baseline justify-between text-eyebrow text-ink-400">
             <span>
@@ -307,11 +314,32 @@ function TopicCard({
             </div>
           )}
         </div>
-      ) : null}
+      ) : perStudentLocked ? (
+        <div className="mt-4 inline-flex items-center gap-1.5 text-caption font-medium text-amber-700">
+          <Lock className="h-3.5 w-3.5" aria-hidden />
+          <span>Tap to request access</span>
+        </div>
+      ) : (
+        <div className="mt-4 flex items-center gap-2 text-caption text-ink-400">
+          <span>Coming soon</span>
+          {topic.outline && topic.outline.length > 0 && (
+            <>
+              <span>·</span>
+              <span>{topic.outline.length} planned lessons</span>
+            </>
+          )}
+        </div>
+      )}
     </Card>
   );
 
-  return locked ? <div>{card}</div> : <Link to={`/topic/${topic.slug}`}>{card}</Link>;
+  // Open and per-student-locked cards are clickable; a locked card routes to the
+  // request screen. Coming-soon (un-authored) cards aren't clickable.
+  return open || perStudentLocked ? (
+    <Link to={`/topic/${topic.slug}`}>{card}</Link>
+  ) : (
+    <div>{card}</div>
+  );
 }
 
 /* ── Helpers ────────────────────────────────────────────── */

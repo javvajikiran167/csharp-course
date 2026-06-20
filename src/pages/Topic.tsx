@@ -12,8 +12,11 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
+import { LockedNotice } from '@/components/course/LockedNotice';
 import { inline } from '@/lib/inline';
 import { isLessonComplete } from '@/lib/completion';
+import { useAuth } from '@/store/auth';
+import { topicState } from '@/lib/access';
 
 export function Topic() {
   const { slug = '' } = useParams();
@@ -22,6 +25,10 @@ export function Topic() {
   // Subscribe to the whole lessons map so any update (visit, completion) re-renders.
   const lessonRecords = useProgress((s) => s.lessons);
   const topicProgress = useProgress((s) => s.topicProgress);
+
+  // Per-student access (admins see everything).
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const grantedTopics = useAuth((s) => s.grantedTopics);
 
   if (!topic) {
     return (
@@ -33,6 +40,11 @@ export function Topic() {
         </Link>
       </div>
     );
+  }
+
+  // Authored chapter the instructor hasn't unlocked for this student yet.
+  if (topicState(topic, { isAdmin, grantedTopics }) === 'locked') {
+    return <LockedNotice topic={topic} />;
   }
 
   if (topic.status === 'locked') {

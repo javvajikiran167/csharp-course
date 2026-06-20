@@ -17,8 +17,11 @@ import { QuizBlock } from '@/components/course/QuizBlock';
 import { ChallengeList } from '@/components/course/ChallengeList';
 import { LessonProgress } from '@/components/course/LessonProgress';
 import { OnThisPage } from '@/components/course/OnThisPage';
+import { LockedNotice } from '@/components/course/LockedNotice';
 import { inline } from '@/lib/inline';
 import { isLessonComplete } from '@/lib/completion';
+import { useAuth } from '@/store/auth';
+import { topicState } from '@/lib/access';
 
 // The lesson page is the place a student spends most of their time. Width,
 // rhythm, and chrome are all tuned for one job: focused reading. The column is
@@ -32,6 +35,8 @@ export function Lesson() {
   const record = useProgress((s) => s.lessons[lessonSlug]);
   const markLessonVisited = useProgress((s) => s.markLessonVisited);
   const isComplete = result ? isLessonComplete(result.lesson, record) : false;
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const grantedTopics = useAuth((s) => s.grantedTopics);
 
   useEffect(() => {
     // Only on actual lesson navigation — NOT on every re-render. `result` is a
@@ -57,6 +62,12 @@ export function Lesson() {
   }
 
   const { topic, lesson, index, prev, next } = result;
+
+  // Block lesson content if this chapter isn't unlocked for the student.
+  if (topicState(topic, { isAdmin, grantedTopics }) !== 'open') {
+    return <LockedNotice topic={topic} />;
+  }
+
   const lessonNumber = `0${lesson.number}`.slice(-2);
   const totalPadded = `0${topic.lessons.length}`.slice(-2);
   // On the last lesson of a topic, point forward to the next unlocked topic

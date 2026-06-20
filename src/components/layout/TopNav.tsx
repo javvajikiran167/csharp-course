@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap, ShieldCheck, LogOut } from 'lucide-react';
 import { usePrefs } from '@/store/prefs';
+import { useAuth } from '@/store/auth';
 import { cn } from '@/lib/cn';
 
 // Deliberately minimal: just enough to get home, never enough to distract.
@@ -11,6 +12,11 @@ export function TopNav() {
   const teacherMode = usePrefs((s) => s.teacherMode);
   const toggleTeacherMode = usePrefs((s) => s.toggleTeacherMode);
 
+  const username = useAuth((s) => s.username);
+  const displayName = useAuth((s) => s.displayName);
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const signOut = useAuth((s) => s.signOut);
+
   return (
     <header
       className={[
@@ -18,7 +24,7 @@ export function TopNav() {
         isLessonPage ? 'bg-cream/95 backdrop-blur' : 'bg-cream/80 backdrop-blur',
       ].join(' ')}
     >
-      <div className="container-page flex h-12 items-center justify-between">
+      <div className="container-page flex h-12 items-center justify-between gap-3">
         <Link
           to="/"
           className="flex items-center gap-2.5 group"
@@ -37,26 +43,67 @@ export function TopNav() {
           </span>
         </Link>
 
-        <button
-          type="button"
-          onClick={toggleTeacherMode}
-          aria-pressed={teacherMode}
-          aria-label={teacherMode ? 'Teacher mode on, hide teaching notes' : 'Teacher mode off, show teaching notes'}
-          title={
-            teacherMode
-              ? 'Teacher mode on — teaching notes are visible. Click to hide.'
-              : 'Teacher mode off — teaching notes are hidden. Click to show.'
-          }
-          className={cn(
-            'inline-flex items-center gap-1.5 border px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase transition-colors',
-            teacherMode
-              ? 'border-amber-400 bg-amber-100 text-amber-800'
-              : 'border-hairline bg-white text-ink-500 hover:border-amber-400 hover:text-amber-700',
+        <div className="flex items-center gap-2">
+          {/* Instructor-only console link */}
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={cn(
+                'inline-flex items-center gap-1.5 border px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase transition-colors',
+                location.pathname === '/admin'
+                  ? 'border-amber-400 bg-amber-100 text-amber-800'
+                  : 'border-hairline bg-white text-ink-500 hover:border-amber-400 hover:text-amber-700',
+              )}
+            >
+              <ShieldCheck className="h-3.5 w-3.5" aria-hidden />
+              <span className="hidden sm:inline">Console</span>
+            </Link>
           )}
-        >
-          <GraduationCap className="h-3.5 w-3.5" aria-hidden />
-          <span className="hidden sm:inline">Teacher</span>
-        </button>
+
+          {/* Teacher mode toggle (teaching notes) */}
+          <button
+            type="button"
+            onClick={toggleTeacherMode}
+            aria-pressed={teacherMode}
+            aria-label={teacherMode ? 'Teacher mode on, hide teaching notes' : 'Teacher mode off, show teaching notes'}
+            title={
+              teacherMode
+                ? 'Teacher mode on — teaching notes are visible. Click to hide.'
+                : 'Teacher mode off — teaching notes are hidden. Click to show.'
+            }
+            className={cn(
+              'inline-flex items-center gap-1.5 border px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase transition-colors',
+              teacherMode
+                ? 'border-amber-400 bg-amber-100 text-amber-800'
+                : 'border-hairline bg-white text-ink-500 hover:border-amber-400 hover:text-amber-700',
+            )}
+          >
+            <GraduationCap className="h-3.5 w-3.5" aria-hidden />
+            <span className="hidden sm:inline">Teacher</span>
+          </button>
+
+          {/* Signed-in identity + sign out */}
+          {username && (
+            <>
+              <span
+                className="hidden md:inline max-w-[12ch] truncate text-caption text-ink-400"
+                title={displayName ?? username}
+              >
+                {displayName ?? username}
+              </span>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                aria-label="Sign out"
+                title="Sign out"
+                className="inline-flex items-center gap-1.5 border border-hairline bg-white px-3 py-2 sm:px-2.5 sm:py-1 min-h-[40px] sm:min-h-0 text-eyebrow font-semibold uppercase text-ink-500 transition-colors hover:border-amber-400 hover:text-amber-700"
+              >
+                <LogOut className="h-3.5 w-3.5" aria-hidden />
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
