@@ -82,7 +82,7 @@ export const lesson08: Lesson = {
     {
       kind: 'output',
       label: 'Expected output (your exact number may differ)',
-      output: '9.0.100',
+      output: '10.0.100',
     },
     {
       kind: 'paragraph',
