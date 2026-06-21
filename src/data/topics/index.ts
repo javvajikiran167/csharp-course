@@ -6,6 +6,7 @@ import { loops } from './loops';
 import { methods } from './methods';
 import { collections } from './collections';
 import { oop } from './oop';
+import { exceptions } from './exceptions';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -59,22 +60,11 @@ export const topics: Topic[] = [
   // ── 06 · Object-Oriented Programming (UNLOCKED — full content authored) ──
   oop,
 
-  // ── 07 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
-  conventions,
+  // ── 07 · Exception Handling (UNLOCKED — full content authored) ──
+  exceptions,
 
-  // ── 08 · Exception Handling ──
-  stub(
-    'exceptions',
-    'Exception Handling',
-    'try, catch, finally, throw — handle failures the way production code does.',
-    [
-      lesson(1, 'try-catch', 'try / catch — The Basics', 'How exceptions propagate, which catch block wins, and the stack trace.'),
-      lesson(2, 'finally', 'finally & using', 'Guaranteed cleanup blocks — and why most code uses `using` instead.'),
-      lesson(3, 'throw', 'Throwing & Re-Throwing Exceptions', 'throw vs throw ex, when to wrap, when to let it propagate.'),
-      lesson(4, 'custom', 'Custom Exception Types', 'Create your own exception class — and when it\'s justified.'),
-      lesson(5, 'mini-project-exceptions', 'Mini-Project — Robust File Reader', 'A small tool that handles every realistic failure mode of reading a file.'),
-    ],
-  ),
+  // ── 08 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
+  conventions,
 
   // ── 09 · Files & Serialization ──
   stub(
