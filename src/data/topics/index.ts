@@ -10,6 +10,7 @@ import { exceptions } from './exceptions';
 import { files } from './files';
 import { delegates } from './delegates';
 import { conventions } from './conventions';
+import { genericsLinq } from './generics-linq';
 
 // ────────────────────────────────────────────────────────────────
 //  Complete C# course outline — 16 topics from basics → job-ready
@@ -74,22 +75,8 @@ export const topics: Topic[] = [
   // ── 10 · Delegates, Events & Lambdas (UNLOCKED — full content authored) ──
   delegates,
 
-  // ── 11 · Generics & LINQ ──
-  stub(
-    'generics-linq',
-    'Generics & LINQ',
-    'Write reusable typed code with generics, then transform data with LINQ — the two features that define modern .NET style.',
-    [
-      lesson(1, 'generic-methods', 'Generic Methods', 'Write one method that works on int, string, or any type — with type safety preserved.'),
-      lesson(2, 'generic-classes', 'Generic Classes', 'How List<T> is built — and how to write your own.'),
-      lesson(3, 'constraints', 'Type Constraints', 'where T : IComparable<T>, where T : new() — limiting what T can be.'),
-      lesson(4, 'linq-intro', 'LINQ — Method Syntax Basics', 'Where, Select, OrderBy, FirstOrDefault — the operators you\'ll use every day.'),
-      lesson(5, 'linq-query', 'LINQ Query Syntax', 'The SQL-like alternative — and when to prefer it.'),
-      lesson(6, 'linq-grouping', 'GroupBy, Join & Aggregation', 'Transform collections like a database query.'),
-      lesson(7, 'deferred-execution', 'Deferred Execution & ToList()', 'The biggest LINQ gotcha — why iterating twice runs twice.'),
-      lesson(8, 'mini-project-linq', 'Mini-Project — Sales Data Analyzer', 'Load a CSV, query it with LINQ, output a report.'),
-    ],
-  ),
+  // ── 11 · Generics & LINQ (UNLOCKED — full content authored) ──
+  genericsLinq,
 
   // ── 12 · Async / Await ──
   stub(
