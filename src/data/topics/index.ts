@@ -11,6 +11,7 @@ import { files } from './files';
 import { delegates } from './delegates';
 import { conventions } from './conventions';
 import { genericsLinq } from './generics-linq';
+import { asyncAwait } from './async';
 
 // ────────────────────────────────────────────────────────────────
 //  Complete C# course outline — 16 topics from basics → job-ready
@@ -78,20 +79,8 @@ export const topics: Topic[] = [
   // ── 11 · Generics & LINQ (UNLOCKED — full content authored) ──
   genericsLinq,
 
-  // ── 12 · Async / Await ──
-  stub(
-    'async',
-    'Async & Await',
-    'Write non-blocking code that scales — the foundation of every modern .NET web service.',
-    [
-      lesson(1, 'why-async', 'Why Async — Blocking vs Non-Blocking', 'Threads, scalability, and where async wins.'),
-      lesson(2, 'task', 'Task & Task<T>', 'The async return types — and how to await them.'),
-      lesson(3, 'async-await', 'async / await Syntax', 'The keywords that make async code read like sync code.'),
-      lesson(4, 'pitfalls', 'Common Async Pitfalls', 'Deadlocks, async void, ConfigureAwait — interview favorites.'),
-      lesson(5, 'cancellation', 'CancellationToken', 'Stop work cleanly when the user navigates away or the request times out.'),
-      lesson(6, 'mini-project-async', 'Mini-Project — Parallel URL Fetcher', 'Fetch many URLs concurrently with Task.WhenAll.'),
-    ],
-  ),
+  // ── 12 · Async & Await (UNLOCKED — full content authored) ──
+  asyncAwait,
 
   // ── 13 · Databases & EF Core ──
   stub(

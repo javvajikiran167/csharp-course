@@ -21,11 +21,12 @@ _Last updated: 2026-06-21 ~17:30 (Asia/Calcutta)_
 | 08 | Files & Serialization | 5 | 12 | 10 | 2 |
 | 09 | Delegates, Events & Lambdas | 5 | 15 | 10 | 2 |
 | 11 | Generics & LINQ | 8 | 14 | 10 | 2 |
+| 12 | Async & Await | 6 | 14 | 10 | 2 |
 
-**Totals shipped: 55 lessons · 114 quiz Qs · 82 practice · 16 projects.** Every topic SHIP-rated by an adversarial compiler-review agent.
+**Totals shipped: 61 lessons · 128 quiz Qs · 92 practice · 18 projects.** Every topic SHIP-rated by an adversarial compiler-review agent.
 
 ## In progress ⏳
-- **12 · Async / Await** — next up.
+- **13 · Databases & EF Core** — next up.
 
 ## Queued
 Async/Await → Null Safety → Debugging → finish Conventions → Databases & EF Core → Web API → Testing & Patterns → Git & Deployment → Projects chapter → Capstone. Then **migrate the 4 existing topics** (Foundations, Control Flow, Loops, Conventions) into the per-topic Quiz/Practice/Projects structure.
