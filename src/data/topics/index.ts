@@ -8,6 +8,7 @@ import { collections } from './collections';
 import { oop } from './oop';
 import { exceptions } from './exceptions';
 import { files } from './files';
+import { delegates } from './delegates';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -70,7 +71,10 @@ export const topics: Topic[] = [
   // ── 09 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
   conventions,
 
-  // ── 10 · Generics & LINQ ──
+  // ── 10 · Delegates, Events & Lambdas (UNLOCKED — full content authored) ──
+  delegates,
+
+  // ── 11 · Generics & LINQ ──
   stub(
     'generics-linq',
     'Generics & LINQ',
@@ -84,20 +88,6 @@ export const topics: Topic[] = [
       lesson(6, 'linq-grouping', 'GroupBy, Join & Aggregation', 'Transform collections like a database query.'),
       lesson(7, 'deferred-execution', 'Deferred Execution & ToList()', 'The biggest LINQ gotcha — why iterating twice runs twice.'),
       lesson(8, 'mini-project-linq', 'Mini-Project — Sales Data Analyzer', 'Load a CSV, query it with LINQ, output a report.'),
-    ],
-  ),
-
-  // ── 11 · Delegates, Events & Lambdas ──
-  stub(
-    'delegates',
-    'Delegates, Events & Lambdas',
-    'Treat methods as values, react to events, and write the lambda expressions LINQ depends on.',
-    [
-      lesson(1, 'delegates', 'Delegates — Methods as Values', 'The foundation of LINQ, events, and callbacks.'),
-      lesson(2, 'func-action', 'Func, Action & Predicate', 'The three built-in delegates you\'ll see everywhere.'),
-      lesson(3, 'lambdas', 'Lambda Expressions', 'The => syntax that makes LINQ readable.'),
-      lesson(4, 'events', 'Events & event Keyword', 'The publish/subscribe pattern built into the language.'),
-      lesson(5, 'mini-project-events', 'Mini-Project — Event-Driven Notification System', 'Build a small pub/sub system using events and delegates.'),
     ],
   ),
 
