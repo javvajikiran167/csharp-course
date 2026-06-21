@@ -7,6 +7,7 @@ import { methods } from './methods';
 import { collections } from './collections';
 import { oop } from './oop';
 import { exceptions } from './exceptions';
+import { files } from './files';
 import { conventions } from './conventions';
 
 // ────────────────────────────────────────────────────────────────
@@ -63,23 +64,11 @@ export const topics: Topic[] = [
   // ── 07 · Exception Handling (UNLOCKED — full content authored) ──
   exceptions,
 
-  // ── 08 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
-  conventions,
+  // ── 08 · Files & Serialization (UNLOCKED — full content authored) ──
+  files,
 
-  // ── 09 · Files & Serialization ──
-  stub(
-    'files',
-    'Files & Serialization',
-    'Read and write files, parse CSV, work with JSON via System.Text.Json — every line-of-business app needs this.',
-    [
-      lesson(1, 'file-io', 'Reading & Writing Text Files', 'File.ReadAllText, WriteAllText, ReadAllLines, AppendAllText.'),
-      lesson(2, 'streams', 'StreamReader & StreamWriter', 'For large files where you can\'t load everything into memory.'),
-      lesson(3, 'paths', 'Path Manipulation & Path.Combine', 'Cross-platform paths the right way.'),
-      lesson(4, 'json', 'JSON with System.Text.Json', 'Serialize and deserialize — the modern alternative to Newtonsoft.'),
-      lesson(5, 'csv', 'Working with CSV', 'Parse and write CSV files — a real-world skill.'),
-      lesson(6, 'mini-project-files', 'Mini-Project — CSV → JSON Converter', 'A small command-line tool that converts data between formats.'),
-    ],
-  ),
+  // ── 09 · C# Conventions & Style (lesson 1 authored; rest in outline) ──
+  conventions,
 
   // ── 10 · Generics & LINQ ──
   stub(
