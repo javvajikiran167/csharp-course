@@ -13,6 +13,8 @@ import { conventions } from './conventions';
 import { genericsLinq } from './generics-linq';
 import { asyncAwait } from './async';
 import { databases } from './databases';
+import { webApi } from './web-api';
+import { testingPatterns } from './testing-patterns';
 
 // ────────────────────────────────────────────────────────────────
 //  Complete C# course outline — 16 topics from basics → job-ready
@@ -86,37 +88,11 @@ export const topics: Topic[] = [
   // ── 13 · Databases & EF Core (UNLOCKED — full content authored) ──
   databases,
 
-  // ── 14 · ASP.NET Core Web API ──
-  stub(
-    'web-api',
-    'Building a Web API',
-    'Build production-grade REST APIs with ASP.NET Core — the most marketable skill for a junior .NET developer.',
-    [
-      lesson(1, 'minimal-api', 'Minimal API — Hello World', 'Spin up a web server in 5 lines of code.'),
-      lesson(2, 'routing', 'Routing & HTTP Verbs', 'GET, POST, PUT, DELETE — and route patterns.'),
-      lesson(3, 'controllers', 'Controllers vs Minimal API', 'When to use which.'),
-      lesson(4, 'model-binding', 'Model Binding & Validation', 'How JSON becomes C# objects, and how to reject bad input.'),
-      lesson(5, 'di', 'Dependency Injection', 'The built-in DI container — register, inject, scope.'),
-      lesson(6, 'middleware', 'Middleware Pipeline', 'Authentication, CORS, logging — the pipeline behind every request.'),
-      lesson(7, 'auth', 'Authentication & Authorization', 'JWT tokens, [Authorize], policy-based authz.'),
-      lesson(8, 'mini-project-api', 'Mini-Project — Tasks REST API', 'CRUD a tasks list with EF Core + JWT auth.'),
-    ],
-  ),
+  // ── 14 · ASP.NET Core Web API (UNLOCKED — full content authored) ──
+  webApi,
 
-  // ── 15 · Testing & Design Patterns ──
-  stub(
-    'testing-patterns',
-    'Testing & Design Patterns',
-    'Write unit tests with xUnit, mock dependencies with Moq, and learn the patterns interviewers ask about.',
-    [
-      lesson(1, 'xunit', 'xUnit Basics', 'Fact, Theory, InlineData — the test framework most teams use.'),
-      lesson(2, 'arrange-act-assert', 'Arrange-Act-Assert', 'The structure every good test follows.'),
-      lesson(3, 'mocks', 'Mocking with Moq', 'Test in isolation by faking dependencies.'),
-      lesson(4, 'tdd', 'Test-Driven Development', 'Red, green, refactor — the discipline.'),
-      lesson(5, 'solid', 'SOLID Principles', 'The five letters that come up in every senior interview.'),
-      lesson(6, 'patterns', 'Singleton, Factory, Strategy, Observer', 'The four classic patterns you must know by name.'),
-    ],
-  ),
+  // ── 15 · Testing & Design Patterns (UNLOCKED — full content authored) ──
+  testingPatterns,
 
   // ── 16 · Job Prep & Capstone ──
   stub(
