@@ -15,6 +15,7 @@ import { asyncAwait } from './async';
 import { databases } from './databases';
 import { webApi } from './web-api';
 import { testingPatterns } from './testing-patterns';
+import { capstone } from './capstone';
 
 // ────────────────────────────────────────────────────────────────
 //  Complete C# course outline — 16 topics from basics → job-ready
@@ -94,20 +95,8 @@ export const topics: Topic[] = [
   // ── 15 · Testing & Design Patterns (UNLOCKED — full content authored) ──
   testingPatterns,
 
-  // ── 16 · Job Prep & Capstone ──
-  stub(
-    'capstone',
-    'Job Prep & Capstone',
-    'Mock interviews, common algorithm problems in C#, code-review checklists, and a full-stack capstone you can put on your resume.',
-    [
-      lesson(1, 'algorithms', 'Common Algorithm Problems in C#', 'Two-pointer, sliding window, hash map — practiced in C# syntax.'),
-      lesson(2, 'mock-interview', 'A Walk Through a Mock Interview', 'What hiring managers actually ask, and how to think aloud.'),
-      lesson(3, 'code-review', 'How to Read & Review Other People\'s Code', 'A practical skill every job posting expects.'),
-      lesson(4, 'capstone-spec', 'Capstone Spec — Tasks App End-to-End', 'EF Core backend, ASP.NET API, tests, deployment.'),
-      lesson(5, 'capstone-build', 'Capstone — Build & Iterate', 'Implement, test, refactor.'),
-      lesson(6, 'next-steps', 'Where to Go From Here', 'Specializations: Unity, mobile (MAUI), cloud (Azure), advanced .NET.'),
-    ],
-  ),
+  // ── 16 · Job Prep & Capstone (UNLOCKED — full content authored) ──
+  capstone,
 ];
 
 export const findTopic = (slug: string): Topic | undefined =>
