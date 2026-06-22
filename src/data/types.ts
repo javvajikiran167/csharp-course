@@ -27,13 +27,34 @@ export type Challenge = {
   hints?: string[];
 };
 
+// A larger, multi-step build. Bigger than a challenge: it has a spec
+// (requirements), optional stretch goals, and lists the concepts it exercises.
+// Two of these live at the end of every topic's Practice page, and the
+// standalone Projects chapter collects the cross-topic ones.
+export type Project = {
+  id: string;
+  difficulty: 'starter' | 'intermediate' | 'advanced';
+  title: string;
+  // One or two sentences: what you're building and why it's realistic.
+  brief: string;
+  // The must-have checklist — the spec the finished project satisfies.
+  requirements: string[];
+  // Optional "go further" extensions for fast learners.
+  stretch?: string[];
+  // Which topic concepts the project exercises (shown as tags).
+  concepts?: string[];
+};
+
 export type Lesson = {
   slug: string;
   number: number;
   title: string;
   objective: string;
   blocks: Block[];
-  questions: Question[];
+  // Quizzes and challenges now live at the TOPIC level (separate pages).
+  // These remain optional for backward compatibility and the occasional
+  // inline "quick check"; new lessons are pure reading + examples.
+  questions?: Question[];
   challenges?: Challenge[];
 };
 
@@ -52,6 +73,13 @@ export type Topic = {
   subtitle: string;
   status: 'unlocked' | 'locked';
   lessons: Lesson[];
+  // ── Topic-level assessment (the separate Quiz & Practice pages) ──
+  // The graded quiz for the whole topic — 12–15 questions at /topic/:slug/quiz.
+  quiz?: Question[];
+  // The take-home problem set — ≥10 problems at /topic/:slug/practice.
+  practice?: Challenge[];
+  // Two (or more) larger builds, shown under the practice problems.
+  projects?: Project[];
   // When locked, this lists what's coming so students see the path
   outline?: LessonStub[];
 };

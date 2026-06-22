@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Lock, ArrowRight, BookOpenCheck, Play, RotateCcw } from 'lucide-react';
+import { Lock, ArrowRight, BookOpenCheck, Play } from 'lucide-react';
 import { topics } from '@/data/topics';
 import { useProgress } from '@/store/progress';
 import type { Topic, Lesson } from '@/data/types';
@@ -54,8 +54,8 @@ export function Home() {
           <Lead>
             A focused, no-fluff course in C# fundamentals — type systems,
             compilation, OOP, async, and the patterns that make professional
-            code feel inevitable. Every lesson ends with a quiz and take-home
-            challenges.
+            code feel inevitable. Every topic ends with a quiz, a practice set,
+            and projects you can build.
           </Lead>
           <div className="flex flex-wrap gap-3 pt-2">
             {resume ? (
@@ -86,7 +86,6 @@ export function Home() {
               total={overall.total}
               pct={overall.pct}
               visited={overall.visited}
-              avgQuizScorePct={overall.avgQuizScorePct}
             />
           ) : (
             <CourseOverviewPanel topics={topics} unlocked={unlocked} />
@@ -159,13 +158,11 @@ function YourProgressPanel({
   total,
   pct,
   visited,
-  avgQuizScorePct,
 }: {
   completed: number;
   total: number;
   pct: number;
   visited: number;
-  avgQuizScorePct: number | null;
 }) {
   const inProgress = Math.max(0, visited - completed);
   const notStarted = Math.max(0, total - visited);
@@ -189,12 +186,9 @@ function YourProgressPanel({
         <ProgressBar value={completed} max={total} />
       </div>
       <dl className="mt-6 divide-y divide-hairline border-t border-hairline">
-        <StatRow k="Completed" v={`${completed}`} />
+        <StatRow k="Lessons read" v={`${completed}`} />
         <StatRow k="In progress" v={`${inProgress}`} />
         <StatRow k="Not started" v={`${notStarted}`} />
-        {avgQuizScorePct !== null && (
-          <StatRow k="Avg quiz score" v={`${avgQuizScorePct}%`} accent />
-        )}
       </dl>
     </>
   );
@@ -221,7 +215,7 @@ function CourseOverviewPanel({
         <StatRow k="Topics" v={`${topics.length}`} />
         <StatRow k="Lessons available now" v={`${totalLessons}`} />
         <StatRow k="Total lessons planned" v={`${totalOutlineLessons}`} />
-        <StatRow k="Quiz at every lesson" v="3 questions each" />
+        <StatRow k="Per topic" v="Quiz + practice + projects" />
         <StatRow k="Level" v="Beginner → Job-ready" accent />
       </dl>
     </>
@@ -244,7 +238,6 @@ function TopicCard({
     completed: number;
     total: number;
     pct: number;
-    avgQuizScorePct: number | null;
   };
 }) {
   const open = state === 'open';
@@ -307,12 +300,6 @@ function TopicCard({
           <div className="mt-1.5">
             <ProgressBar value={stats.completed} max={stats.total} thin />
           </div>
-          {stats.avgQuizScorePct !== null && (
-            <div className="mt-2 inline-flex items-center gap-1.5 text-eyebrow text-ink-400">
-              <RotateCcw className="h-3 w-3" />
-              avg quiz {stats.avgQuizScorePct}%
-            </div>
-          )}
         </div>
       ) : perStudentLocked ? (
         <div className="mt-4 inline-flex items-center gap-1.5 text-caption font-medium text-amber-700">
@@ -372,7 +359,7 @@ type ResumeTarget = {
 // 3. Else (everything done), the first lesson (review mode).
 function findResumeLesson(
   unlockedTopics: Topic[],
-  records: Record<string, { visited: boolean; quizDone: boolean; practiceDone: boolean }>,
+  records: Record<string, { visited: boolean; read?: boolean; quizDone?: boolean; practiceDone?: boolean }>,
 ): ResumeTarget {
   if (unlockedTopics.length === 0) return null;
 
@@ -380,7 +367,7 @@ function findResumeLesson(
   for (const topic of unlockedTopics) {
     for (const lesson of topic.lessons) {
       const r = records[lesson.slug];
-      if (r?.visited && !isLessonComplete(lesson, r)) {
+      if (r?.visited && !isLessonComplete(r)) {
         return { topic, lesson, kind: 'continue' };
       }
     }
@@ -390,7 +377,7 @@ function findResumeLesson(
   for (const topic of unlockedTopics) {
     for (const lesson of topic.lessons) {
       const r = records[lesson.slug];
-      if (!isLessonComplete(lesson, r)) {
+      if (!isLessonComplete(r)) {
         const hasAnyVisit = Object.values(records).some((rec) => rec?.visited);
         return { topic, lesson, kind: hasAnyVisit ? 'continue' : 'start' };
       }

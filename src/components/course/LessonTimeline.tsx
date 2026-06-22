@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Check, ArrowRight, Sparkles, BookOpen, Code2 } from 'lucide-react';
+import { Check, ArrowRight, Sparkles, BookOpen } from 'lucide-react';
 import type { Lesson, Topic } from '@/data/types';
 import { useProgress } from '@/store/progress';
 import { isLessonComplete } from '@/lib/completion';
@@ -22,7 +22,7 @@ export function LessonTimeline({ topic }: Props) {
 
   const statusOf = (lesson: Lesson): LessonStatus => {
     const rec = records[lesson.slug];
-    if (isLessonComplete(lesson, rec)) return 'completed';
+    if (isLessonComplete(rec)) return 'completed';
     if (rec?.visited) return 'visited';
     return 'not-started';
   };
@@ -41,7 +41,6 @@ export function LessonTimeline({ topic }: Props) {
 
       {lessons.map((lesson, i) => {
         const status = statusOf(lesson);
-        const record = records[lesson.slug];
         const isNextUp = i === nextUpIdx && status !== 'completed';
 
         return (
@@ -50,8 +49,6 @@ export function LessonTimeline({ topic }: Props) {
               topicSlug={topic.slug}
               lesson={lesson}
               status={status}
-              quizScore={record?.quizScore}
-              totalQuestions={record?.totalQuestions || lesson.questions.length}
               isNextUp={isNextUp}
             />
           </li>
@@ -65,20 +62,14 @@ function LessonRow({
   topicSlug,
   lesson,
   status,
-  quizScore,
-  totalQuestions,
   isNextUp,
 }: {
   topicSlug: string;
   lesson: Lesson;
   status: LessonStatus;
-  quizScore?: number;
-  totalQuestions: number;
   isNextUp: boolean;
 }) {
   const number = `0${lesson.number}`.slice(-2);
-  const challengeCount = lesson.challenges?.length ?? 0;
-  const questionCount = lesson.questions.length;
 
   return (
     <Link
@@ -108,9 +99,7 @@ function LessonRow({
           >
             {inline(lesson.title)}
           </h3>
-          {status === 'completed' && quizScore !== undefined && (
-            <Pill tone="ok">{quizScore}/{totalQuestions}</Pill>
-          )}
+          {status === 'completed' && <Pill tone="ok">Read</Pill>}
         </div>
 
         <p className="mt-1 text-caption text-ink-400 leading-relaxed pr-6">
@@ -122,16 +111,6 @@ function LessonRow({
             <BookOpen className="h-3 w-3" />
             {lesson.blocks.length} blocks
           </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="font-mono">?</span>
-            {questionCount} questions
-          </span>
-          {challengeCount > 0 && (
-            <span className="inline-flex items-center gap-1.5">
-              <Code2 className="h-3 w-3" />
-              {challengeCount} challenges
-            </span>
-          )}
         </div>
       </div>
 
