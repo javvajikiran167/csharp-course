@@ -13,7 +13,7 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { BlockRenderer } from '@/components/course/BlockRenderer';
-import { QuizBlock } from '@/components/course/QuizBlock';
+import { Quiz as QuizBlock } from '@/components/course/QuizBlock';
 import { ChallengeList } from '@/components/course/ChallengeList';
 import { LessonProgress } from '@/components/course/LessonProgress';
 import { OnThisPage } from '@/components/course/OnThisPage';
