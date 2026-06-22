@@ -12,6 +12,7 @@ import { delegates } from './delegates';
 import { conventions } from './conventions';
 import { genericsLinq } from './generics-linq';
 import { asyncAwait } from './async';
+import { databases } from './databases';
 
 // ────────────────────────────────────────────────────────────────
 //  Complete C# course outline — 16 topics from basics → job-ready
@@ -82,21 +83,8 @@ export const topics: Topic[] = [
   // ── 12 · Async & Await (UNLOCKED — full content authored) ──
   asyncAwait,
 
-  // ── 13 · Databases & EF Core ──
-  stub(
-    'databases',
-    'Databases & EF Core',
-    'Talk to a real database with Entity Framework Core — the ORM behind most production .NET apps.',
-    [
-      lesson(1, 'ef-intro', 'What is an ORM? EF Core Overview', 'Why we don\'t write raw SQL by hand anymore (mostly).'),
-      lesson(2, 'dbcontext', 'DbContext & DbSet', 'The two classes you build every EF app around.'),
-      lesson(3, 'migrations', 'Migrations & Schema Evolution', 'Add a column without losing data.'),
-      lesson(4, 'querying', 'Querying with LINQ to EF', 'Where, Include, OrderBy — how queries translate to SQL.'),
-      lesson(5, 'crud', 'Insert, Update, Delete', 'The state-tracking model EF uses for changes.'),
-      lesson(6, 'relationships', 'One-to-Many & Many-to-Many', 'Model real-world relationships in code.'),
-      lesson(7, 'mini-project-db', 'Mini-Project — Blog with SQLite', 'Build a console blog app backed by a real SQLite database — you\'ll wrap it in a Web API in the next topic.'),
-    ],
-  ),
+  // ── 13 · Databases & EF Core (UNLOCKED — full content authored) ──
+  databases,
 
   // ── 14 · ASP.NET Core Web API ──
   stub(
