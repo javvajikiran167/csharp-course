@@ -2,7 +2,7 @@
 
 **Live updated by Claude as each topic lands.** For real-time agent-level progress, run `/workflows` in the Claude session.
 
-_Last updated: 2026-06-21 ~17:30 (Asia/Calcutta)_
+_Last updated: 2026-06-22 ~21:15 (Asia/Calcutta)_
 
 ## How to watch progress
 - **`/workflows`** — live tree of running agents (Research → Author → Verify → Assessment).
@@ -22,14 +22,18 @@ _Last updated: 2026-06-21 ~17:30 (Asia/Calcutta)_
 | 09 | Delegates, Events & Lambdas | 5 | 15 | 10 | 2 |
 | 11 | Generics & LINQ | 8 | 14 | 10 | 2 |
 | 12 | Async & Await | 6 | 14 | 10 | 2 |
+| 13 | Databases & EF Core | 7 | 14 | 10 | 2 |
 
-**Totals shipped: 61 lessons · 128 quiz Qs · 92 practice · 18 projects.** Every topic SHIP-rated by an adversarial compiler-review agent.
+**Totals shipped: 68 lessons · 142 quiz Qs · 102 practice · 20 projects.** Every topic SHIP-rated by an adversarial compiler-review agent.
 
 ## In progress ⏳
-- **13 · Databases & EF Core** — next up.
+- **14 · Building a Web API** — REST APIs with ASP.NET Core.
 
 ## Queued
-Async/Await → Null Safety → Debugging → finish Conventions → Databases & EF Core → Web API → Testing & Patterns → Git & Deployment → Projects chapter → Capstone. Then **migrate the 4 existing topics** (Foundations, Control Flow, Loops, Conventions) into the per-topic Quiz/Practice/Projects structure.
+- Topic 15: Testing & Design Patterns
+- Topic 16: Job Prep & Capstone
+- Topics 10, 09: Delegate/Events/Lambdas, C# Conventions (migrate to new structure)
+- Topics 01–03: Foundations, Control Flow, Loops (migrate to new structure)
 
 ## Notes
 - All work is isolated on `course-buildout`; `main` (your Supabase auth/Admin feature) is untouched. Merge when ready.
