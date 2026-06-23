@@ -12,10 +12,12 @@ export const collections: Topic = {
   title: "Collections",
   subtitle: "Arrays, List<T>, Dictionary<TKey,TValue>, HashSet<T>, and Stack/Queue — the data containers every C# developer reaches for daily, and how to choose between them.",
   status: 'unlocked',
-  lessons: [lesson01, lesson02, lesson03, lesson04, lesson05, lesson06, lesson07],
-  quiz: [
-  {
-    "id": "collections-q1",
+  lessons: [
+    {
+      ...lesson01,
+      questions: [
+        {
+          "id": "collections-q1",
     "kind": "mcq",
     "prompt": "You write `int[] scores = new int[3];` and then need to append a fourth value. Which statement is **true** about C# arrays?",
     "options": [
@@ -62,9 +64,28 @@ export const collections: Topic = {
       }
     ],
     "explanation": "`[10, 20, 30, 40]` is a collection expression (C# 12+, fully available on .NET 10) target-typed to `int[]`, giving 4 elements. `Length` (the array's count property) is 4, and `foreach` adds them: 10+20+30+40 = 100. Note arrays use `.Length`, while `List<T>` uses `.Count` — a small but common slip."
-  },
-  {
-    "id": "collections-q3",
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p1",
+          "difficulty": "easy",
+          "title": "Weekly Temperature Log (Arrays)",
+          "prompt": "You're building a tiny weather dashboard. Create a fixed-size `double[]` named `temps` that holds exactly 7 daily temperatures for one week. Initialize it with these readings: 18.5, 21.0, 19.8, 22.3, 20.1, 17.6, 23.4.\n\nThen, using a `for` loop:\n- Print each day as `Day 1: 18.5C` ... `Day 7: 23.4C` (use the index + 1 for the day number).\n\nAfter the loop, compute and print:\n- The total of all readings.\n- The average, formatted to one decimal place, like `Average: 20.4C`.\n\nFinally, write a one-line comment explaining what happens if you tried to assign an 8th value with `temps[7] = 25.0;` — and DO NOT actually run that line.",
+          "hints": [
+            "Use a collection expression to initialize: `double[] temps = [18.5, 21.0, ...];`",
+            "`temps.Length` gives you 7; valid indices are 0..6.",
+            "Format to one decimal with an interpolated string: `$\"Average: {avg:F1}C\"`.",
+            "`temps[7]` would throw `IndexOutOfRangeException` because the array's size is fixed at 7 — that fixed size is exactly why `List<T>` exists."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson02,
+      questions: [
+        {
+          "id": "collections-q3",
     "kind": "mcq",
     "prompt": "You need a 3-row table where each row has a **different** number of columns (e.g. a list of tags per user). Which type fits best?",
     "options": [
@@ -111,9 +132,28 @@ export const collections: Topic = {
       }
     ],
     "explanation": "A rectangular array `new int[2, 3]` has 2 rows and 3 columns. `GetLength(0)` is the size of the first dimension (2), `GetLength(1)` the second (3), and `Length` is the **total** element count, 2*3 = 6. Unassigned cells default to 0, but we set `grid[1, 2] = 9`, so the second line prints 9. Use `GetLength(dim)` for per-dimension sizes; `Length` alone gives the flat total."
-  },
-  {
-    "id": "collections-q5",
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p2",
+          "difficulty": "easy",
+          "title": "Seating Chart vs Variable-Length Rows (Multidimensional & Jagged)",
+          "prompt": "A small theatre has a rectangular main floor and an irregular balcony.\n\nPart A — Rectangular `int[,]`:\nModel the main floor as a 3-row by 4-seat grid using `int[,] floor = new int[3, 4];`. Fill it so each seat holds a ticket price: row 0 = 50, row 1 = 40, row 2 = 30 (every seat in a row has that row's price). Then loop over it with nested `for` loops and print the grid, one row per line, like `50 50 50 50`.\nAlso print `Total seats: 12` using the array's dimensions (not a hard-coded 12).\n\nPart B — Jagged `int[][]`:\nThe balcony has uneven rows: row 0 has 2 seats, row 1 has 5 seats, row 2 has 3 seats. Build a jagged array and fill every balcony seat with the price 25. Loop over it and print each row's seat count, like `Balcony row 0 has 2 seats`.\n\nWrite a one-sentence comment explaining when you'd pick `int[,]` over `int[][]`.",
+          "hints": [
+            "For `int[,]`, the total count is `floor.GetLength(0) * floor.GetLength(1)`.",
+            "`floor.GetLength(0)` is the number of rows; `floor.GetLength(1)` is the number of columns.",
+            "A jagged array is an array of arrays: `int[][] balcony = new int[3][];` then `balcony[0] = new int[2];` etc.",
+            "Rectangular `int[,]` fits true grids where every row is the same width (a chessboard, a matrix); jagged `int[][]` fits rows of differing length."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson03,
+      questions: [
+        {
+          "id": "collections-q5",
     "kind": "predict",
     "prompt": "What does this program print?",
     "code": "List<string> queue = [\"alice\", \"bob\"];\nqueue.Add(\"carol\");\nqueue.Insert(0, \"zoe\");\nqueue.Remove(\"bob\");\nConsole.WriteLine(string.Join(\", \", queue));\nConsole.WriteLine(queue.Count);",
@@ -160,9 +200,28 @@ export const collections: Topic = {
       }
     ],
     "explanation": "`Count` is the number of elements actually stored. `Capacity` is the length of the internal array `List<T>` keeps behind the scenes; when `Count` would exceed `Capacity`, the list allocates a bigger array (roughly doubling) and copies. They are usually different. Use `Count` for logic. If you know the final size up front, pass it as `new List<T>(capacity)` to avoid repeated reallocation in a tight loop."
-  },
-  {
-    "id": "collections-q7",
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p3",
+          "difficulty": "easy",
+          "title": "Shopping Cart (List<T> Basics)",
+          "prompt": "Build a shopping cart for an e-commerce checkout using `List<string>`.\n\n1. Start with an empty cart: `List<string> cart = [];`.\n2. `Add` three items: \"Keyboard\", \"Mouse\", \"Monitor\".\n3. The customer realizes they want a \"USB Cable\" to appear FIRST in the cart — use `Insert` to put it at index 0.\n4. They change their mind about the \"Mouse\" — `Remove` it by value.\n5. Print the final cart with a `foreach`, numbered like `1. USB Cable`, `2. Keyboard`, ...\n6. Print `Items in cart: <n>` using the `Count` property.\n7. Print whether the cart `Contains` a \"Monitor\" (`True`/`False`).\n\nThen add a short comment: explain in your own words the difference between the `Count` property and the `Capacity` property of a `List<T>`.",
+          "hints": [
+            "`cart.Insert(0, \"USB Cable\")` shifts everything else right — that's an O(n) operation.",
+            "`cart.Remove(\"Mouse\")` removes the first matching value and returns a bool; `RemoveAt(index)` removes by position.",
+            "Use a manual counter or `for (int i = 0; ...)` to print the numbering.",
+            "`Count` is how many items are actually in the list; `Capacity` is how big the internal backing array currently is (it doubles as the list grows)."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson04,
+      questions: [
+        {
+          "id": "collections-q7",
     "kind": "predict",
     "prompt": "What does this program print?",
     "code": "var ages = new Dictionary<string, int>\n{\n    [\"ana\"] = 30,\n    [\"ben\"] = 25\n};\n\nif (ages.TryGetValue(\"ana\", out int a))\n    Console.WriteLine($\"ana={a}\");\n\nConsole.WriteLine(ages.GetValueOrDefault(\"zoe\"));\nConsole.WriteLine(ages.GetValueOrDefault(\"zoe\", -1));",
@@ -209,9 +268,37 @@ export const collections: Topic = {
       }
     ],
     "explanation": "`TryGetValue` is the canonical pattern: it does a single hash lookup, returns a bool for hit/miss, and assigns the value via `out` — no exception. The bare indexer **throws** `KeyNotFoundException` on a miss (it never returns null for value types). `ContainsKey` followed by the indexer works but hashes the key twice. Using try/catch for ordinary control flow is slow and poor style."
-  },
-  {
-    "id": "collections-q9",
+        },
+        {
+          "id": "collections-q14",
+          "kind": "fill",
+          "prompt": "Fill in the method call that safely reads `count` from a dictionary, assigning it via an `out` variable and returning a bool for hit/miss (no exception on a missing key).",
+          "template": "if (wordCounts.___(\"hello\", out int count)) { Console.WriteLine(count); }",
+          "accept": [
+            "TryGetValue"
+          ]
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p4",
+          "difficulty": "medium",
+          "title": "Word Frequency Counter (Dictionary<TKey,TValue>)",
+          "prompt": "You're writing a text-analytics helper for a content app. Given this sentence string:\n\n`\"the cat sat on the mat the cat ran\"`\n\nSplit it into words on spaces and count how many times each word appears, using a `Dictionary<string, int>`.\n\nRequirements:\n- Use the safe upsert idiom `counts[word] = counts.GetValueOrDefault(word) + 1;` — do NOT use the throwing indexer for reading.\n- After counting, print each word and its count, one per line, like `the: 3`.\n- Then demonstrate safe lookup: use `TryGetValue` to look up the word \"cat\" and print `cat appears 2 times`, and look up the word \"dog\" (absent) and print `dog not found` instead of crashing.\n- Add a comment explaining why `counts[\"dog\"]` (the indexer) would be dangerous here, and how this differs from Python's `dict.get(\"dog\")`.",
+          "hints": [
+            "`sentence.Split(' ')` returns a `string[]` you can `foreach` over.",
+            "`GetValueOrDefault(word)` returns 0 for an int value type when the key is missing — no exception.",
+            "`if (counts.TryGetValue(\"cat\", out int n)) { ... } else { ... }` is the canonical safe pattern.",
+            "The indexer `counts[\"dog\"]` throws `KeyNotFoundException` on a missing key — unlike Python's `dict.get()` which returns `None`/a default. Dictionary iteration order is NOT guaranteed, so don't depend on it."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson05,
+      questions: [
+        {
+          "id": "collections-q9",
     "kind": "predict",
     "prompt": "What does this program print?",
     "code": "var seen = new HashSet<int> { 1, 2, 3 };\nbool addedNew = seen.Add(4);\nbool addedDup = seen.Add(2);\nConsole.WriteLine($\"{addedNew} {addedDup}\");\nConsole.WriteLine(seen.Count);\nConsole.WriteLine(seen.Contains(3));",
@@ -258,9 +345,50 @@ export const collections: Topic = {
       }
     ],
     "explanation": "`HashSet<T>` stores **unique** values with average O(1) `Add`/`Contains`/`Remove`, and supports set operations (`UnionWith`, `IntersectWith`, `ExceptWith`) — ideal for 'have I processed this id?', visited-sets, and dedup. If you need a value mapped to a key, use `Dictionary`. If you need index access or insertion order, use `List`. If you need items kept sorted, use `SortedSet<T>` (O(log n), tree-backed)."
-  },
-  {
-    "id": "collections-q11",
+        },
+        {
+          "id": "collections-q15",
+          "kind": "fill",
+          "prompt": "A method parameter should accept the **weakest** interface that still lets it `foreach` over the items, so callers can pass an array, a `List<T>`, or a LINQ query. Fill in that interface.",
+          "template": "public int CountItems(___<string> items) => items.Count();",
+          "accept": [
+            "IEnumerable",
+            "IEnumerable<string>"
+          ]
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p5",
+          "difficulty": "medium",
+          "title": "Deduplicating Email Recipients (HashSet<T>)",
+          "prompt": "A marketing tool keeps accidentally emailing people twice. Fix it with `HashSet<T>`.\n\nGiven two recipient lists:\n- `string[] listA = [\"ann@x.com\", \"bob@x.com\", \"cara@x.com\", \"ann@x.com\"];`\n- `string[] listB = [\"bob@x.com\", \"dan@x.com\", \"cara@x.com\"];`\n\nDo all of the following:\n1. Build a `HashSet<string>` from `listA` and print how many UNIQUE addresses it contains (note the duplicate \"ann@x.com\").\n2. Demonstrate a fast membership test: print whether \"bob@x.com\" is present (`True`).\n3. Compute the people in BOTH lists (intersection) and print them — use a copy and `IntersectWith`.\n4. Compute everyone across both lists with no duplicates (union) and print the total count — use `UnionWith`.\n5. Compute who is in `listA` but NOT in `listB` (difference) and print them — use `ExceptWith`.\n\nAdd a comment noting why a `HashSet` has no indexer (`set[0]` doesn't compile) and why its iteration order is not guaranteed.",
+          "hints": [
+            "`HashSet<string> setA = [..listA];` (collection expression with spread) or `new HashSet<string>(listA)` dedups automatically.",
+            "Set operations MUTATE the set they're called on, so make a copy first: `var both = new HashSet<string>(setA); both.IntersectWith(listB);`.",
+            "`UnionWith`, `IntersectWith`, and `ExceptWith` all accept any `IEnumerable<T>`, so you can pass the raw arrays.",
+            "A set is unordered and stores items by hash bucket, so there's no meaningful 'position' to index by, and enumeration order can differ from insertion order."
+          ]
+        },
+        {
+          "id": "collections-p8",
+          "difficulty": "hard",
+          "title": "In-Memory User Index (Dictionary + List + custom key)",
+          "prompt": "Build a tiny in-memory 'repository' like the ones behind a web API, combining several collection types.\n\nDefine `record User(int Id, string Name, string City);` (a record so equality and hashing are correct for free).\n\nGiven this seed data (build it as a `List<User>`):\n`[ new(1,\"Ann\",\"Paris\"), new(2,\"Bob\",\"Lyon\"), new(3,\"Cara\",\"Paris\"), new(4,\"Dan\",\"Nice\"), new(5,\"Eve\",\"Lyon\") ]`\n\nImplement and demonstrate:\n1. Build a `Dictionary<int, User>` indexed by `Id` so you can do O(1) lookups. Use `TryAdd` while building and assert no duplicate ids slipped in.\n2. Write a lookup that, given an id, prints the user via `TryGetValue` — show both a hit (id 3) and a miss (id 99 -> `No user 99`).\n3. Build a 'users by city' index of type `Dictionary<string, List<User>>`: for each user, get-or-create the list for their city and add them. Then print each city followed by its members, like `Paris: Ann, Cara`.\n4. Use a `HashSet<string>` to print the set of DISTINCT cities.\n\nAdd a comment explaining why making `User` a `record` matters if you ever put `User` instances directly into a `HashSet<User>` or use them as dictionary keys.",
+          "hints": [
+            "`if (!byId.TryAdd(u.Id, u)) throw new InvalidOperationException($\"Duplicate id {u.Id}\");` enforces uniqueness while building.",
+            "For the grouping index, the get-or-create idiom: `if (!byCity.TryGetValue(u.City, out var list)) { list = []; byCity[u.City] = list; } list.Add(u);`",
+            "Build distinct cities by spreading the users' cities into a set, or `foreach` and `Add` to a `HashSet<string>` (Add is a no-op if already present).",
+            "A `record` auto-generates value-based `Equals` and `GetHashCode`, so two `User`s with the same field values are 'equal' in a set/dictionary. A plain `class` would compare by reference, silently breaking set membership and key lookups."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson06,
+      questions: [
+        {
+          "id": "collections-q11",
     "kind": "predict",
     "prompt": "What does this program print?",
     "code": "var stack = new Stack<string>();\nstack.Push(\"a\");\nstack.Push(\"b\");\nstack.Push(\"c\");\n\nvar queue = new Queue<string>();\nqueue.Enqueue(\"a\");\nqueue.Enqueue(\"b\");\nqueue.Enqueue(\"c\");\n\nConsole.WriteLine($\"{stack.Pop()} {queue.Dequeue()}\");",
@@ -283,9 +411,52 @@ export const collections: Topic = {
       }
     ],
     "explanation": "A `Stack<T>` is LIFO (last-in, first-out): after pushing a, b, c, `Pop()` returns the most recent, 'c'. A `Queue<T>` is FIFO (first-in, first-out): after enqueuing a, b, c, `Dequeue()` returns the oldest, 'a'. So it prints 'c a'. Stacks back undo/DFS/expression evaluation; queues back work pipelines/BFS/scheduling."
-  },
-  {
-    "id": "collections-q12",
+        },
+        {
+          "id": "collections-q16",
+          "kind": "mcq",
+          "prompt": "You call `Pop()` (or `Dequeue()`) on an **empty** `Stack<T>`/`Queue<T>`. What is the safe, idiomatic way to read the next item only if one exists, without throwing?",
+          "options": [
+            {
+              "label": "Check `Count > 0` first, or use `TryPop(out var x)` / `TryDequeue(out var x)`, which return false instead of throwing on an empty collection.",
+              "correct": true
+            },
+            {
+              "label": "`Pop()` returns `null` on an empty stack, so just null-check the result.",
+              "correct": false
+            },
+            {
+              "label": "`Peek()` is guaranteed to never throw, so call it before every `Pop()`.",
+              "correct": false
+            },
+            {
+              "label": "Empty stacks auto-grow, so `Pop()` simply returns `default(T)` and you can ignore the case.",
+              "correct": false
+            }
+          ],
+          "explanation": "`Pop()`/`Dequeue()`/`Peek()` all throw `InvalidOperationException` when the collection is empty — they never return null or `default`. Guard with `if (stack.Count > 0)`, or prefer the `Try*` family added for exactly this: `TryPop(out var x)` and `TryDequeue(out var x)` return `false` (and set the out var to `default`) instead of throwing, mirroring `Dictionary.TryGetValue`."
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p6",
+          "difficulty": "medium",
+          "title": "Balanced Brackets & Print Queue (Stack<T> & Queue<T>)",
+          "prompt": "Two classic real-world structures in one exercise.\n\nPart A — Bracket checker (Stack<T>):\nWrite a method `bool IsBalanced(string s)` that returns whether the brackets in `s` are balanced. Support `()`, `[]`, and `{}`. Use a `Stack<char>`: push opening brackets; on a closing bracket, `Pop` and verify it matches the expected opener (and that the stack isn't empty). At the end the stack must be empty. Ignore any non-bracket characters.\nTest it on: `\"(a[b]{c})\"` -> True, `\"([)]\"` -> False, `\"(((\"` -> False, `\"\"` -> True. Print each result.\n\nPart B — Print job scheduler (Queue<T>):\nA printer processes jobs first-in, first-out. `Enqueue` these jobs in order: \"report.pdf\", \"invoice.docx\", \"photo.png\". Then loop while the queue is not empty, `Dequeue` each, and print `Printing: report.pdf` etc. After the loop print `All jobs done. Remaining: 0`.\n\nAdd a comment contrasting LIFO (Stack) vs FIFO (Queue) and naming one real use for each.",
+          "hints": [
+            "For matching, keep a small map of closer->opener, e.g. check `top == '(' for ')'`. A `switch` expression also works.",
+            "Guard before popping: if a closing bracket arrives and `stack.Count == 0`, it's already unbalanced.",
+            "`Stack<T>`: `Push`, `Pop`, `Peek`, `Count`. `Queue<T>`: `Enqueue`, `Dequeue`, `Peek`, `Count`.",
+            "Stack = LIFO (undo history, DFS, expression parsing); Queue = FIFO (print/work queues, BFS, scheduling)."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson07,
+      questions: [
+        {
+          "id": "collections-q12",
     "kind": "mcq",
     "prompt": "You loop over a `List<int>` with `foreach` and call `list.Remove(x)` inside the loop. What happens?",
     "options": [
@@ -332,102 +503,11 @@ export const collections: Topic = {
       }
     ],
     "explanation": "`Sort()` orders ascending in place -> [1,2,3,4,5]. `FindAll(predicate)` returns a **new** list of matches, in current order, so `evens` is [2,4]. Then `nums.Sort((x, y) => y.CompareTo(x))` uses a custom comparator to sort descending in place -> [5,4,3,2,1]. Because `FindAll` ran before the second sort, `evens` keeps its [2,4] order. These built-in helpers (`Sort`, `FindAll`) preview what LINQ's `OrderBy`/`Where` will generalize."
-  },
-  {
-    "id": "collections-q14",
-    "kind": "fill",
-    "prompt": "Fill in the method call that safely reads `count` from a dictionary, assigning it via an `out` variable and returning a bool for hit/miss (no exception on a missing key).",
-    "template": "if (wordCounts.___(\"hello\", out int count)) { Console.WriteLine(count); }",
-    "accept": [
-      "TryGetValue"
-    ]
-  },
-  {
-    "id": "collections-q15",
-    "kind": "fill",
-    "prompt": "A method parameter should accept the **weakest** interface that still lets it `foreach` over the items, so callers can pass an array, a `List<T>`, or a LINQ query. Fill in that interface.",
-    "template": "public int CountItems(___<string> items) => items.Count();",
-    "accept": [
-      "IEnumerable",
-      "IEnumerable<string>"
-    ]
-  }
-],
-  practice: [
-  {
-    "id": "collections-p1",
-    "difficulty": "easy",
-    "title": "Weekly Temperature Log (Arrays)",
-    "prompt": "You're building a tiny weather dashboard. Create a fixed-size `double[]` named `temps` that holds exactly 7 daily temperatures for one week. Initialize it with these readings: 18.5, 21.0, 19.8, 22.3, 20.1, 17.6, 23.4.\n\nThen, using a `for` loop:\n- Print each day as `Day 1: 18.5C` ... `Day 7: 23.4C` (use the index + 1 for the day number).\n\nAfter the loop, compute and print:\n- The total of all readings.\n- The average, formatted to one decimal place, like `Average: 20.4C`.\n\nFinally, write a one-line comment explaining what happens if you tried to assign an 8th value with `temps[7] = 25.0;` — and DO NOT actually run that line.",
-    "hints": [
-      "Use a collection expression to initialize: `double[] temps = [18.5, 21.0, ...];`",
-      "`temps.Length` gives you 7; valid indices are 0..6.",
-      "Format to one decimal with an interpolated string: `$\"Average: {avg:F1}C\"`.",
-      "`temps[7]` would throw `IndexOutOfRangeException` because the array's size is fixed at 7 — that fixed size is exactly why `List<T>` exists."
-    ]
-  },
-  {
-    "id": "collections-p2",
-    "difficulty": "easy",
-    "title": "Seating Chart vs Variable-Length Rows (Multidimensional & Jagged)",
-    "prompt": "A small theatre has a rectangular main floor and an irregular balcony.\n\nPart A — Rectangular `int[,]`:\nModel the main floor as a 3-row by 4-seat grid using `int[,] floor = new int[3, 4];`. Fill it so each seat holds a ticket price: row 0 = 50, row 1 = 40, row 2 = 30 (every seat in a row has that row's price). Then loop over it with nested `for` loops and print the grid, one row per line, like `50 50 50 50`.\nAlso print `Total seats: 12` using the array's dimensions (not a hard-coded 12).\n\nPart B — Jagged `int[][]`:\nThe balcony has uneven rows: row 0 has 2 seats, row 1 has 5 seats, row 2 has 3 seats. Build a jagged array and fill every balcony seat with the price 25. Loop over it and print each row's seat count, like `Balcony row 0 has 2 seats`.\n\nWrite a one-sentence comment explaining when you'd pick `int[,]` over `int[][]`.",
-    "hints": [
-      "For `int[,]`, the total count is `floor.GetLength(0) * floor.GetLength(1)`.",
-      "`floor.GetLength(0)` is the number of rows; `floor.GetLength(1)` is the number of columns.",
-      "A jagged array is an array of arrays: `int[][] balcony = new int[3][];` then `balcony[0] = new int[2];` etc.",
-      "Rectangular `int[,]` fits true grids where every row is the same width (a chessboard, a matrix); jagged `int[][]` fits rows of differing length."
-    ]
-  },
-  {
-    "id": "collections-p3",
-    "difficulty": "easy",
-    "title": "Shopping Cart (List<T> Basics)",
-    "prompt": "Build a shopping cart for an e-commerce checkout using `List<string>`.\n\n1. Start with an empty cart: `List<string> cart = [];`.\n2. `Add` three items: \"Keyboard\", \"Mouse\", \"Monitor\".\n3. The customer realizes they want a \"USB Cable\" to appear FIRST in the cart — use `Insert` to put it at index 0.\n4. They change their mind about the \"Mouse\" — `Remove` it by value.\n5. Print the final cart with a `foreach`, numbered like `1. USB Cable`, `2. Keyboard`, ...\n6. Print `Items in cart: <n>` using the `Count` property.\n7. Print whether the cart `Contains` a \"Monitor\" (`True`/`False`).\n\nThen add a short comment: explain in your own words the difference between the `Count` property and the `Capacity` property of a `List<T>`.",
-    "hints": [
-      "`cart.Insert(0, \"USB Cable\")` shifts everything else right — that's an O(n) operation.",
-      "`cart.Remove(\"Mouse\")` removes the first matching value and returns a bool; `RemoveAt(index)` removes by position.",
-      "Use a manual counter or `for (int i = 0; ...)` to print the numbering.",
-      "`Count` is how many items are actually in the list; `Capacity` is how big the internal backing array currently is (it doubles as the list grows)."
-    ]
-  },
-  {
-    "id": "collections-p4",
-    "difficulty": "medium",
-    "title": "Word Frequency Counter (Dictionary<TKey,TValue>)",
-    "prompt": "You're writing a text-analytics helper for a content app. Given this sentence string:\n\n`\"the cat sat on the mat the cat ran\"`\n\nSplit it into words on spaces and count how many times each word appears, using a `Dictionary<string, int>`.\n\nRequirements:\n- Use the safe upsert idiom `counts[word] = counts.GetValueOrDefault(word) + 1;` — do NOT use the throwing indexer for reading.\n- After counting, print each word and its count, one per line, like `the: 3`.\n- Then demonstrate safe lookup: use `TryGetValue` to look up the word \"cat\" and print `cat appears 2 times`, and look up the word \"dog\" (absent) and print `dog not found` instead of crashing.\n- Add a comment explaining why `counts[\"dog\"]` (the indexer) would be dangerous here, and how this differs from Python's `dict.get(\"dog\")`.",
-    "hints": [
-      "`sentence.Split(' ')` returns a `string[]` you can `foreach` over.",
-      "`GetValueOrDefault(word)` returns 0 for an int value type when the key is missing — no exception.",
-      "`if (counts.TryGetValue(\"cat\", out int n)) { ... } else { ... }` is the canonical safe pattern.",
-      "The indexer `counts[\"dog\"]` throws `KeyNotFoundException` on a missing key — unlike Python's `dict.get()` which returns `None`/a default. Dictionary iteration order is NOT guaranteed, so don't depend on it."
-    ]
-  },
-  {
-    "id": "collections-p5",
-    "difficulty": "medium",
-    "title": "Deduplicating Email Recipients (HashSet<T>)",
-    "prompt": "A marketing tool keeps accidentally emailing people twice. Fix it with `HashSet<T>`.\n\nGiven two recipient lists:\n- `string[] listA = [\"ann@x.com\", \"bob@x.com\", \"cara@x.com\", \"ann@x.com\"];`\n- `string[] listB = [\"bob@x.com\", \"dan@x.com\", \"cara@x.com\"];`\n\nDo all of the following:\n1. Build a `HashSet<string>` from `listA` and print how many UNIQUE addresses it contains (note the duplicate \"ann@x.com\").\n2. Demonstrate a fast membership test: print whether \"bob@x.com\" is present (`True`).\n3. Compute the people in BOTH lists (intersection) and print them — use a copy and `IntersectWith`.\n4. Compute everyone across both lists with no duplicates (union) and print the total count — use `UnionWith`.\n5. Compute who is in `listA` but NOT in `listB` (difference) and print them — use `ExceptWith`.\n\nAdd a comment noting why a `HashSet` has no indexer (`set[0]` doesn't compile) and why its iteration order is not guaranteed.",
-    "hints": [
-      "`HashSet<string> setA = [..listA];` (collection expression with spread) or `new HashSet<string>(listA)` dedups automatically.",
-      "Set operations MUTATE the set they're called on, so make a copy first: `var both = new HashSet<string>(setA); both.IntersectWith(listB);`.",
-      "`UnionWith`, `IntersectWith`, and `ExceptWith` all accept any `IEnumerable<T>`, so you can pass the raw arrays.",
-      "A set is unordered and stores items by hash bucket, so there's no meaningful 'position' to index by, and enumeration order can differ from insertion order."
-    ]
-  },
-  {
-    "id": "collections-p6",
-    "difficulty": "medium",
-    "title": "Balanced Brackets & Print Queue (Stack<T> & Queue<T>)",
-    "prompt": "Two classic real-world structures in one exercise.\n\nPart A — Bracket checker (Stack<T>):\nWrite a method `bool IsBalanced(string s)` that returns whether the brackets in `s` are balanced. Support `()`, `[]`, and `{}`. Use a `Stack<char>`: push opening brackets; on a closing bracket, `Pop` and verify it matches the expected opener (and that the stack isn't empty). At the end the stack must be empty. Ignore any non-bracket characters.\nTest it on: `\"(a[b]{c})\"` -> True, `\"([)]\"` -> False, `\"(((\"` -> False, `\"\"` -> True. Print each result.\n\nPart B — Print job scheduler (Queue<T>):\nA printer processes jobs first-in, first-out. `Enqueue` these jobs in order: \"report.pdf\", \"invoice.docx\", \"photo.png\". Then loop while the queue is not empty, `Dequeue` each, and print `Printing: report.pdf` etc. After the loop print `All jobs done. Remaining: 0`.\n\nAdd a comment contrasting LIFO (Stack) vs FIFO (Queue) and naming one real use for each.",
-    "hints": [
-      "For matching, keep a small map of closer->opener, e.g. check `top == '(' for ')'`. A `switch` expression also works.",
-      "Guard before popping: if a closing bracket arrives and `stack.Count == 0`, it's already unbalanced.",
-      "`Stack<T>`: `Push`, `Pop`, `Peek`, `Count`. `Queue<T>`: `Enqueue`, `Dequeue`, `Peek`, `Count`.",
-      "Stack = LIFO (undo history, DFS, expression parsing); Queue = FIFO (print/work queues, BFS, scheduling)."
-    ]
-  },
-  {
-    "id": "collections-p7",
+        }
+      ],
+      challenges: [
+        {
+          "id": "collections-p7",
     "difficulty": "medium",
     "title": "Leaderboard: Iterate, Sort, and Filter",
     "prompt": "Build a game leaderboard report from a `List<int>` of scores using ONLY built-in collection helpers (no LINQ yet).\n\nStart with: `List<int> scores = [42, 88, 17, 88, 5, 73, 60];`\n\n1. Print the scores in their original order with a `foreach`, space-separated.\n2. Make a COPY of the list and `Sort()` it ascending; print it. (Use a copy so the original order is preserved.)\n3. Sort the copy in DESCENDING order using a custom comparison `copy.Sort((a, b) => b.CompareTo(a));` and print it.\n4. Use `FindAll` with a predicate to get every score `>= 60` (a 'qualifying' score) and print how many qualified plus the qualifying scores.\n5. Use `Find` to print the FIRST score that is greater than 50.\n6. Use `Exists` to print whether any score equals 100 (`True`/`False`).\n\nAdd a comment: name two of these helpers (`Sort`, `FindAll`, `Find`, `Exists`) and note that LINQ (coming later) will generalize `FindAll`/`Find` into `Where`/`First`.",
@@ -436,18 +516,6 @@ export const collections: Topic = {
       "`List<T>.Sort()` orders ascending by default; pass a `Comparison<T>` lambda `(a,b) => b.CompareTo(a)` to reverse it.",
       "`FindAll(s => s >= 60)` returns a new `List<int>`; `Find(s => s > 50)` returns the first match (or `default`, i.e. 0, if none).",
       "`Exists(s => s == 100)` returns a bool. These are the pre-LINQ ancestors of `Where`, `First`/`FirstOrDefault`, and `Any`."
-    ]
-  },
-  {
-    "id": "collections-p8",
-    "difficulty": "hard",
-    "title": "In-Memory User Index (Dictionary + List + custom key)",
-    "prompt": "Build a tiny in-memory 'repository' like the ones behind a web API, combining several collection types.\n\nDefine `record User(int Id, string Name, string City);` (a record so equality and hashing are correct for free).\n\nGiven this seed data (build it as a `List<User>`):\n`[ new(1,\"Ann\",\"Paris\"), new(2,\"Bob\",\"Lyon\"), new(3,\"Cara\",\"Paris\"), new(4,\"Dan\",\"Nice\"), new(5,\"Eve\",\"Lyon\") ]`\n\nImplement and demonstrate:\n1. Build a `Dictionary<int, User>` indexed by `Id` so you can do O(1) lookups. Use `TryAdd` while building and assert no duplicate ids slipped in.\n2. Write a lookup that, given an id, prints the user via `TryGetValue` — show both a hit (id 3) and a miss (id 99 -> `No user 99`).\n3. Build a 'users by city' index of type `Dictionary<string, List<User>>`: for each user, get-or-create the list for their city and add them. Then print each city followed by its members, like `Paris: Ann, Cara`.\n4. Use a `HashSet<string>` to print the set of DISTINCT cities.\n\nAdd a comment explaining why making `User` a `record` matters if you ever put `User` instances directly into a `HashSet<User>` or use them as dictionary keys.",
-    "hints": [
-      "`if (!byId.TryAdd(u.Id, u)) throw new InvalidOperationException($\"Duplicate id {u.Id}\");` enforces uniqueness while building.",
-      "For the grouping index, the get-or-create idiom: `if (!byCity.TryGetValue(u.City, out var list)) { list = []; byCity[u.City] = list; } list.Add(u);`",
-      "Build distinct cities by spreading the users' cities into a set, or `foreach` and `Add` to a `HashSet<string>` (Add is a no-op if already present).",
-      "A `record` auto-generates value-based `Equals` and `GetHashCode`, so two `User`s with the same field values are 'equal' in a set/dictionary. A plain `class` would compare by reference, silently breaking set membership and key lookups."
     ]
   },
   {
@@ -472,9 +540,11 @@ export const collections: Topic = {
       "Upsert pattern: `totals[o.Category] = totals.GetValueOrDefault(o.Category) + o.Quantity * o.Price;`.",
       "To return a sorted view: copy the dictionary entries into `var list = new List<KeyValuePair<string,int>>(perProduct);` then `list.Sort((a,b) => b.Value.CompareTo(a.Value));` and return it as `IReadOnlyList<...>`.",
       "Returning `IReadOnly*`/`IReadOnlySet` hands callers a read-only VIEW: they can enumerate and read, but can't `Add`/`Remove` and accidentally corrupt the module's internal collections. A `Dictionary` implements `IReadOnlyDictionary`, so you can just return it typed as the interface."
-    ]
-  }
-],
+          ]
+        }
+      ]
+    }
+  ],
   projects: [
   {
     "id": "collections-proj-1",

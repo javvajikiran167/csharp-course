@@ -13,444 +13,427 @@ export const genericsLinq: Topic = {
   title: "Generics & LINQ",
   subtitle: "Write reusable typed code with generics, then transform data with LINQ — the two features that define modern .NET style.",
   status: 'unlocked',
-  lessons: [lesson01, lesson02, lesson03, lesson04, lesson05, lesson06, lesson07, lesson08],
-  quiz: [
-  {
-    "id": "generics-linq-q1",
-    "kind": "mcq",
-    "prompt": "You want to write a single method `Swap` that exchanges two variables of **any** type — `int`, `string`, `Customer`, whatever. Which signature is correct C# 14?",
-    "options": [
-      {
-        "label": "`public void Swap(object a, object b) { var tmp = a; a = b; b = tmp; }`",
-        "correct": false
-      },
-      {
-        "label": "`public void Swap<T>(ref T a, ref T b) { var tmp = a; a = b; b = tmp; }`",
-        "correct": true
-      },
-      {
-        "label": "`public void Swap<T>(T a, T b) { var tmp = a; a = b; b = tmp; }`",
-        "correct": false
-      },
-      {
-        "label": "`public T Swap<T>(T a, T b) => (b, a);`",
-        "correct": false
-      }
-    ],
-    "explanation": "The `ref` keyword is essential: without it, `a` and `b` are local copies and the swap never affects the caller. Using `object` loses type safety — you'd need casting and get no compile-time guarantee. The tuple return form changes the method contract entirely. The correct version `public void Swap<T>(ref T a, ref T b)` is a classic generic method that works for any type without boxing or casting."
-  },
-  {
-    "id": "generics-linq-q2",
-    "kind": "predict",
-    "prompt": "What does this program print?",
-    "code": "public class Stack<T>\n{\n    private readonly List<T> _items = new();\n    public void Push(T item) => _items.Add(item);\n    public T Pop()\n    {\n        var item = _items[^1];\n        _items.RemoveAt(_items.Count - 1);\n        return item;\n    }\n    public int Count => _items.Count;\n}\n\nvar s = new Stack<string>();\ns.Push(\"alpha\");\ns.Push(\"beta\");\ns.Push(\"gamma\");\nConsole.WriteLine(s.Pop());\nConsole.WriteLine(s.Count);",
-    "options": [
-      {
-        "label": "alpha\n2",
-        "correct": false
-      },
-      {
-        "label": "gamma\n2",
-        "correct": true
-      },
-      {
-        "label": "gamma\n3",
-        "correct": false
-      },
-      {
-        "label": "alpha\n3",
-        "correct": false
-      }
-    ],
-    "explanation": "`Stack<T>` here is a last-in, first-out structure. After pushing alpha, beta, gamma the top is gamma. `Pop()` removes and returns the last element (`_items[^1]` is the C# index-from-end operator), so it returns `\"gamma\"`. After popping, two items remain (alpha and beta), so `Count` is `2`."
-  },
-  {
-    "id": "generics-linq-q3",
-    "kind": "mcq",
-    "prompt": "A junior developer writes this generic repository interface:\n\n```csharp\npublic interface IRepository<T>\n{\n    Task<T?> GetByIdAsync(int id);\n    Task AddAsync(T entity);\n}\n```\n\nThe team wants to prevent callers from accidentally passing `int` or `bool` as `T`. Which constraint achieves that?",
-    "options": [
-      {
-        "label": "`where T : struct`",
-        "correct": false
-      },
-      {
-        "label": "`where T : new()`",
-        "correct": false
-      },
-      {
-        "label": "`where T : class`",
-        "correct": true
-      },
-      {
-        "label": "`where T : IComparable<T>`",
-        "correct": false
-      }
-    ],
-    "explanation": "`where T : class` restricts `T` to reference types only, which means `int`, `bool`, `DateTime` (all value types / structs) are rejected at compile time. `where T : struct` is the opposite — it allows only value types. `where T : new()` only requires a public parameterless constructor and still allows structs. `where T : IComparable<T>` is about comparison capability, not reference vs value."
-  },
-  {
-    "id": "generics-linq-q4",
-    "kind": "mcq",
-    "prompt": "You're writing a utility that finds the **maximum** element in any collection, and the elements must support comparison. Which constraint is the most appropriate?",
-    "options": [
-      {
-        "label": "`where T : object`",
-        "correct": false
-      },
-      {
-        "label": "`where T : IComparable<T>`",
-        "correct": true
-      },
-      {
-        "label": "`where T : new()`",
-        "correct": false
-      },
-      {
-        "label": "`where T : class`",
-        "correct": false
-      }
-    ],
-    "explanation": "`where T : IComparable<T>` guarantees the compiler that `T` has a `CompareTo(T other)` method, which is exactly what you need to determine which element is larger. Without this constraint `T` is just `object` and you can't call `CompareTo` — the compiler will refuse to compile the call. `new()` is about construction, `class` is about reference types, and `object` is not a valid constraint keyword."
-  },
-  {
-    "id": "generics-linq-q5",
-    "kind": "fill",
-    "prompt": "Complete the constraint so that `T` must be both a **reference type** AND have a **public parameterless constructor** (required for calling `new T()` inside the method):\n\n```csharp\npublic T CreateDefault<T>() where T : ___, new()\n{\n    return new T();\n}\n```",
-    "template": "public T CreateDefault<T>() where T : ___, new()",
-    "accept": [
-      "class",
-      "class, new()",
-      "class,new()"
-    ],
-    "explanation": "`where T : class, new()` combines two constraints: `class` enforces a reference type and `new()` guarantees a public parameterless constructor. The `new()` constraint **must be listed last** when combined with other constraints. With both in place, `new T()` compiles and calling `CreateDefault<int>()` is rejected at compile time."
-  },
-  {
-    "id": "generics-linq-q6",
-    "kind": "predict",
-    "prompt": "What does this LINQ pipeline print?",
-    "code": "var orders = new[]\n{\n    new { Id = 1, Total = 250m,  Status = \"Completed\" },\n    new { Id = 2, Total = 80m,   Status = \"Pending\" },\n    new { Id = 3, Total = 430m,  Status = \"Completed\" },\n    new { Id = 4, Total = 150m,  Status = \"Completed\" },\n};\n\nvar result = orders\n    .Where(o => o.Status == \"Completed\")\n    .OrderByDescending(o => o.Total)\n    .Select(o => $\"#{o.Id}: {o.Total:C0}\")\n    .First();\n\nConsole.WriteLine(result);",
-    "options": [
-      {
-        "label": "#1: $250",
-        "correct": false
-      },
-      {
-        "label": "#3: $430",
-        "correct": true
-      },
-      {
-        "label": "#4: $150",
-        "correct": false
-      },
-      {
-        "label": "#2: $80",
-        "correct": false
-      }
-    ],
-    "explanation": "The pipeline: (1) `Where` keeps only Completed orders — ids 1, 3, 4 with totals 250, 430, 150; (2) `OrderByDescending` sorts by Total descending — order is 430, 250, 150; (3) `Select` projects to formatted strings; (4) `First()` takes the first element, which is the highest total: `#3: $430`. The `C0` format specifier formats as currency with zero decimal places."
-  },
-  {
-    "id": "generics-linq-q7",
-    "kind": "mcq",
-    "prompt": "Your Python colleague writes the following C# and expects it to print the names of users older than 30, but the list never seems to update. What is the **actual** output after the `Add` call?\n\n```csharp\nvar users = new List<(string Name, int Age)>\n{\n    (\"Alice\", 28),\n    (\"Bob\",   35),\n};\n\nvar query = users.Where(u => u.Age > 30);\nusers.Add((\"Carol\", 40));\n\nforeach (var u in query)\n    Console.WriteLine(u.Name);\n```",
-    "options": [
-      {
-        "label": "Bob",
-        "correct": false
-      },
-      {
-        "label": "Bob\nCarol",
-        "correct": true
-      },
-      {
-        "label": "Alice\nBob\nCarol",
-        "correct": false
-      },
-      {
-        "label": "The code throws an InvalidOperationException.",
-        "correct": false
-      }
-    ],
-    "explanation": "This is the **deferred execution** feature. The `Where` call does NOT execute immediately — it creates a lazy pipeline that references `users`. When the `foreach` runs the query, `users` already contains Carol (added after the query was defined). Because LINQ iterates the current state of `users` at execution time, Carol IS included. The output is `Bob` then `Carol`. Python beginners expect immediate execution (like a list comprehension), but LINQ is lazy by design."
-  },
-  {
-    "id": "generics-linq-q8",
-    "kind": "mcq",
-    "prompt": "Which LINQ method is the **most efficient** way to check whether any employee has a salary above $200,000?",
-    "options": [
-      {
-        "label": "`employees.Where(e => e.Salary > 200_000).Count() > 0`",
-        "correct": false
-      },
-      {
-        "label": "`employees.Count(e => e.Salary > 200_000) > 0`",
-        "correct": false
-      },
-      {
-        "label": "`employees.Any(e => e.Salary > 200_000)`",
-        "correct": true
-      },
-      {
-        "label": "`employees.Select(e => e.Salary).Max() > 200_000`",
-        "correct": false
-      }
-    ],
-    "explanation": "`Any(predicate)` short-circuits: it stops iterating the moment it finds the first match and returns `true`. `Count()` must traverse **every** element and for `IQueryable<T>` this issues a `COUNT(*)` SQL query over the whole table. `Where().Count() > 0` is doubly wasteful — an intermediate iterator plus a full count. `Max()` also scans everything. `Any()` is the idiomatic, performant choice for existence checks."
-  },
-  {
-    "id": "generics-linq-q9",
-    "kind": "predict",
-    "prompt": "What does this program print?",
-    "code": "int threshold = 100;\nvar prices = new[] { 50, 120, 80, 200, 95 };\n\nvar expensive = prices.Where(p => p > threshold);\n\nthreshold = 90;\n\nforeach (var p in expensive)\n    Console.Write(p + \" \");",
-    "options": [
-      {
-        "label": "120 200 ",
-        "correct": false
-      },
-      {
-        "label": "120 80 200 95 ",
-        "correct": false
-      },
-      {
-        "label": "120 200 95 ",
-        "correct": true
-      },
-      {
-        "label": "50 120 80 200 95 ",
-        "correct": false
-      }
-    ],
-    "explanation": "This demonstrates the **variable capture pitfall**. The lambda `p => p > threshold` captures the **variable** `threshold`, not its value at query-definition time. By the time `foreach` executes the query, `threshold` has been reassigned to `90`. So the filter becomes `p > 90`, which matches 120, 200, and 95. The original value of 100 is irrelevant — the lambda reads `threshold`'s current value at execution time."
-  },
-  {
-    "id": "generics-linq-q10",
-    "kind": "mcq",
-    "prompt": "You have a list of `Order` objects, each with a `CustomerId` and `Total`. You want to group orders by `CustomerId` and compute the total spent per customer. Which code is correct?",
-    "options": [
-      {
-        "label": "```csharp\norders.GroupBy(o => o.CustomerId)\n      .Select(g => new { CustomerId = g.Key, TotalSpent = g.Sum(o => o.Total) })\n      .ToList();\n```",
-        "correct": true
-      },
-      {
-        "label": "```csharp\norders.GroupBy(o => o.CustomerId)\n      .Select(g => new { CustomerId = g, TotalSpent = g.Sum(o => o.Total) })\n      .ToList();\n```",
-        "correct": false
-      },
-      {
-        "label": "```csharp\norders.OrderBy(o => o.CustomerId)\n      .GroupBy(o => o.CustomerId)\n      .Select(g => g.Sum(o => o.Total))\n      .ToList();\n```",
-        "correct": false
-      },
-      {
-        "label": "```csharp\norders.GroupBy(o => o.CustomerId, o => o.Total)\n      .Select(g => new { CustomerId = g.Key, TotalSpent = g.Key })\n      .ToList();\n```",
-        "correct": false
-      }
-    ],
-    "explanation": "The correct pattern: `GroupBy(o => o.CustomerId)` produces `IEnumerable<IGrouping<int, Order>>` where each group's `.Key` is the `CustomerId`. Projecting with `.Select(g => new { CustomerId = g.Key, TotalSpent = g.Sum(o => o.Total) })` computes the sum for each group. Option B incorrectly uses `g` (the whole grouping) as the `CustomerId`. Option C omits `CustomerId` from the result and adds a redundant `OrderBy` (LINQ `GroupBy` does NOT require sorted input unlike Python's `itertools.groupby`). Option D reads `g.Key` as the `TotalSpent`, which would be the customer ID, not the sum."
-  },
-  {
-    "id": "generics-linq-q11",
-    "kind": "fill",
-    "prompt": "Complete the LINQ query to return **only the names** of products that are in stock (`InStock == true`), sorted alphabetically:\n\n```csharp\nvar names = products\n    .Where(p => p.InStock)\n    .OrderBy(p => p.Name)\n    .___( p => p.Name)\n    .ToList();\n```",
-    "template": ".___( p => p.Name)",
-    "accept": [
-      "Select",
-      "select"
-    ],
-    "explanation": "`Select` is the LINQ projection operator — it transforms each element to a new shape, here extracting just the `Name` string. The pipeline reads: filter to in-stock products, sort by name, then project to strings. `Select` corresponds to Python's `map()` or the expression part of a list comprehension like `[p.Name for p in products if p.InStock]`."
-  },
-  {
-    "id": "generics-linq-q12",
-    "kind": "predict",
-    "prompt": "What does this program print?",
-    "code": "var employees = new[]\n{\n    new { Name = \"Dana\",  Dept = \"Engineering\", Salary = 95000 },\n    new { Name = \"Eli\",   Dept = \"Marketing\",   Salary = 72000 },\n    new { Name = \"Fiona\", Dept = \"Engineering\", Salary = 110000 },\n    new { Name = \"Greg\",  Dept = \"Marketing\",   Salary = 68000 },\n};\n\nvar report = employees\n    .GroupBy(e => e.Dept)\n    .Select(g => $\"{g.Key}: avg={g.Average(e => e.Salary):F0}\")\n    .OrderBy(s => s);\n\nforeach (var line in report)\n    Console.WriteLine(line);",
-    "options": [
-      {
-        "label": "Engineering: avg=102500\nMarketing: avg=70000",
-        "correct": true
-      },
-      {
-        "label": "Marketing: avg=70000\nEngineering: avg=102500",
-        "correct": false
-      },
-      {
-        "label": "Engineering: avg=205000\nMarketing: avg=140000",
-        "correct": false
-      },
-      {
-        "label": "Engineering: avg=102500.00\nMarketing: avg=70000.00",
-        "correct": false
-      }
-    ],
-    "explanation": "Engineering average: (95000 + 110000) / 2 = 102500. Marketing average: (72000 + 68000) / 2 = 70000. The `F0` format specifier rounds to zero decimal places (no `.00`). `OrderBy(s => s)` sorts the resulting strings alphabetically, so `\"Engineering...\"` comes before `\"Marketing...\"`. Output is two lines: `Engineering: avg=102500` then `Marketing: avg=70000`."
-  },
-  {
-    "id": "generics-linq-q13",
-    "kind": "mcq",
-    "prompt": "A teammate writes the following code to find a user by email and then update their last-login date:\n\n```csharp\nvar user = users.FirstOrDefault(u => u.Email == email);\nuser.LastLoginDate = DateTime.UtcNow;\n```\n\nWhat is the **most serious problem** with this code?",
-    "options": [
-      {
-        "label": "`FirstOrDefault` is slower than `SingleOrDefault` for this use case.",
-        "correct": false
-      },
-      {
-        "label": "If no user matches the email, `user` is `null` and `user.LastLoginDate = ...` throws a `NullReferenceException`.",
-        "correct": true
-      },
-      {
-        "label": "`DateTime.UtcNow` should be `DateTime.Now` to use local time.",
-        "correct": false
-      },
-      {
-        "label": "`FirstOrDefault` requires the collection to be sorted by email first.",
-        "correct": false
-      }
-    ],
-    "explanation": "`FirstOrDefault` returns `null` (for reference types) when no element matches — it does **not** throw. Accessing `.LastLoginDate` on a null reference immediately throws `NullReferenceException` at runtime. The fix is to guard: `if (user is null) return;` or use the null-conditional: `user?.LastLoginDate = DateTime.UtcNow;`. `FirstOrDefault` has nothing to do with sorting, and UTC vs local time is a design choice, not a bug. `SingleOrDefault` would actually throw if multiple users share the same email — a different and arguably worse problem."
-  },
-  {
-    "id": "generics-linq-q14",
-    "kind": "mcq",
-    "prompt": "You are building a Sales Data Analyzer. This code is supposed to print a CSV report of the top 3 customers by total spend. What is the **bug**?\n\n```csharp\nvar records = File.ReadAllLines(\"sales.csv\")\n    .Skip(1)\n    .Select(line => line.Split(','))\n    .Select(cols => new { CustomerId = cols[0], Amount = decimal.Parse(cols[1]) });\n\nvar report = records\n    .GroupBy(r => r.CustomerId)\n    .Select(g => new { CustomerId = g.Key, Total = g.Sum(r => r.Amount) })\n    .OrderByDescending(c => c.Total)\n    .Take(3);\n\n// Print results\nConsole.WriteLine($\"Processed {records.Count()} records\");\nforeach (var c in report)\n    Console.WriteLine($\"{c.CustomerId},{c.Total}\");\n```",
-    "options": [
-      {
-        "label": "`.Skip(1)` skips too many lines — it should be `.Skip(0)`.",
-        "correct": false
-      },
-      {
-        "label": "`decimal.Parse` will throw if any field contains whitespace.",
-        "correct": false
-      },
-      {
-        "label": "`records` is enumerated **twice**: once for `Count()` and once inside the `report` pipeline — the file is read and parsed twice.",
-        "correct": true
-      },
-      {
-        "label": "`.Take(3)` should come before `.OrderByDescending` to be efficient.",
-        "correct": false
-      }
-    ],
-    "explanation": "This is the **multiple enumeration** pitfall. `records` is a deferred LINQ pipeline that starts with `File.ReadAllLines`. Every time you enumerate `records`, it reads the file again, re-splits, and re-parses. Calling `records.Count()` causes one full enumeration, and then `report` (which references `records` internally via `GroupBy`) causes a second. Fix: call `records.ToList()` immediately after building the pipeline and use the list for both `Count` and `report`. `.Skip(1)` correctly skips the CSV header. `.Take(3)` after `OrderByDescending` is correct — you must sort before taking the top N."
-  }
-],
-  practice: [
-  {
-    "id": "generics-linq-p1",
-    "difficulty": "easy",
-    "title": "Swap Two Values",
-    "prompt": "Write a **generic method** `Swap<T>(ref T a, ref T b)` that exchanges the values of two variables without knowing their type. Call it with `int` values (swap 10 and 20), then with `string` values (swap \"hello\" and \"world\"). Print both pairs before and after the swap to confirm it works.\n\nConstraints:\n- One method signature handles all types — no overloads.\n- Use `ref` parameters so the caller's variables actually change.\n- No type constraints needed here.",
-    "hints": [
-      "A temporary variable `T temp = a;` is all you need inside the method.",
-      "Call it like `Swap(ref x, ref y);` — the compiler infers `T` from the arguments.",
-      "Notice you never write `Swap<int>(ref x, ref y)` — type inference removes the noise."
-    ]
-  },
-  {
-    "id": "generics-linq-p2",
-    "difficulty": "easy",
-    "title": "Generic Stack",
-    "prompt": "Build a `Stack<T>` class that stores items in a `List<T>` field. Implement:\n- `void Push(T item)` — add to the top\n- `T Pop()` — remove and return the top item (throw `InvalidOperationException` with message `\"Stack is empty\"` if empty)\n- `T Peek()` — return the top item without removing it (same guard)\n- `int Count { get; }` — read-only property\n- `bool IsEmpty { get; }` — convenience property\n\nInstantiate a `Stack<string>` and push three job-queue task names onto it. Pop and print them in LIFO order. Then instantiate a `Stack<double>` with three sensor readings to confirm the same class works for a different type.",
-    "hints": [
-      "The 'top' of the stack is the last element in the list — index `_items.Count - 1`.",
-      "Remove the top with `_items.RemoveAt(_items.Count - 1)` after reading the value.",
-      "You do NOT need any type constraints — `T` can be anything because you are just storing and returning it, never calling methods on it."
-    ]
-  },
-  {
-    "id": "generics-linq-p3",
-    "difficulty": "easy",
-    "title": "Find the Minimum with a Constraint",
-    "prompt": "Write a **generic method** `FindMin<T>(IEnumerable<T> items)` that returns the smallest element in any collection, for any type that supports comparison.\n\nRequirements:\n- Apply the constraint `where T : IComparable<T>` so the compiler knows `T` has a `CompareTo` method.\n- Throw `ArgumentException` with a meaningful message if the collection is empty.\n- Do **not** use `LINQ Min()` — implement the loop yourself.\n\nTest it with three scenarios:\n1. A `List<int>` of five product prices (integers).\n2. A `string[]` of five city names — `IComparable<T>` on strings uses alphabetical order.\n3. A `List<DateTime>` of five appointment dates — return the earliest.\n\nPrint the minimum for each.",
-    "hints": [
-      "Initialize `T min = items.First();` then loop over the rest with `if (item.CompareTo(min) < 0) min = item;`.",
-      "Convert the enumerable to a list or use a `bool foundFirst` flag to handle the first element.",
-      "The constraint is what allows you to call `a.CompareTo(b)` — without it the compiler rejects the call because unconstrained `T` only exposes `object` members."
-    ]
-  },
-  {
-    "id": "generics-linq-p4",
-    "difficulty": "easy",
-    "title": "LINQ Basics — Employee Filter Pipeline",
-    "prompt": "Given this record:\n```csharp\npublic record Employee(string Name, string Department, decimal Salary, bool IsActive);\n```\nCreate a hard-coded `List<Employee>` with at least eight employees across three departments (Engineering, Marketing, HR), a mix of active/inactive, and salaries ranging from 40 000 to 120 000.\n\nWrite **four separate LINQ queries** (method syntax, not query syntax) and print the results of each:\n1. **Active employees only** — `Where` on `IsActive`.\n2. **Just the names** of active employees, sorted A→Z — chain `Where`, `Select`, `OrderBy`.\n3. **The highest-paid active employee** — use `OrderByDescending` + `FirstOrDefault`, then null-guard the result.\n4. **Count of active employees in Engineering** — chain `Where` twice (or combine predicates with `&&`) then `Count()`.\n\nPrint a labeled header before each result.",
-    "hints": [
-      "Method syntax: `employees.Where(e => e.IsActive).Select(e => e.Name).OrderBy(n => n)`.",
-      "For query 3, always check `if (result is null)` before accessing `.Name` — `FirstOrDefault` returns null when nothing matches.",
-      "Two conditions in one `Where` is cleaner than chaining two `Where` calls: `Where(e => e.IsActive && e.Department == \"Engineering\")`."
-    ]
-  },
-  {
-    "id": "generics-linq-p5",
-    "difficulty": "medium",
-    "title": "LINQ Query Syntax — Order Report",
-    "prompt": "Given these records:\n```csharp\npublic record Customer(int Id, string Name, string City);\npublic record Order(int Id, int CustomerId, decimal Amount, DateTime PlacedOn);\n```\nCreate at least six customers and twelve orders spread across them. Some customers should have multiple orders; at least one customer should have no orders at all.\n\nWrite the following queries using **query syntax** (`from … in … where … select …`):\n1. A **join query** that pairs each order with its customer's name and city, keeping only orders placed in the last 180 days.\n2. A **group query** that groups orders by customer name and projects `{ CustomerName, OrderCount, TotalSpent }` — include only groups where `TotalSpent > 500`.\n\nThen rewrite **query 1 only** in method syntax and confirm the output is identical.\n\nDiscuss in a code comment (two sentences) when you would prefer query syntax over method syntax.",
-    "hints": [
-      "Query syntax join: `from o in orders join c in customers on o.CustomerId equals c.Id where o.PlacedOn >= cutoff select new { ... }`.",
-      "For the group query: `from o in orders group o by o.CustomerId into g where g.Sum(o => o.Amount) > 500 select new { ... }` — you need `into` to reference the group.",
-      "Method syntax equivalent of join: `orders.Join(customers, o => o.CustomerId, c => c.Id, (o, c) => new { ... }).Where(x => x.PlacedOn >= cutoff)`.",
-      "Query syntax shines when joins and group-into clauses are involved — it reads closer to SQL. Method syntax is preferred for simple pipelines."
-    ]
-  },
-  {
-    "id": "generics-linq-p6",
-    "difficulty": "medium",
-    "title": "GroupBy, Aggregation & Projection",
-    "prompt": "You have sales data:\n```csharp\npublic record Sale(string Region, string Product, int UnitsSold, decimal UnitPrice, DateTime SaleDate);\n```\nCreate a hard-coded `List<Sale>` with at least fifteen entries across three regions (North, South, West) and four products.\n\nWrite LINQ queries (method syntax) to produce:\n1. **Per-region summary** — for each region: `RegionName`, `TotalRevenue` (UnitsSold × UnitPrice summed), `BestSellingProduct` (product with highest total units in that region). Order by `TotalRevenue` descending.\n2. **Monthly trend** — group by year+month (`new { sale.SaleDate.Year, sale.SaleDate.Month }`), output `{ Month (\"yyyy-MM\"), TotalRevenue }` sorted chronologically.\n3. **Top 3 products by total units sold** across all regions — use `GroupBy` → `Select` → `OrderByDescending` → `Take(3)`.\n\nPrint each report with clear headers and formatted numbers (`TotalRevenue:C2` for currency).",
-    "hints": [
-      "Revenue per sale: `s.UnitsSold * s.UnitPrice`. Use `.Sum(s => s.UnitsSold * s.UnitPrice)` inside the group projection.",
-      "For BestSellingProduct inside a region group, you need a nested GroupBy: `g.GroupBy(s => s.Product).OrderByDescending(pg => pg.Sum(s => s.UnitsSold)).First().Key`.",
-      "Format month as string inside Select: `$\"{g.Key.Year:D4}-{g.Key.Month:D2}\"`.",
-      "Remember: `GroupBy` returns `IEnumerable<IGrouping<TKey, TElement>>`. The group's key is `.Key` and the elements are iterable directly."
-    ]
-  },
-  {
-    "id": "generics-linq-p7",
-    "difficulty": "medium",
-    "title": "Deferred Execution Trap",
-    "prompt": "This exercise is designed to make deferred execution **visible** through deliberate experiments. You will write code that demonstrates each of the following scenarios, print what actually happens, and add a comment explaining why:\n\n**Scenario A — Variable capture:** Build a query `var q = numbers.Where(n => n > threshold)` where `threshold = 10`. Print the count. Then change `threshold = 5` and print the count again without rebuilding the query. Observe the difference.\n\n**Scenario B — Multiple enumeration cost:** Create a list of 5 integers. Build a deferred query. Use a `Select` lambda that prints `\"Processing {n}\"` as a side effect AND returns `n * 2`. Enumerate with `foreach` twice. Count how many times \"Processing\" prints — then fix it by materializing with `ToList()` and confirm the processing messages appear only once.\n\n**Scenario C — Source mutation:** Build a deferred query on a `List<string>`. Iterate once (print results). Add a new element to the list. Iterate the same query variable again. Show that the new element appears in the second iteration.\n\nFor each scenario write a `// WHY:` comment explaining the behaviour in one sentence.",
-    "hints": [
-      "Scenario A: the lambda closes over the `threshold` variable itself, not a copy of its value at query-creation time. Change the variable, change the filter.",
-      "Scenario B: every `foreach` re-runs the pipeline from scratch. `ToList()` snapshots the results so subsequent iterations read from the list, not the pipeline.",
-      "Scenario C: the query holds a reference to the original list object. When you add to the list, the query sees the addition because it re-reads the list each time it runs.",
-      "Avoid side effects in production lambdas — this exercise uses them intentionally to make the invisible visible."
-    ]
-  },
-  {
-    "id": "generics-linq-p8",
-    "difficulty": "medium",
-    "title": "Generic Repository Interface",
-    "prompt": "Design and implement a **generic in-memory repository** that could slot into a real ASP.NET Core application.\n\nSteps:\n1. Define a marker interface `IEntity` with a single property `int Id { get; }`.\n2. Define `IRepository<T> where T : class, IEntity` with methods:\n   - `void Add(T entity)`\n   - `T? GetById(int id)`\n   - `IReadOnlyList<T> GetAll()`\n   - `IReadOnlyList<T> Find(Func<T, bool> predicate)`\n   - `void Update(T entity)` — replace the stored entity that has the same `Id`\n   - `bool Delete(int id)` — return `true` if found and removed, `false` if not found\n3. Implement `InMemoryRepository<T>` backed by a `List<T>`.\n4. Create two entity types: `Product(int Id, string Name, decimal Price)` and `Customer(int Id, string Name, string Email)`, both implementing `IEntity`.\n5. Add five products and four customers to separate repository instances. Demonstrate `GetById`, `Find`, `Update`, and `Delete` on each, printing before/after state.\n\nThe constraint `where T : class, IEntity` is load-bearing — explain in a comment why both parts are needed.",
-    "hints": [
-      "`where T : class` ensures `T` is a reference type so `GetById` can return `T?` (nullable reference). Without it, returning null for a missing value type would not compile.",
-      "`where T : IEntity` ensures every `T` has an `Id` property, which `GetById` and `Update` rely on.",
-      "For `Update`, use `int idx = _items.FindIndex(e => e.Id == entity.Id); if (idx >= 0) _items[idx] = entity;`.",
-      "The `Find` method with `Func<T, bool>` predicate is the in-memory equivalent of EF Core's `Where` — callers pass any lambda they want."
-    ]
-  },
-  {
-    "id": "generics-linq-p9",
-    "difficulty": "hard",
-    "title": "LINQ Pipeline — Sales Data Analyzer (Mini-Project)",
-    "prompt": "Build a **console application** that reads a CSV file, analyzes the data with LINQ, and prints a formatted report. This simulates a real business-data tool.\n\n**The CSV** (`sales.csv`) has this header and at least 20 data rows you create:\n```\nOrderId,CustomerId,CustomerName,Region,Product,Category,Quantity,UnitPrice,OrderDate,Status\n```\nStatuses are: `Completed`, `Pending`, `Cancelled`. Include a mix.\n\n**Step 1 — Load:** Read the file with `File.ReadAllLines`, skip the header, split on comma, and parse into a `List<SaleRecord>` (define the record yourself). Parse `Quantity` as `int`, `UnitPrice` as `decimal`, `OrderDate` as `DateTime`.\n\n**Step 2 — Clean:** Filter out `Cancelled` orders before any analysis.\n\n**Step 3 — Report** (all LINQ, method syntax):\n- **A. Summary stats:** total orders, total revenue, average order value, largest single order (print customer + amount).\n- **B. Revenue by Category** — sorted descending, formatted as currency.\n- **C. Top 5 Customers by Revenue** — `CustomerId`, `CustomerName`, total spent, order count.\n- **D. Monthly revenue trend** — group by `yyyy-MM`, sorted chronologically.\n- **E. Pending orders** — list them with days since order date (`(DateTime.Today - o.OrderDate).Days`).\n\n**Step 4 — Edge cases:** If the file is not found, print a friendly error and exit. If a row fails to parse, skip it and count skipped rows; report the count at the end.\n\nAll output must be neatly formatted with headers, separators, and aligned columns.",
-    "hints": [
-      "Use a `try-catch` inside the row-parsing loop (or `TryParse` for each field) to handle malformed rows gracefully without crashing.",
-      "Revenue = `Quantity * UnitPrice`. Compute it inside `Select` as an anonymous-type property so downstream operators can reuse it without recalculating.",
-      "Group by month: `.GroupBy(s => new { s.OrderDate.Year, s.OrderDate.Month }).Select(g => new { Month = $\"{g.Key.Year:D4}-{g.Key.Month:D2}\", Revenue = g.Sum(...) }).OrderBy(x => x.Month)`.",
-      "For Top 5 Customers, group by `CustomerId`, project `{ CustomerId, CustomerName = g.First().CustomerName, TotalSpent, OrderCount }`, then `OrderByDescending` + `Take(5)`.",
-      "Materialize to `List<SaleRecord>` right after loading and cleaning — all five report queries run against that list in memory, so multiple enumeration is not a problem and you avoid re-reading the file."
-    ]
-  },
-  {
-    "id": "generics-linq-p10",
-    "difficulty": "hard",
-    "title": "Generic Result<T> Type with LINQ Integration",
-    "prompt": "Many professional .NET teams replace thrown exceptions for **expected failures** with a `Result<T>` type that explicitly carries either a success value or an error message. Build one and integrate it with LINQ.\n\n**Part 1 — Define `Result<T>`:**\n- A generic struct (value type for zero-allocation) with:\n  - `bool IsSuccess`\n  - `T? Value` (valid when `IsSuccess` is true)\n  - `string? Error` (valid when `IsSuccess` is false)\n  - Static factory methods: `Result<T>.Ok(T value)` and `Result<T>.Fail(string error)`\n  - A `Match<TOut>(Func<T, TOut> onSuccess, Func<string, TOut> onFailure)` method\n- Apply constraint `where T : notnull` on the struct and on `Ok`.\n\n**Part 2 — A validation pipeline using LINQ:**\nDefine a `Product` record with `Name`, `Price` (decimal), and `StockQuantity` (int). Write a method:\n```csharp\nstatic Result<Product> ValidateProduct(Product p)\n```\nthat returns `Fail` if: name is null/empty, price ≤ 0, or stock < 0; otherwise returns `Ok(p)`.\n\n**Part 3 — Batch processing with LINQ:**\nCreate a `List<Product>` with 10 products — deliberately include 3 invalid ones. Use LINQ to:\n1. Call `ValidateProduct` on each — project to `IEnumerable<Result<Product>>`.\n2. Separate into `validProducts` and `failures` using two `Where` + `Select` chains.\n3. Print valid products (formatted) and failure messages.\n4. Compute average price of valid products only.\n\n**Part 4 — Chain Results:**\nWrite a method `EnrichProduct(Product p)` that fetches a fake \"supplier name\" (just string-concat for simulation) and returns `Result<EnrichedProduct>`. Chain it: for each valid product from Part 3, call `EnrichProduct` inside a `Select`, then filter to only the successful enrichments. This simulates a real pipeline where each step can independently fail.",
-    "hints": [
-      "Struct with `where T : notnull`: `public readonly struct Result<T> where T : notnull { ... }`. The `notnull` constraint prevents `Result<int?>` or `Result<string?>` as the success type.",
-      "For `Value` on the struct, use `T? Value` — even with `notnull`, adding `?` to the field allows it to hold null in the failure case (this requires `#nullable enable`).",
-      "Separate valid/failed: `var valid = results.Where(r => r.IsSuccess).Select(r => r.Value!).ToList();` — the `!` null-forgiving operator is safe here because `IsSuccess` guarantees `Value` is set.",
-      "Chain in Part 4: `validProducts.Select(p => EnrichProduct(p)).Where(r => r.IsSuccess).Select(r => r.Value!).ToList()`.",
-      "The `Match` method eliminates if/else on `IsSuccess`: `result.Match(p => $\"OK: {p.Name}\", err => $\"ERR: {err}\")`."
-    ]
-  }
-],
+  lessons: [
+    {
+      ...lesson01,
+      questions: [
+        {
+          "id": "generics-linq-q1",
+          "kind": "mcq",
+          "prompt": "You want to write a single method `Swap` that exchanges two variables of **any** type — `int`, `string`, `Customer`, whatever. Which signature is correct C# 14?",
+          "options": [
+            { "label": "`public void Swap(object a, object b) { var tmp = a; a = b; b = tmp; }`", "correct": false },
+            { "label": "`public void Swap<T>(ref T a, ref T b) { var tmp = a; a = b; b = tmp; }`", "correct": true },
+            { "label": "`public void Swap<T>(T a, T b) { var tmp = a; a = b; b = tmp; }`", "correct": false },
+            { "label": "`public T Swap<T>(T a, T b) => (b, a);`", "correct": false }
+          ],
+          "explanation": "The `ref` keyword is essential: without it, `a` and `b` are local copies and the swap never affects the caller. Using `object` loses type safety — you'd need casting and get no compile-time guarantee. The tuple return form changes the method contract entirely. The correct version `public void Swap<T>(ref T a, ref T b)` is a classic generic method that works for any type without boxing or casting."
+        },
+        {
+          "id": "generics-linq-q1b",
+          "kind": "fill",
+          "prompt": "Given `int x = 3, y = 7;` and a generic method `void Swap<T>(ref T a, ref T b)`, complete the call so the compiler **infers** `T` from the arguments (no explicit type argument):\n\n```csharp\n___(ref x, ref y);\n```",
+          "template": "___(ref x, ref y);",
+          "accept": ["Swap", "Swap<int>"],
+          "explanation": "Type inference lets you write `Swap(ref x, ref y)` and the compiler deduces `T = int` from the arguments — you almost never write `Swap<int>(...)` explicitly. This is the same convenience Python's duck typing gives you for free, except here the inferred type is checked at compile time."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p1",
+          "difficulty": "easy",
+          "title": "Swap Two Values",
+          "prompt": "Write a **generic method** `Swap<T>(ref T a, ref T b)` that exchanges the values of two variables without knowing their type. Call it with `int` values (swap 10 and 20), then with `string` values (swap \"hello\" and \"world\"). Print both pairs before and after the swap to confirm it works.\n\nConstraints:\n- One method signature handles all types — no overloads.\n- Use `ref` parameters so the caller's variables actually change.\n- No type constraints needed here.",
+          "hints": [
+            "A temporary variable `T temp = a;` is all you need inside the method.",
+            "Call it like `Swap(ref x, ref y);` — the compiler infers `T` from the arguments.",
+            "Notice you never write `Swap<int>(ref x, ref y)` — type inference removes the noise."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson02,
+      questions: [
+        {
+          "id": "generics-linq-q2",
+          "kind": "predict",
+          "prompt": "What does this program print?",
+          "code": "public class Stack<T>\n{\n    private readonly List<T> _items = new();\n    public void Push(T item) => _items.Add(item);\n    public T Pop()\n    {\n        var item = _items[^1];\n        _items.RemoveAt(_items.Count - 1);\n        return item;\n    }\n    public int Count => _items.Count;\n}\n\nvar s = new Stack<string>();\ns.Push(\"alpha\");\ns.Push(\"beta\");\ns.Push(\"gamma\");\nConsole.WriteLine(s.Pop());\nConsole.WriteLine(s.Count);",
+          "options": [
+            { "label": "alpha\n2", "correct": false },
+            { "label": "gamma\n2", "correct": true },
+            { "label": "gamma\n3", "correct": false },
+            { "label": "alpha\n3", "correct": false }
+          ],
+          "explanation": "`Stack<T>` here is a last-in, first-out structure. After pushing alpha, beta, gamma the top is gamma. `Pop()` removes and returns the last element (`_items[^1]` is the C# index-from-end operator), so it returns `\"gamma\"`. After popping, two items remain (alpha and beta), so `Count` is `2`."
+        },
+        {
+          "id": "generics-linq-q2b",
+          "kind": "mcq",
+          "prompt": "Why is a generic `Stack<T>` (one class, type parameter `T`) better than writing separate `IntStack`, `StringStack`, and `CustomerStack` classes — or a single `ObjectStack` storing `object`?",
+          "options": [
+            { "label": "`Stack<T>` runs faster because generics are compiled to native code while normal classes are interpreted.", "correct": false },
+            { "label": "One generic class gives compile-time type safety and no boxing for value types, while avoiding duplicated code for every element type.", "correct": true },
+            { "label": "An `ObjectStack` is actually safer because `object` can hold anything, including null.", "correct": false },
+            { "label": "Separate per-type classes are required whenever the element type is a `struct`.", "correct": false }
+          ],
+          "explanation": "A generic `Stack<T>` is written once and reused for every element type with full compile-time checking — `Stack<int>` can only hold `int`. An `ObjectStack` would force casts on every `Pop()`, lose type safety, and box value types like `int` (heap allocation + unboxing). Generics are not interpreted vs native; this is about reuse and type safety, not raw speed, and value types work fine as `T`."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p2",
+          "difficulty": "easy",
+          "title": "Generic Stack",
+          "prompt": "Build a `Stack<T>` class that stores items in a `List<T>` field. Implement:\n- `void Push(T item)` — add to the top\n- `T Pop()` — remove and return the top item (throw `InvalidOperationException` with message `\"Stack is empty\"` if empty)\n- `T Peek()` — return the top item without removing it (same guard)\n- `int Count { get; }` — read-only property\n- `bool IsEmpty { get; }` — convenience property\n\nInstantiate a `Stack<string>` and push three job-queue task names onto it. Pop and print them in LIFO order. Then instantiate a `Stack<double>` with three sensor readings to confirm the same class works for a different type.",
+          "hints": [
+            "The 'top' of the stack is the last element in the list — index `_items.Count - 1`.",
+            "Remove the top with `_items.RemoveAt(_items.Count - 1)` after reading the value.",
+            "You do NOT need any type constraints — `T` can be anything because you are just storing and returning it, never calling methods on it."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson03,
+      questions: [
+        {
+          "id": "generics-linq-q3",
+          "kind": "mcq",
+          "prompt": "A junior developer writes this generic repository interface:\n\n```csharp\npublic interface IRepository<T>\n{\n    Task<T?> GetByIdAsync(int id);\n    Task AddAsync(T entity);\n}\n```\n\nThe team wants to prevent callers from accidentally passing `int` or `bool` as `T`. Which constraint achieves that?",
+          "options": [
+            { "label": "`where T : struct`", "correct": false },
+            { "label": "`where T : new()`", "correct": false },
+            { "label": "`where T : class`", "correct": true },
+            { "label": "`where T : IComparable<T>`", "correct": false }
+          ],
+          "explanation": "`where T : class` restricts `T` to reference types only, which means `int`, `bool`, `DateTime` (all value types / structs) are rejected at compile time. `where T : struct` is the opposite — it allows only value types. `where T : new()` only requires a public parameterless constructor and still allows structs. `where T : IComparable<T>` is about comparison capability, not reference vs value."
+        },
+        {
+          "id": "generics-linq-q4",
+          "kind": "mcq",
+          "prompt": "You're writing a utility that finds the **maximum** element in any collection, and the elements must support comparison. Which constraint is the most appropriate?",
+          "options": [
+            { "label": "`where T : object`", "correct": false },
+            { "label": "`where T : IComparable<T>`", "correct": true },
+            { "label": "`where T : new()`", "correct": false },
+            { "label": "`where T : class`", "correct": false }
+          ],
+          "explanation": "`where T : IComparable<T>` guarantees the compiler that `T` has a `CompareTo(T other)` method, which is exactly what you need to determine which element is larger. Without this constraint `T` is just `object` and you can't call `CompareTo` — the compiler will refuse to compile the call. `new()` is about construction, `class` is about reference types, and `object` is not a valid constraint keyword."
+        },
+        {
+          "id": "generics-linq-q5",
+          "kind": "fill",
+          "prompt": "Complete the constraint so that `T` must be both a **reference type** AND have a **public parameterless constructor** (required for calling `new T()` inside the method):\n\n```csharp\npublic T CreateDefault<T>() where T : ___, new()\n{\n    return new T();\n}\n```",
+          "template": "public T CreateDefault<T>() where T : ___, new()",
+          "accept": ["class", "class, new()", "class,new()"],
+          "explanation": "`where T : class, new()` combines two constraints: `class` enforces a reference type and `new()` guarantees a public parameterless constructor. The `new()` constraint **must be listed last** when combined with other constraints. With both in place, `new T()` compiles and calling `CreateDefault<int>()` is rejected at compile time."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p3",
+          "difficulty": "easy",
+          "title": "Find the Minimum with a Constraint",
+          "prompt": "Write a **generic method** `FindMin<T>(IEnumerable<T> items)` that returns the smallest element in any collection, for any type that supports comparison.\n\nRequirements:\n- Apply the constraint `where T : IComparable<T>` so the compiler knows `T` has a `CompareTo` method.\n- Throw `ArgumentException` with a meaningful message if the collection is empty.\n- Do **not** use `LINQ Min()` — implement the loop yourself.\n\nTest it with three scenarios:\n1. A `List<int>` of five product prices (integers).\n2. A `string[]` of five city names — `IComparable<T>` on strings uses alphabetical order.\n3. A `List<DateTime>` of five appointment dates — return the earliest.\n\nPrint the minimum for each.",
+          "hints": [
+            "Initialize `T min = items.First();` then loop over the rest with `if (item.CompareTo(min) < 0) min = item;`.",
+            "Convert the enumerable to a list or use a `bool foundFirst` flag to handle the first element.",
+            "The constraint is what allows you to call `a.CompareTo(b)` — without it the compiler rejects the call because unconstrained `T` only exposes `object` members."
+          ]
+        },
+        {
+          "id": "generics-linq-p8",
+          "difficulty": "medium",
+          "title": "Generic Repository Interface",
+          "prompt": "Design and implement a **generic in-memory repository** that could slot into a real ASP.NET Core application.\n\nSteps:\n1. Define a marker interface `IEntity` with a single property `int Id { get; }`.\n2. Define `IRepository<T> where T : class, IEntity` with methods:\n   - `void Add(T entity)`\n   - `T? GetById(int id)`\n   - `IReadOnlyList<T> GetAll()`\n   - `IReadOnlyList<T> Find(Func<T, bool> predicate)`\n   - `void Update(T entity)` — replace the stored entity that has the same `Id`\n   - `bool Delete(int id)` — return `true` if found and removed, `false` if not found\n3. Implement `InMemoryRepository<T>` backed by a `List<T>`.\n4. Create two entity types: `Product(int Id, string Name, decimal Price)` and `Customer(int Id, string Name, string Email)`, both implementing `IEntity`.\n5. Add five products and four customers to separate repository instances. Demonstrate `GetById`, `Find`, `Update`, and `Delete` on each, printing before/after state.\n\nThe constraint `where T : class, IEntity` is load-bearing — explain in a comment why both parts are needed.",
+          "hints": [
+            "`where T : class` ensures `T` is a reference type so `GetById` can return `T?` (nullable reference). Without it, returning null for a missing value type would not compile.",
+            "`where T : IEntity` ensures every `T` has an `Id` property, which `GetById` and `Update` rely on.",
+            "For `Update`, use `int idx = _items.FindIndex(e => e.Id == entity.Id); if (idx >= 0) _items[idx] = entity;`.",
+            "The `Find` method with `Func<T, bool>` predicate is the in-memory equivalent of EF Core's `Where` — callers pass any lambda they want."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson04,
+      questions: [
+        {
+          "id": "generics-linq-q6",
+          "kind": "predict",
+          "prompt": "What does this LINQ pipeline print?",
+          "code": "var orders = new[]\n{\n    new { Id = 1, Total = 250m,  Status = \"Completed\" },\n    new { Id = 2, Total = 80m,   Status = \"Pending\" },\n    new { Id = 3, Total = 430m,  Status = \"Completed\" },\n    new { Id = 4, Total = 150m,  Status = \"Completed\" },\n};\n\nvar result = orders\n    .Where(o => o.Status == \"Completed\")\n    .OrderByDescending(o => o.Total)\n    .Select(o => $\"#{o.Id}: {o.Total:C0}\")\n    .First();\n\nConsole.WriteLine(result);",
+          "options": [
+            { "label": "#1: $250", "correct": false },
+            { "label": "#3: $430", "correct": true },
+            { "label": "#4: $150", "correct": false },
+            { "label": "#2: $80", "correct": false }
+          ],
+          "explanation": "The pipeline: (1) `Where` keeps only Completed orders — ids 1, 3, 4 with totals 250, 430, 150; (2) `OrderByDescending` sorts by Total descending — order is 430, 250, 150; (3) `Select` projects to formatted strings; (4) `First()` takes the first element, which is the highest total: `#3: $430`. The `C0` format specifier formats as currency with zero decimal places."
+        },
+        {
+          "id": "generics-linq-q8",
+          "kind": "mcq",
+          "prompt": "Which LINQ method is the **most efficient** way to check whether any employee has a salary above $200,000?",
+          "options": [
+            { "label": "`employees.Where(e => e.Salary > 200_000).Count() > 0`", "correct": false },
+            { "label": "`employees.Count(e => e.Salary > 200_000) > 0`", "correct": false },
+            { "label": "`employees.Any(e => e.Salary > 200_000)`", "correct": true },
+            { "label": "`employees.Select(e => e.Salary).Max() > 200_000`", "correct": false }
+          ],
+          "explanation": "`Any(predicate)` short-circuits: it stops iterating the moment it finds the first match and returns `true`. `Count()` must traverse **every** element and for `IQueryable<T>` this issues a `COUNT(*)` SQL query over the whole table. `Where().Count() > 0` is doubly wasteful — an intermediate iterator plus a full count. `Max()` also scans everything. `Any()` is the idiomatic, performant choice for existence checks."
+        },
+        {
+          "id": "generics-linq-q11",
+          "kind": "fill",
+          "prompt": "Complete the LINQ query to return **only the names** of products that are in stock (`InStock == true`), sorted alphabetically:\n\n```csharp\nvar names = products\n    .Where(p => p.InStock)\n    .OrderBy(p => p.Name)\n    .___( p => p.Name)\n    .ToList();\n```",
+          "template": ".___( p => p.Name)",
+          "accept": ["Select", "select"],
+          "explanation": "`Select` is the LINQ projection operator — it transforms each element to a new shape, here extracting just the `Name` string. The pipeline reads: filter to in-stock products, sort by name, then project to strings. `Select` corresponds to Python's `map()` or the expression part of a list comprehension like `[p.Name for p in products if p.InStock]`."
+        },
+        {
+          "id": "generics-linq-q13",
+          "kind": "mcq",
+          "prompt": "A teammate writes the following code to find a user by email and then update their last-login date:\n\n```csharp\nvar user = users.FirstOrDefault(u => u.Email == email);\nuser.LastLoginDate = DateTime.UtcNow;\n```\n\nWhat is the **most serious problem** with this code?",
+          "options": [
+            { "label": "`FirstOrDefault` is slower than `SingleOrDefault` for this use case.", "correct": false },
+            { "label": "If no user matches the email, `user` is `null` and `user.LastLoginDate = ...` throws a `NullReferenceException`.", "correct": true },
+            { "label": "`DateTime.UtcNow` should be `DateTime.Now` to use local time.", "correct": false },
+            { "label": "`FirstOrDefault` requires the collection to be sorted by email first.", "correct": false }
+          ],
+          "explanation": "`FirstOrDefault` returns `null` (for reference types) when no element matches — it does **not** throw. Accessing `.LastLoginDate` on a null reference immediately throws `NullReferenceException` at runtime. The fix is to guard: `if (user is null) return;` or use the null-conditional: `user?.LastLoginDate = DateTime.UtcNow;`. `FirstOrDefault` has nothing to do with sorting, and UTC vs local time is a design choice, not a bug. `SingleOrDefault` would actually throw if multiple users share the same email — a different and arguably worse problem."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p4",
+          "difficulty": "easy",
+          "title": "LINQ Basics — Employee Filter Pipeline",
+          "prompt": "Given this record:\n```csharp\npublic record Employee(string Name, string Department, decimal Salary, bool IsActive);\n```\nCreate a hard-coded `List<Employee>` with at least eight employees across three departments (Engineering, Marketing, HR), a mix of active/inactive, and salaries ranging from 40 000 to 120 000.\n\nWrite **four separate LINQ queries** (method syntax, not query syntax) and print the results of each:\n1. **Active employees only** — `Where` on `IsActive`.\n2. **Just the names** of active employees, sorted A→Z — chain `Where`, `Select`, `OrderBy`.\n3. **The highest-paid active employee** — use `OrderByDescending` + `FirstOrDefault`, then null-guard the result.\n4. **Count of active employees in Engineering** — chain `Where` twice (or combine predicates with `&&`) then `Count()`.\n\nPrint a labeled header before each result.",
+          "hints": [
+            "Method syntax: `employees.Where(e => e.IsActive).Select(e => e.Name).OrderBy(n => n)`.",
+            "For query 3, always check `if (result is null)` before accessing `.Name` — `FirstOrDefault` returns null when nothing matches.",
+            "Two conditions in one `Where` is cleaner than chaining two `Where` calls: `Where(e => e.IsActive && e.Department == \"Engineering\")`."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson05,
+      questions: [
+        {
+          "id": "generics-linq-q5a",
+          "kind": "predict",
+          "prompt": "What does this query-syntax LINQ print?",
+          "code": "int[] numbers = [5, 12, 3, 20, 8];\n\nvar result =\n    from n in numbers\n    where n > 6\n    orderby n\n    select n * 10;\n\nConsole.WriteLine(string.Join(\", \", result));",
+          "options": [
+            { "label": "80, 120, 200", "correct": true },
+            { "label": "120, 200, 80", "correct": false },
+            { "label": "50, 120, 30, 200, 80", "correct": false },
+            { "label": "200, 120, 80", "correct": false }
+          ],
+          "explanation": "Query syntax reads source-first like SQL: `from n in numbers` then `where n > 6` keeps 12, 20, 8; `orderby n` sorts those ascending to 8, 12, 20; `select n * 10` projects to 80, 120, 200. Unlike Python's comprehension `[n*10 for n in numbers if n > 6]`, the projection (`select`) comes last, matching the data-flow order."
+        },
+        {
+          "id": "generics-linq-q5b",
+          "kind": "mcq",
+          "prompt": "In LINQ query syntax, which clause lets you capture a grouped result so you can filter or project on it afterwards — the keyword you need to write a group query with an aggregate filter?",
+          "options": [
+            { "label": "`group ... by ... into g`", "correct": true },
+            { "label": "`group ... having ...`", "correct": false },
+            { "label": "`group ... where ...`", "correct": false },
+            { "label": "`groupby ... as g`", "correct": false }
+          ],
+          "explanation": "`group o by o.CustomerId into g` introduces the range variable `g` (an `IGrouping<TKey, T>`) that you can then filter (`where g.Sum(...) > 500`) and project (`select new { g.Key, ... }`). C# has no SQL `having` keyword — you express the post-group filter with a plain `where` on the grouped variable, which is exactly why `into` is required."
+        },
+        {
+          "id": "generics-linq-q5c",
+          "kind": "mcq",
+          "prompt": "When does **query syntax** typically read better than method syntax in C#?",
+          "options": [
+            { "label": "For simple single-operator pipelines like one `Where` or one `Select`.", "correct": false },
+            { "label": "For queries with joins and `group ... into` clauses, where the SQL-like shape is clearer.", "correct": true },
+            { "label": "Always — query syntax compiles to faster code than method syntax.", "correct": false },
+            { "label": "Only when the source is an array rather than a `List<T>`.", "correct": false }
+          ],
+          "explanation": "Query syntax and method syntax compile to the *same* thing — there's no performance difference. Query syntax shines for multi-source joins and group-into queries, where it reads close to SQL. For short, single-operator chains method syntax (`numbers.Where(...)`) is more concise. The source type (array vs list) is irrelevant to which syntax reads better."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p5",
+          "difficulty": "medium",
+          "title": "LINQ Query Syntax — Order Report",
+          "prompt": "Given these records:\n```csharp\npublic record Customer(int Id, string Name, string City);\npublic record Order(int Id, int CustomerId, decimal Amount, DateTime PlacedOn);\n```\nCreate at least six customers and twelve orders spread across them. Some customers should have multiple orders; at least one customer should have no orders at all.\n\nWrite the following queries using **query syntax** (`from … in … where … select …`):\n1. A **join query** that pairs each order with its customer's name and city, keeping only orders placed in the last 180 days.\n2. A **group query** that groups orders by customer name and projects `{ CustomerName, OrderCount, TotalSpent }` — include only groups where `TotalSpent > 500`.\n\nThen rewrite **query 1 only** in method syntax and confirm the output is identical.\n\nDiscuss in a code comment (two sentences) when you would prefer query syntax over method syntax.",
+          "hints": [
+            "Query syntax join: `from o in orders join c in customers on o.CustomerId equals c.Id where o.PlacedOn >= cutoff select new { ... }`.",
+            "For the group query: `from o in orders group o by o.CustomerId into g where g.Sum(o => o.Amount) > 500 select new { ... }` — you need `into` to reference the group.",
+            "Method syntax equivalent of join: `orders.Join(customers, o => o.CustomerId, c => c.Id, (o, c) => new { ... }).Where(x => x.PlacedOn >= cutoff)`.",
+            "Query syntax shines when joins and group-into clauses are involved — it reads closer to SQL. Method syntax is preferred for simple pipelines."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson06,
+      questions: [
+        {
+          "id": "generics-linq-q10",
+          "kind": "mcq",
+          "prompt": "You have a list of `Order` objects, each with a `CustomerId` and `Total`. You want to group orders by `CustomerId` and compute the total spent per customer. Which code is correct?",
+          "options": [
+            { "label": "```csharp\norders.GroupBy(o => o.CustomerId)\n      .Select(g => new { CustomerId = g.Key, TotalSpent = g.Sum(o => o.Total) })\n      .ToList();\n```", "correct": true },
+            { "label": "```csharp\norders.GroupBy(o => o.CustomerId)\n      .Select(g => new { CustomerId = g, TotalSpent = g.Sum(o => o.Total) })\n      .ToList();\n```", "correct": false },
+            { "label": "```csharp\norders.OrderBy(o => o.CustomerId)\n      .GroupBy(o => o.CustomerId)\n      .Select(g => g.Sum(o => o.Total))\n      .ToList();\n```", "correct": false },
+            { "label": "```csharp\norders.GroupBy(o => o.CustomerId, o => o.Total)\n      .Select(g => new { CustomerId = g.Key, TotalSpent = g.Key })\n      .ToList();\n```", "correct": false }
+          ],
+          "explanation": "The correct pattern: `GroupBy(o => o.CustomerId)` produces `IEnumerable<IGrouping<int, Order>>` where each group's `.Key` is the `CustomerId`. Projecting with `.Select(g => new { CustomerId = g.Key, TotalSpent = g.Sum(o => o.Total) })` computes the sum for each group. Option B incorrectly uses `g` (the whole grouping) as the `CustomerId`. Option C omits `CustomerId` from the result and adds a redundant `OrderBy` (LINQ `GroupBy` does NOT require sorted input unlike Python's `itertools.groupby`). Option D reads `g.Key` as the `TotalSpent`, which would be the customer ID, not the sum."
+        },
+        {
+          "id": "generics-linq-q12",
+          "kind": "predict",
+          "prompt": "What does this program print?",
+          "code": "var employees = new[]\n{\n    new { Name = \"Dana\",  Dept = \"Engineering\", Salary = 95000 },\n    new { Name = \"Eli\",   Dept = \"Marketing\",   Salary = 72000 },\n    new { Name = \"Fiona\", Dept = \"Engineering\", Salary = 110000 },\n    new { Name = \"Greg\",  Dept = \"Marketing\",   Salary = 68000 },\n};\n\nvar report = employees\n    .GroupBy(e => e.Dept)\n    .Select(g => $\"{g.Key}: avg={g.Average(e => e.Salary):F0}\")\n    .OrderBy(s => s);\n\nforeach (var line in report)\n    Console.WriteLine(line);",
+          "options": [
+            { "label": "Engineering: avg=102500\nMarketing: avg=70000", "correct": true },
+            { "label": "Marketing: avg=70000\nEngineering: avg=102500", "correct": false },
+            { "label": "Engineering: avg=205000\nMarketing: avg=140000", "correct": false },
+            { "label": "Engineering: avg=102500.00\nMarketing: avg=70000.00", "correct": false }
+          ],
+          "explanation": "Engineering average: (95000 + 110000) / 2 = 102500. Marketing average: (72000 + 68000) / 2 = 70000. The `F0` format specifier rounds to zero decimal places (no `.00`). `OrderBy(s => s)` sorts the resulting strings alphabetically, so `\"Engineering...\"` comes before `\"Marketing...\"`. Output is two lines: `Engineering: avg=102500` then `Marketing: avg=70000`."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p6",
+          "difficulty": "medium",
+          "title": "GroupBy, Aggregation & Projection",
+          "prompt": "You have sales data:\n```csharp\npublic record Sale(string Region, string Product, int UnitsSold, decimal UnitPrice, DateTime SaleDate);\n```\nCreate a hard-coded `List<Sale>` with at least fifteen entries across three regions (North, South, West) and four products.\n\nWrite LINQ queries (method syntax) to produce:\n1. **Per-region summary** — for each region: `RegionName`, `TotalRevenue` (UnitsSold × UnitPrice summed), `BestSellingProduct` (product with highest total units in that region). Order by `TotalRevenue` descending.\n2. **Monthly trend** — group by year+month (`new { sale.SaleDate.Year, sale.SaleDate.Month }`), output `{ Month (\"yyyy-MM\"), TotalRevenue }` sorted chronologically.\n3. **Top 3 products by total units sold** across all regions — use `GroupBy` → `Select` → `OrderByDescending` → `Take(3)`.\n\nPrint each report with clear headers and formatted numbers (`TotalRevenue:C2` for currency).",
+          "hints": [
+            "Revenue per sale: `s.UnitsSold * s.UnitPrice`. Use `.Sum(s => s.UnitsSold * s.UnitPrice)` inside the group projection.",
+            "For BestSellingProduct inside a region group, you need a nested GroupBy: `g.GroupBy(s => s.Product).OrderByDescending(pg => pg.Sum(s => s.UnitsSold)).First().Key`.",
+            "Format month as string inside Select: `$\"{g.Key.Year:D4}-{g.Key.Month:D2}\"`.",
+            "Remember: `GroupBy` returns `IEnumerable<IGrouping<TKey, TElement>>`. The group's key is `.Key` and the elements are iterable directly."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson07,
+      questions: [
+        {
+          "id": "generics-linq-q7",
+          "kind": "mcq",
+          "prompt": "Your Python colleague writes the following C# and expects it to print the names of users older than 30, but the list never seems to update. What is the **actual** output after the `Add` call?\n\n```csharp\nvar users = new List<(string Name, int Age)>\n{\n    (\"Alice\", 28),\n    (\"Bob\",   35),\n};\n\nvar query = users.Where(u => u.Age > 30);\nusers.Add((\"Carol\", 40));\n\nforeach (var u in query)\n    Console.WriteLine(u.Name);\n```",
+          "options": [
+            { "label": "Bob", "correct": false },
+            { "label": "Bob\nCarol", "correct": true },
+            { "label": "Alice\nBob\nCarol", "correct": false },
+            { "label": "The code throws an InvalidOperationException.", "correct": false }
+          ],
+          "explanation": "This is the **deferred execution** feature. The `Where` call does NOT execute immediately — it creates a lazy pipeline that references `users`. When the `foreach` runs the query, `users` already contains Carol (added after the query was defined). Because LINQ iterates the current state of `users` at execution time, Carol IS included. The output is `Bob` then `Carol`. Python beginners expect immediate execution (like a list comprehension), but LINQ is lazy by design."
+        },
+        {
+          "id": "generics-linq-q9",
+          "kind": "predict",
+          "prompt": "What does this program print?",
+          "code": "int threshold = 100;\nvar prices = new[] { 50, 120, 80, 200, 95 };\n\nvar expensive = prices.Where(p => p > threshold);\n\nthreshold = 90;\n\nforeach (var p in expensive)\n    Console.Write(p + \" \");",
+          "options": [
+            { "label": "120 200 ", "correct": false },
+            { "label": "120 80 200 95 ", "correct": false },
+            { "label": "120 200 95 ", "correct": true },
+            { "label": "50 120 80 200 95 ", "correct": false }
+          ],
+          "explanation": "This demonstrates the **variable capture pitfall**. The lambda `p => p > threshold` captures the **variable** `threshold`, not its value at query-definition time. By the time `foreach` executes the query, `threshold` has been reassigned to `90`. So the filter becomes `p > 90`, which matches 120, 200, and 95. The original value of 100 is irrelevant — the lambda reads `threshold`'s current value at execution time."
+        },
+        {
+          "id": "generics-linq-q14",
+          "kind": "mcq",
+          "prompt": "You are building a Sales Data Analyzer. This code is supposed to print a CSV report of the top 3 customers by total spend. What is the **bug**?\n\n```csharp\nvar records = File.ReadAllLines(\"sales.csv\")\n    .Skip(1)\n    .Select(line => line.Split(','))\n    .Select(cols => new { CustomerId = cols[0], Amount = decimal.Parse(cols[1]) });\n\nvar report = records\n    .GroupBy(r => r.CustomerId)\n    .Select(g => new { CustomerId = g.Key, Total = g.Sum(r => r.Amount) })\n    .OrderByDescending(c => c.Total)\n    .Take(3);\n\n// Print results\nConsole.WriteLine($\"Processed {records.Count()} records\");\nforeach (var c in report)\n    Console.WriteLine($\"{c.CustomerId},{c.Total}\");\n```",
+          "options": [
+            { "label": "`.Skip(1)` skips too many lines — it should be `.Skip(0)`.", "correct": false },
+            { "label": "`decimal.Parse` will throw if any field contains whitespace.", "correct": false },
+            { "label": "`records` is enumerated **twice**: once for `Count()` and once inside the `report` pipeline — the file is read and parsed twice.", "correct": true },
+            { "label": "`.Take(3)` should come before `.OrderByDescending` to be efficient.", "correct": false }
+          ],
+          "explanation": "This is the **multiple enumeration** pitfall. `records` is a deferred LINQ pipeline that starts with `File.ReadAllLines`. Every time you enumerate `records`, it reads the file again, re-splits, and re-parses. Calling `records.Count()` causes one full enumeration, and then `report` (which references `records` internally via `GroupBy`) causes a second. Fix: call `records.ToList()` immediately after building the pipeline and use the list for both `Count` and `report`. `.Skip(1)` correctly skips the CSV header. `.Take(3)` after `OrderByDescending` is correct — you must sort before taking the top N."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p7",
+          "difficulty": "medium",
+          "title": "Deferred Execution Trap",
+          "prompt": "This exercise is designed to make deferred execution **visible** through deliberate experiments. You will write code that demonstrates each of the following scenarios, print what actually happens, and add a comment explaining why:\n\n**Scenario A — Variable capture:** Build a query `var q = numbers.Where(n => n > threshold)` where `threshold = 10`. Print the count. Then change `threshold = 5` and print the count again without rebuilding the query. Observe the difference.\n\n**Scenario B — Multiple enumeration cost:** Create a list of 5 integers. Build a deferred query. Use a `Select` lambda that prints `\"Processing {n}\"` as a side effect AND returns `n * 2`. Enumerate with `foreach` twice. Count how many times \"Processing\" prints — then fix it by materializing with `ToList()` and confirm the processing messages appear only once.\n\n**Scenario C — Source mutation:** Build a deferred query on a `List<string>`. Iterate once (print results). Add a new element to the list. Iterate the same query variable again. Show that the new element appears in the second iteration.\n\nFor each scenario write a `// WHY:` comment explaining the behaviour in one sentence.",
+          "hints": [
+            "Scenario A: the lambda closes over the `threshold` variable itself, not a copy of its value at query-creation time. Change the variable, change the filter.",
+            "Scenario B: every `foreach` re-runs the pipeline from scratch. `ToList()` snapshots the results so subsequent iterations read from the list, not the pipeline.",
+            "Scenario C: the query holds a reference to the original list object. When you add to the list, the query sees the addition because it re-reads the list each time it runs.",
+            "Avoid side effects in production lambdas — this exercise uses them intentionally to make the invisible visible."
+          ]
+        }
+      ]
+    },
+    {
+      ...lesson08,
+      questions: [
+        {
+          "id": "generics-linq-q8a",
+          "kind": "mcq",
+          "prompt": "In the Sales Data Analyzer mini-project you load and clean the CSV once, then run **five** different report queries against the data. What is the single most important step to avoid the multiple-enumeration trap across all five reports?",
+          "options": [
+            { "label": "Wrap every report query in its own `try-catch`.", "correct": false },
+            { "label": "Materialize the loaded-and-cleaned records into a `List<SaleRecord>` with `.ToList()` once, then run all five queries against that list.", "correct": true },
+            { "label": "Call `File.ReadAllLines` separately at the start of each report.", "correct": false },
+            { "label": "Use `IQueryable<SaleRecord>` instead of `IEnumerable<SaleRecord>`.", "correct": false }
+          ],
+          "explanation": "The records start as a deferred pipeline rooted in `File.ReadAllLines`. If five reports each enumerate that pipeline, the file is read and parsed five times. Calling `.ToList()` once right after loading and cleaning snapshots the data in memory, so every report iterates a plain in-memory list — fast and consistent. Re-reading the file per report is exactly the bug to avoid, and `IQueryable` is for remote/SQL sources, not in-memory CSV data."
+        },
+        {
+          "id": "generics-linq-q8b",
+          "kind": "mcq",
+          "prompt": "The mini-project parses money values from the CSV. Why does the lesson insist on `decimal` rather than `double` for `UnitPrice` and revenue totals?",
+          "options": [
+            { "label": "`double` cannot store numbers larger than 1,000,000.", "correct": false },
+            { "label": "`decimal` is a base-10 type that represents currency amounts exactly, avoiding the binary floating-point rounding errors `double` introduces.", "correct": true },
+            { "label": "`double` is not supported by LINQ's `Sum` operator.", "correct": false },
+            { "label": "`decimal` parses CSV strings automatically while `double` does not.", "correct": false }
+          ],
+          "explanation": "`double` is binary floating point, so values like 0.1 cannot be stored exactly and sums of many prices accumulate tiny rounding errors — unacceptable for money. `decimal` uses a base-10 representation that stores currency amounts precisely. Both types support `Sum`, both can be parsed from strings, and `double`'s range is actually huge — the real reason is exactness for financial math."
+        }
+      ],
+      challenges: [
+        {
+          "id": "generics-linq-p9",
+          "difficulty": "hard",
+          "title": "LINQ Pipeline — Sales Data Analyzer (Mini-Project)",
+          "prompt": "Build a **console application** that reads a CSV file, analyzes the data with LINQ, and prints a formatted report. This simulates a real business-data tool.\n\n**The CSV** (`sales.csv`) has this header and at least 20 data rows you create:\n```\nOrderId,CustomerId,CustomerName,Region,Product,Category,Quantity,UnitPrice,OrderDate,Status\n```\nStatuses are: `Completed`, `Pending`, `Cancelled`. Include a mix.\n\n**Step 1 — Load:** Read the file with `File.ReadAllLines`, skip the header, split on comma, and parse into a `List<SaleRecord>` (define the record yourself). Parse `Quantity` as `int`, `UnitPrice` as `decimal`, `OrderDate` as `DateTime`.\n\n**Step 2 — Clean:** Filter out `Cancelled` orders before any analysis.\n\n**Step 3 — Report** (all LINQ, method syntax):\n- **A. Summary stats:** total orders, total revenue, average order value, largest single order (print customer + amount).\n- **B. Revenue by Category** — sorted descending, formatted as currency.\n- **C. Top 5 Customers by Revenue** — `CustomerId`, `CustomerName`, total spent, order count.\n- **D. Monthly revenue trend** — group by `yyyy-MM`, sorted chronologically.\n- **E. Pending orders** — list them with days since order date (`(DateTime.Today - o.OrderDate).Days`).\n\n**Step 4 — Edge cases:** If the file is not found, print a friendly error and exit. If a row fails to parse, skip it and count skipped rows; report the count at the end.\n\nAll output must be neatly formatted with headers, separators, and aligned columns.",
+          "hints": [
+            "Use a `try-catch` inside the row-parsing loop (or `TryParse` for each field) to handle malformed rows gracefully without crashing.",
+            "Revenue = `Quantity * UnitPrice`. Compute it inside `Select` as an anonymous-type property so downstream operators can reuse it without recalculating.",
+            "Group by month: `.GroupBy(s => new { s.OrderDate.Year, s.OrderDate.Month }).Select(g => new { Month = $\"{g.Key.Year:D4}-{g.Key.Month:D2}\", Revenue = g.Sum(...) }).OrderBy(x => x.Month)`.",
+            "For Top 5 Customers, group by `CustomerId`, project `{ CustomerId, CustomerName = g.First().CustomerName, TotalSpent, OrderCount }`, then `OrderByDescending` + `Take(5)`.",
+            "Materialize to `List<SaleRecord>` right after loading and cleaning — all five report queries run against that list in memory, so multiple enumeration is not a problem and you avoid re-reading the file."
+          ]
+        },
+        {
+          "id": "generics-linq-p10",
+          "difficulty": "hard",
+          "title": "Generic Result<T> Type with LINQ Integration",
+          "prompt": "Many professional .NET teams replace thrown exceptions for **expected failures** with a `Result<T>` type that explicitly carries either a success value or an error message. Build one and integrate it with LINQ.\n\n**Part 1 — Define `Result<T>`:**\n- A generic struct (value type for zero-allocation) with:\n  - `bool IsSuccess`\n  - `T? Value` (valid when `IsSuccess` is true)\n  - `string? Error` (valid when `IsSuccess` is false)\n  - Static factory methods: `Result<T>.Ok(T value)` and `Result<T>.Fail(string error)`\n  - A `Match<TOut>(Func<T, TOut> onSuccess, Func<string, TOut> onFailure)` method\n- Apply constraint `where T : notnull` on the struct and on `Ok`.\n\n**Part 2 — A validation pipeline using LINQ:**\nDefine a `Product` record with `Name`, `Price` (decimal), and `StockQuantity` (int). Write a method:\n```csharp\nstatic Result<Product> ValidateProduct(Product p)\n```\nthat returns `Fail` if: name is null/empty, price ≤ 0, or stock < 0; otherwise returns `Ok(p)`.\n\n**Part 3 — Batch processing with LINQ:**\nCreate a `List<Product>` with 10 products — deliberately include 3 invalid ones. Use LINQ to:\n1. Call `ValidateProduct` on each — project to `IEnumerable<Result<Product>>`.\n2. Separate into `validProducts` and `failures` using two `Where` + `Select` chains.\n3. Print valid products (formatted) and failure messages.\n4. Compute average price of valid products only.\n\n**Part 4 — Chain Results:**\nWrite a method `EnrichProduct(Product p)` that fetches a fake \"supplier name\" (just string-concat for simulation) and returns `Result<EnrichedProduct>`. Chain it: for each valid product from Part 3, call `EnrichProduct` inside a `Select`, then filter to only the successful enrichments. This simulates a real pipeline where each step can independently fail.",
+          "hints": [
+            "Struct with `where T : notnull`: `public readonly struct Result<T> where T : notnull { ... }`. The `notnull` constraint prevents `Result<int?>` or `Result<string?>` as the success type.",
+            "For `Value` on the struct, use `T? Value` — even with `notnull`, adding `?` to the field allows it to hold null in the failure case (this requires `#nullable enable`).",
+            "Separate valid/failed: `var valid = results.Where(r => r.IsSuccess).Select(r => r.Value!).ToList();` — the `!` null-forgiving operator is safe here because `IsSuccess` guarantees `Value` is set.",
+            "Chain in Part 4: `validProducts.Select(p => EnrichProduct(p)).Where(r => r.IsSuccess).Select(r => r.Value!).ToList()`.",
+            "The `Match` method eliminates if/else on `IsSuccess`: `result.Match(p => $\"OK: {p.Name}\", err => $\"ERR: {err}\")`."
+          ]
+        }
+      ]
+    }
+  ],
   projects: [
   {
     "id": "generics-linq-proj-1",
