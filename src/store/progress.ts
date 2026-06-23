@@ -1,11 +1,17 @@
 import { create } from 'zustand';
 import type { Lesson } from '@/data/types';
-import { isLessonComplete } from '@/lib/completion';
+import { isLessonComplete, QUIZ_PASS_PCT } from '@/lib/completion';
 import {
   fetchProgress,
   upsertLessonProgress,
   deleteAllProgress,
 } from '@/lib/progressApi';
+
+// Topic-level quiz/practice progress is stored in lesson_progress under these
+// reserved slug prefixes (e.g. "topic-quiz::oop"). They never collide with real
+// lesson slugs and let us persist topic assessment without a new table.
+const TOPIC_QUIZ_PREFIX = 'topic-quiz::';
+const TOPIC_PRACTICE_PREFIX = 'topic-practice::';
 
 export type QuizResult = {
   lessonSlug: string;
@@ -29,8 +35,16 @@ export type LessonRecord = {
 // Minimal shape topicProgress needs to derive completion per lesson.
 type LessonLike = Pick<Lesson, 'slug' | 'questions' | 'challenges'>;
 
+// Per-topic assessment progress (the dedicated Quiz & Practice pages). Persisted
+// in the same lesson_progress table under reserved synthetic slugs so no schema
+// change is needed — see TOPIC_QUIZ_PREFIX / TOPIC_PRACTICE_PREFIX below.
+export type TopicQuizRecord = { best: number; total: number };
+
 type ProgressState = {
   lessons: Record<string, LessonRecord>;
+  // best quiz score + practice acknowledgement, keyed by topic slug
+  topicQuiz: Record<string, TopicQuizRecord>;
+  topicPractice: Record<string, boolean>;
   results: QuizResult[];
   // The account this progress belongs to. Set by hydrate(); writes go to this
   // student's rows. Null until signed in / after sign out.
@@ -52,6 +66,11 @@ type ProgressState = {
   // it via the existing quiz_done/practice_done columns (both set together) so no
   // schema change is needed; isLessonComplete reads them back as completion.
   setLessonRead: (lessonSlug: string, read: boolean) => void;
+
+  // ── Topic-level assessment (Quiz & Practice pages) ──
+  recordTopicQuiz: (topicSlug: string, score: number, total: number) => void;
+  topicQuizPassed: (topicSlug: string) => boolean;
+  setTopicPracticeDone: (topicSlug: string, done: boolean) => void;
   resetLesson: (lessonSlug: string) => void;
   reset: () => void;
 
@@ -130,8 +149,17 @@ export const useProgress = create<ProgressState>()((set, get) => {
     if (rec) void upsertLessonProgress(userId, slug, rec);
   };
 
+  // Persist a topic-level assessment record as a synthetic lesson_progress row.
+  const syncTopic = (syntheticSlug: string, rec: LessonRecord) => {
+    const { userId } = get();
+    if (!userId) return;
+    void upsertLessonProgress(userId, syntheticSlug, rec);
+  };
+
   return {
     lessons: {},
+    topicQuiz: {},
+    topicPractice: {},
     results: [],
     userId: null,
     hydrated: false,
@@ -154,15 +182,31 @@ export const useProgress = create<ProgressState>()((set, get) => {
         ...Object.keys(local),
       ]);
       const lessons: Record<string, LessonRecord> = {};
+      const topicQuiz: Record<string, TopicQuizRecord> = { ...get().topicQuiz };
+      const topicPractice: Record<string, boolean> = { ...get().topicPractice };
       for (const slug of slugs) {
+        // Route reserved synthetic slugs to the topic-level maps; everything
+        // else is a real lesson record.
+        if (slug.startsWith(TOPIC_QUIZ_PREFIX)) {
+          const t = slug.slice(TOPIC_QUIZ_PREFIX.length);
+          const r = server[slug];
+          if (r) topicQuiz[t] = { best: r.quizScore, total: r.totalQuestions };
+          continue;
+        }
+        if (slug.startsWith(TOPIC_PRACTICE_PREFIX)) {
+          const t = slug.slice(TOPIC_PRACTICE_PREFIX.length);
+          const r = server[slug];
+          if (r) topicPractice[t] = r.practiceDone;
+          continue;
+        }
         lessons[slug] = mergeRecords(mergeRecords(server[slug], legacy[slug]), local[slug]);
       }
-      set({ lessons, hydrated: true });
+      set({ lessons, topicQuiz, topicPractice, hydrated: true });
 
       // Persist anything the server doesn't already have in identical form:
       // legacy pre-account progress AND pre-hydrate optimistic visits. Without
       // this, the lesson a learner lands on directly never gets recorded.
-      for (const slug of slugs) {
+      for (const slug of Object.keys(lessons)) {
         if (!recordsEqual(server[slug], lessons[slug])) {
           void upsertLessonProgress(userId, slug, lessons[slug]);
         }
@@ -176,7 +220,8 @@ export const useProgress = create<ProgressState>()((set, get) => {
       }
     },
 
-    clear: () => set({ lessons: {}, results: [], userId: null, hydrated: false }),
+    clear: () =>
+      set({ lessons: {}, topicQuiz: {}, topicPractice: {}, results: [], userId: null, hydrated: false }),
 
     markLessonVisited: (lessonSlug) => {
       const existing = get().lessons[lessonSlug];
@@ -254,6 +299,36 @@ export const useProgress = create<ProgressState>()((set, get) => {
         },
       }));
       sync(lessonSlug);
+    },
+
+    // Record a topic-quiz run, keeping the best score. Persisted as a synthetic
+    // lesson_progress row (quiz_score=best, total_questions=total, quiz_done=passed).
+    recordTopicQuiz: (topicSlug, score, total) => {
+      const prev = get().topicQuiz[topicSlug];
+      const best = Math.max(prev?.best ?? 0, score);
+      set((s) => ({ topicQuiz: { ...s.topicQuiz, [topicSlug]: { best, total } } }));
+      const passed = total > 0 && (best / total) * 100 >= QUIZ_PASS_PCT;
+      syncTopic(TOPIC_QUIZ_PREFIX + topicSlug, {
+        ...emptyRecord(),
+        visited: true,
+        quizDone: passed,
+        quizScore: best,
+        totalQuestions: total,
+      });
+    },
+
+    topicQuizPassed: (topicSlug) => {
+      const rec = get().topicQuiz[topicSlug];
+      return Boolean(rec && rec.total > 0 && (rec.best / rec.total) * 100 >= QUIZ_PASS_PCT);
+    },
+
+    setTopicPracticeDone: (topicSlug, done) => {
+      set((s) => ({ topicPractice: { ...s.topicPractice, [topicSlug]: done } }));
+      syncTopic(TOPIC_PRACTICE_PREFIX + topicSlug, {
+        ...emptyRecord(),
+        visited: true,
+        practiceDone: done,
+      });
     },
 
     // Clears completion + recorded score for one lesson, keeping "visited".

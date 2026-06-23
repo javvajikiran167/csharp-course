@@ -5,7 +5,10 @@ import { findTopic } from '@/data/topics';
 import { useProgress } from '@/store/progress';
 import { Breadcrumbs, Button, Eyebrow, H1, Lead, Pill } from '@/components/primitives';
 import { Quiz as QuizRunner } from '@/components/course/QuizBlock';
+import { LockedNotice } from '@/components/course/LockedNotice';
 import { QUIZ_PASS_PCT } from '@/lib/completion';
+import { useAuth } from '@/store/auth';
+import { topicState } from '@/lib/access';
 
 // The per-topic graded quiz. Pulls topic.quiz (12–15 questions) and records the
 // best score so the topic can be marked complete at ≥60%.
@@ -15,6 +18,8 @@ export function Quiz() {
   const recordTopicQuiz = useProgress((s) => s.recordTopicQuiz);
   const quizRec = useProgress((s) => s.topicQuiz[slug]);
   const passed = useProgress((s) => s.topicQuizPassed(slug));
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const grantedTopics = useAuth((s) => s.grantedTopics);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -30,6 +35,11 @@ export function Quiz() {
         </Link>
       </div>
     );
+  }
+
+  // Per-student gating: a student can't reach a chapter's quiz they don't have.
+  if (topicState(topic, { isAdmin, grantedTopics }) !== 'open') {
+    return <LockedNotice topic={topic} />;
   }
 
   const questions = topic.quiz ?? [];

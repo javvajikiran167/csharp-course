@@ -6,6 +6,9 @@ import { useProgress } from '@/store/progress';
 import { Breadcrumbs, Button, Eyebrow, H1, Lead, Pill } from '@/components/primitives';
 import { ChallengeList } from '@/components/course/ChallengeList';
 import { ProjectList } from '@/components/course/ProjectList';
+import { LockedNotice } from '@/components/course/LockedNotice';
+import { useAuth } from '@/store/auth';
+import { topicState } from '@/lib/access';
 import { cn } from '@/lib/cn';
 
 // The per-topic Practice page: ≥10 take-home problems (easy → hard) plus the
@@ -16,6 +19,8 @@ export function Practice() {
   const topic = findTopic(slug);
   const done = useProgress((s) => s.topicPractice[slug] ?? false);
   const setTopicPracticeDone = useProgress((s) => s.setTopicPracticeDone);
+  const isAdmin = useAuth((s) => s.isAdmin);
+  const grantedTopics = useAuth((s) => s.grantedTopics);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -31,6 +36,11 @@ export function Practice() {
         </Link>
       </div>
     );
+  }
+
+  // Per-student gating: a student can't reach practice for a chapter they don't have.
+  if (topicState(topic, { isAdmin, grantedTopics }) !== 'open') {
+    return <LockedNotice topic={topic} />;
   }
 
   const challenges = topic.practice ?? [];

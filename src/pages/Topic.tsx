@@ -9,12 +9,13 @@ import {
   Eyebrow,
   Display,
   Lead,
+  Pill,
   ProgressBar,
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
 import { LockedNotice } from '@/components/course/LockedNotice';
 import { inline } from '@/lib/inline';
-import { isLessonComplete } from '@/lib/completion';
+import { isLessonComplete, QUIZ_PASS_PCT } from '@/lib/completion';
 import { useAuth } from '@/store/auth';
 import { topicState } from '@/lib/access';
 
@@ -25,6 +26,8 @@ export function Topic() {
   // Subscribe to the whole lessons map so any update (visit, completion) re-renders.
   const lessonRecords = useProgress((s) => s.lessons);
   const topicProgress = useProgress((s) => s.topicProgress);
+  const quizPassed = useProgress((s) => s.topicQuizPassed(slug));
+  const practiceDone = useProgress((s) => s.topicPractice[slug] ?? false);
 
   // Per-student access (admins see everything).
   const isAdmin = useAuth((s) => s.isAdmin);
@@ -167,6 +170,56 @@ export function Topic() {
           <LessonTimeline topic={topic} />
         </div>
       </section>
+
+      {/* ── Topic assessment: graded quiz + practice set ──────── */}
+      {(topic.quiz?.length || topic.practice?.length) && (
+        <section className="mt-12">
+          <Eyebrow>Assessment</Eyebrow>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {topic.quiz && topic.quiz.length > 0 && (
+              <Link to={`/topic/${topic.slug}/quiz`} className="group block">
+                <Card padded="lg" accent>
+                  <div className="flex items-center justify-between">
+                    <Eyebrow>Topic quiz</Eyebrow>
+                    {quizPassed && <Pill tone="ok" dot>Passed</Pill>}
+                  </div>
+                  <div className="mt-2 font-serif text-h3 text-ink">
+                    {topic.quiz.length} questions
+                  </div>
+                  <p className="mt-1 text-caption text-ink-400">
+                    Score {QUIZ_PASS_PCT}% or higher to pass — retry anytime.
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-eyebrow text-amber-700">
+                    {quizPassed ? 'Review quiz' : 'Take the quiz'}
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Card>
+              </Link>
+            )}
+            {topic.practice && topic.practice.length > 0 && (
+              <Link to={`/topic/${topic.slug}/practice`} className="group block">
+                <Card padded="lg" accent>
+                  <div className="flex items-center justify-between">
+                    <Eyebrow>Practice</Eyebrow>
+                    {practiceDone && <Pill tone="ok" dot>Done</Pill>}
+                  </div>
+                  <div className="mt-2 font-serif text-h3 text-ink">
+                    {topic.practice.length} problems
+                    {topic.projects?.length ? ` · ${topic.projects.length} projects` : ''}
+                  </div>
+                  <p className="mt-1 text-caption text-ink-400">
+                    Build from warm-up to interview-grade in your own editor.
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-eyebrow text-amber-700">
+                    {practiceDone ? 'Review practice' : 'Start practicing'}
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Card>
+              </Link>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
