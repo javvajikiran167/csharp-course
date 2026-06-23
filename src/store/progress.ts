@@ -48,6 +48,10 @@ type ProgressState = {
   recordResult: (r: QuizResult) => void;
   setQuizDone: (lessonSlug: string, done: boolean) => void;
   setPracticeDone: (lessonSlug: string, done: boolean) => void;
+  // A lesson is a reading unit: "read" is its single completion flag. We persist
+  // it via the existing quiz_done/practice_done columns (both set together) so no
+  // schema change is needed; isLessonComplete reads them back as completion.
+  setLessonRead: (lessonSlug: string, read: boolean) => void;
   resetLesson: (lessonSlug: string) => void;
   reset: () => void;
 
@@ -234,6 +238,24 @@ export const useProgress = create<ProgressState>()((set, get) => {
       sync(lessonSlug);
     },
 
+    // Mark the lesson read/unread. Persisted through quiz_done + practice_done so
+    // isLessonComplete (which falls back to quizDone && practiceDone) treats a
+    // read lesson as complete without needing a dedicated `read` column.
+    setLessonRead: (lessonSlug, read) => {
+      set((s) => ({
+        lessons: {
+          ...s.lessons,
+          [lessonSlug]: {
+            ...(s.lessons[lessonSlug] ?? emptyRecord()),
+            visited: true,
+            quizDone: read,
+            practiceDone: read,
+          },
+        },
+      }));
+      sync(lessonSlug);
+    },
+
     // Clears completion + recorded score for one lesson, keeping "visited".
     resetLesson: (lessonSlug) => {
       set((s) => {
@@ -271,7 +293,7 @@ export const useProgress = create<ProgressState>()((set, get) => {
         const r = records[lesson.slug];
         if (!r) continue;
         if (r.visited) visited++;
-        if (isLessonComplete(lesson, r)) completed++;
+        if (isLessonComplete(r)) completed++;
         if (r.totalQuestions > 0) {
           scoreSum += r.quizScore;
           scoreMax += r.totalQuestions;

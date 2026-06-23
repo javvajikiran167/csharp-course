@@ -93,7 +93,7 @@ export function Topic() {
   const stats = topicProgress(topic.lessons);
 
   const firstUndoneIdx = topic.lessons.findIndex(
-    (l) => !isLessonComplete(l, lessonRecords[l.slug]),
+    (l) => !isLessonComplete(lessonRecords[l.slug]),
   );
   const firstUndone =
     firstUndoneIdx >= 0 ? topic.lessons[firstUndoneIdx] : topic.lessons[0];

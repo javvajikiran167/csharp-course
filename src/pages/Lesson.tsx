@@ -34,7 +34,7 @@ export function Lesson() {
   const result = findLesson(topicSlug, lessonSlug);
   const record = useProgress((s) => s.lessons[lessonSlug]);
   const markLessonVisited = useProgress((s) => s.markLessonVisited);
-  const isComplete = result ? isLessonComplete(result.lesson, record) : false;
+  const isComplete = result ? isLessonComplete(record) : false;
   const isAdmin = useAuth((s) => s.isAdmin);
   const grantedTopics = useAuth((s) => s.grantedTopics);
 

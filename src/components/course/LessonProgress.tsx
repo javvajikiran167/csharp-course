@@ -10,7 +10,9 @@ import { cn } from '@/lib/cn';
 export function LessonProgress({ lesson }: { lesson: Lesson }) {
   const rec = useProgress((s) => s.lessons[lesson.slug]);
   const setLessonRead = useProgress((s) => s.setLessonRead);
-  const read = rec?.read ?? false;
+  // "Read" is persisted via the quiz_done + practice_done columns (set together
+  // by setLessonRead), so derive the checkbox state from them.
+  const read = Boolean(rec?.quizDone && rec?.practiceDone);
 
   return (
     <section

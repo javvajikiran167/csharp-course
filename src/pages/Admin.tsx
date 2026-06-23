@@ -305,7 +305,7 @@ export function Admin() {
       let tc = 0;
       for (const lesson of topic.lessons) {
         total++;
-        if (isLessonComplete(lesson, recs?.get(lesson.slug))) {
+        if (isLessonComplete(recs?.get(lesson.slug))) {
           completed++;
           tc++;
         }
