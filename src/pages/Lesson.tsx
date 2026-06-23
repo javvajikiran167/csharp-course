@@ -113,9 +113,13 @@ export function Lesson() {
       </article>
 
       <div className={LESSON_CONTAINER}>
-        {/* key forces a fresh quiz per lesson — without it, index/score/phase
+        {/* Quizzes now live at the topic level (/topic/:slug/quiz). Only the
+            legacy lessons that still carry inline questions render one here.
+            key forces a fresh quiz per lesson — without it, index/score/phase
             leak across lessons. No auto-scroll on finish; learner stays put. */}
-        <QuizBlock key={lesson.slug} lessonSlug={lesson.slug} questions={lesson.questions} />
+        {lesson.questions && lesson.questions.length > 0 && (
+          <QuizBlock key={lesson.slug} questions={lesson.questions} />
+        )}
 
         {lesson.challenges && lesson.challenges.length > 0 && (
           <div id="challenges">
