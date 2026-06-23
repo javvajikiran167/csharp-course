@@ -6,330 +6,1068 @@ export const capstone: Topic = {
   subtitle: 'Mock interviews, algorithms in C#, code review, and a full-stack capstone project.',
   status: 'unlocked',
   lessons: [
-  {
-    "slug": "algorithms",
-    "number": 1,
-    "title": "Common Algorithm Problems in C#",
-    "objective": "Two-pointer, sliding window, hash map — practiced in C# syntax.",
-    "blocks": [
-      {
-        "kind": "lead",
-        "text": "Technical interviews love algorithms. You don't need to invent new ones—learn the classics and their C# implementations."
-      },
-      {
-        "kind": "heading",
-        "level": 2,
-        "text": "Two-Pointer Technique",
-        "id": "two-pointer"
-      },
-      {
-        "kind": "code",
-        "code": "public int[] TwoSum(int[] nums, int target) {\n    int left = 0, right = nums.Length - 1;\n    while (left < right) {\n        int sum = nums[left] + nums[right];\n        if (sum == target) return new[] { left, right };\n        if (sum < target) left++;\n        else right--;\n    }\n    return Array.Empty<int>();\n}",
-        "language": "csharp"
-      },
-      {
-        "kind": "heading",
-        "level": 2,
-        "text": "Sliding Window",
-        "id": "sliding-window"
-      },
-      {
-        "kind": "code",
-        "code": "public int MaxSubarraySum(int[] nums, int k) {\n    int windowSum = nums.Take(k).Sum();\n    int maxSum = windowSum;\n    for (int i = k; i < nums.Length; i++) {\n        windowSum = windowSum - nums[i - k] + nums[i];\n        maxSum = Math.Max(maxSum, windowSum);\n    }\n    return maxSum;\n}",
-        "language": "csharp"
-      },
-      {
-        "kind": "tip",
-        "tone": "tip",
-        "title": "Practice on LeetCode",
-        "text": "LeetCode has C# support. Filter by \"Easy\" and start with array/string problems."
-      },
-      {
-        "kind": "keyTakeaways",
-        "items": [
-          "Two-pointer for sorted arrays",
-          "Sliding window for subarray problems",
-          "Hash maps for O(1) lookups"
-        ]
-      }
-    ]
-  },
-  {
-    "slug": "mock-interview",
-    "number": 2,
-    "title": "A Walk Through a Mock Interview",
-    "objective": "What hiring managers actually ask, and how to think aloud.",
-    "blocks": []
-  },
-  {
-    "slug": "code-review",
-    "number": 3,
-    "title": "How to Read & Review Other People's Code",
-    "objective": "A practical skill every job posting expects.",
-    "blocks": []
-  },
-  {
-    "slug": "capstone-spec",
-    "number": 4,
-    "title": "Capstone Spec — Tasks App End-to-End",
-    "objective": "EF Core backend, ASP.NET API, tests, deployment.",
-    "blocks": []
-  },
-  {
-    "slug": "capstone-build",
-    "number": 5,
-    "title": "Capstone — Build & Iterate",
-    "objective": "Implement, test, refactor.",
-    "blocks": []
-  },
-  {
-    "slug": "next-steps",
-    "number": 6,
-    "title": "Where to Go From Here",
-    "objective": "Specializations: Unity, mobile (MAUI), cloud (Azure), advanced .NET.",
-    "blocks": []
-  }
-],
-  outline: []
+    {
+      slug: 'algorithms',
+      number: 1,
+      title: 'Common Algorithm Problems in C#',
+      objective: 'Two-pointer, sliding window, hash map — practiced in C# syntax.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "Technical interviews love algorithms. You don't need to invent new ones — you need to recognise a handful of classic patterns and write them fluently in C#. If you came from Python, the logic is identical; only the syntax and the type system change.",
+        },
+        {
+          kind: 'paragraph',
+          text: "Three patterns cover the majority of easy/medium array-and-string interview questions: the **two-pointer** technique, the **sliding window**, and the **hash map**. Learn to spot when each applies and to state its Big-O out loud.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Two-Pointer Technique',
+          id: 'two-pointer',
+        },
+        {
+          kind: 'paragraph',
+          text: "Use two indices moving toward each other (or in the same direction) instead of nested loops. Classic on **sorted** input: Two Sum on a sorted array runs in `O(n)` time and `O(1)` space, versus `O(n^2)` for the brute-force double loop.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'TwoPointer.cs',
+          code: '// Sorted input. Returns the two indices that sum to target.\n// Time O(n), Space O(1).\npublic int[] TwoSumSorted(int[] nums, int target)\n{\n    int left = 0, right = nums.Length - 1;\n    while (left < right)\n    {\n        int sum = nums[left] + nums[right];\n        if (sum == target) return [left, right]; // C# 12+ collection expression\n        if (sum < target) left++;   // need a bigger sum\n        else right--;               // need a smaller sum\n    }\n    return [];\n}',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Python parallel',
+          text: "This is the same `while left < right` loop you'd write in Python. The difference: C# arrays are fixed-size and strongly typed (`int[]`), and `[left, right]` is a collection expression that builds an `int[]` — the modern replacement for `new[] { left, right }`.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Sliding Window',
+          id: 'sliding-window',
+        },
+        {
+          kind: 'paragraph',
+          text: "When a problem asks for the best/longest/sum of a **contiguous** subarray or substring, slide a window instead of recomputing from scratch. Fixed-size window: maximum sum of any `k` consecutive elements in `O(n)`.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'SlidingWindow.cs',
+          code: '// Max sum of any k consecutive elements. Time O(n), Space O(1).\npublic int MaxSubarraySum(int[] nums, int k)\n{\n    int windowSum = 0;\n    for (int i = 0; i < k; i++) windowSum += nums[i]; // first window\n    int maxSum = windowSum;\n    for (int i = k; i < nums.Length; i++)\n    {\n        windowSum += nums[i] - nums[i - k]; // add new, drop oldest\n        maxSum = Math.Max(maxSum, windowSum);\n    }\n    return maxSum;\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: "A **variable-size** window grows and shrinks based on a condition — e.g. the longest substring without repeating characters, where you expand `right` and pull `left` forward whenever you hit a duplicate.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Hash Map for O(1) Lookups',
+          id: 'hash-map',
+        },
+        {
+          kind: 'paragraph',
+          text: "When the input is **not** sorted, a `Dictionary<TKey, TValue>` (C#'s equivalent of Python's `dict`) turns an `O(n^2)` scan into one `O(n)` pass. Two Sum on an unsorted array: store each value's index as you go and check whether the complement was already seen.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'HashMap.cs',
+          code: '// Unsorted input. Time O(n), Space O(n).\npublic int[] TwoSum(int[] nums, int target)\n{\n    var seen = new Dictionary<int, int>(); // value -> index\n    for (int i = 0; i < nums.Length; i++)\n    {\n        int need = target - nums[i];\n        if (seen.TryGetValue(need, out int j)) return [j, i];\n        seen[nums[i]] = i;\n    }\n    return [];\n}',
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'Say the trade-off out loud',
+          text: "Interviewers reward you for naming the cost: the hash-map version is `O(n)` time but `O(n)` space, while the two-pointer version is `O(n)` time and `O(1)` space but needs sorted input. Comparing trade-offs is the signal they're looking for.",
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Two-pointer: sorted arrays / palindrome checks — O(n) time, O(1) space.',
+            'Sliding window: contiguous subarray or substring problems — O(n) by reusing the previous window.',
+            'Hash map (Dictionary): O(1) average lookups turn O(n^2) scans into O(n).',
+            'Always state the time AND space complexity, and use TryGetValue instead of double-lookups.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-algorithms-q1',
+          kind: 'mcq',
+          prompt: 'You are given an UNSORTED array and asked to find two indices whose values sum to a target. Which approach gives O(n) time?',
+          options: [
+            { label: 'Two nested loops checking every pair' },
+            { label: 'A Dictionary that maps each value to its index, checking for the complement', correct: true },
+            { label: 'Sorting then binary search for each element' },
+            { label: 'A sliding window of size 2' },
+          ],
+          explanation: "A Dictionary gives O(1) average lookups, so one pass storing values and checking complements is O(n). The two-pointer trick needs sorted input, and sorting first costs O(n log n) and loses the original indices.",
+        },
+        {
+          id: 'capstone-algorithms-q2',
+          kind: 'predict',
+          prompt: 'What does this sliding-window call return?',
+          code: 'int[] nums = { 2, 1, 5, 1, 3, 2 };\nConsole.WriteLine(MaxSubarraySum(nums, 3));',
+          options: [
+            { label: '9', correct: true },
+            { label: '6' },
+            { label: '8' },
+            { label: '11' },
+          ],
+          explanation: "The windows of size 3 sum to 8 (2+1+5), 7 (1+5+1), 9 (5+1+3), and 6 (1+3+2). The maximum is 9, from the window [5, 1, 3].",
+        },
+        {
+          id: 'capstone-algorithms-q3',
+          kind: 'fill',
+          prompt: 'Complete the safe, single-lookup Dictionary access that retrieves the index for a key if present:',
+          template: 'if (seen.___(need, out int j)) return [j, i];',
+          accept: ['TryGetValue'],
+          explanation: "TryGetValue does the existence check and the retrieval in one operation, avoiding a separate ContainsKey call followed by an indexer lookup (which would hash the key twice).",
+        },
+        {
+          id: 'capstone-algorithms-q4',
+          kind: 'mcq',
+          prompt: 'A problem asks for the longest substring with no repeating characters. Which pattern fits best?',
+          options: [
+            { label: 'Fixed-size sliding window' },
+            { label: 'Variable-size sliding window with a set/map of seen characters', correct: true },
+            { label: 'Two pointers on a sorted copy' },
+            { label: 'Recursion with memoisation' },
+          ],
+          explanation: "The window must grow while characters are unique and shrink from the left when a duplicate appears, so its size varies. A HashSet (or Dictionary of last-seen index) tracks what is currently in the window.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-algorithms-c1',
+          difficulty: 'easy',
+          title: 'Reverse a string in place',
+          prompt: 'Write a method `void Reverse(char[] s)` that reverses a char array in place using two pointers — no extra array. State the time and space complexity in a comment.',
+          hints: ['Swap s[left] and s[right], then move both inward.', 'Stop when left >= right.', 'Space is O(1) because you mutate the input.'],
+        },
+        {
+          id: 'capstone-algorithms-c2',
+          difficulty: 'medium',
+          title: 'Longest substring without repeats',
+          prompt: 'Implement `int LengthOfLongestSubstring(string s)` with a variable-size sliding window. Use a Dictionary<char,int> of last-seen indices. Target O(n) time.',
+          hints: ['Track the window start; when you see a repeat inside the window, jump start past it.', 'Update the answer each iteration with Math.Max.'],
+        },
+        {
+          id: 'capstone-algorithms-c3',
+          difficulty: 'hard',
+          title: 'Group anagrams',
+          prompt: 'Given a string array, return groups of words that are anagrams of each other as `List<List<string>>`. Use a Dictionary keyed by the sorted-letters signature of each word. Discuss why the key choice matters for complexity.',
+          hints: ['A sorted version of each word is a stable group key.', 'Dictionary<string, List<string>> maps signature -> members.', 'Sorting each word is O(k log k) where k is word length.'],
+        },
+      ],
+    },
+    {
+      slug: 'mock-interview',
+      number: 2,
+      title: 'A Walk Through a Mock Interview',
+      objective: 'What hiring managers actually ask, and how to think aloud.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "A coding interview is not a quiz with one right answer — it is a conversation about how you think. The candidate who narrates a clear, structured approach often beats the one who silently produces a clever solution.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Shape of a Typical Loop',
+          id: 'shape',
+        },
+        {
+          kind: 'paragraph',
+          text: "For .NET roles you will usually see a mix of these rounds. Knowing the shape lets you prepare deliberately instead of cramming random LeetCode problems.",
+        },
+        {
+          kind: 'list',
+          items: [
+            'A coding round: one or two algorithm/data-structure problems, often shared in a collaborative editor.',
+            'A C#/.NET fundamentals round: value vs reference types, async/await, IEnumerable vs List, garbage collection, LINQ.',
+            'A system/API design discussion: "design the backend for a tasks app" — entities, endpoints, data store, auth.',
+            'A behavioural round: "tell me about a time you disagreed with a teammate".',
+          ],
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Think Aloud With a Framework',
+          id: 'think-aloud',
+        },
+        {
+          kind: 'paragraph',
+          text: "Before writing any code, walk the interviewer through a repeatable framework. This shows seniority and buys you thinking time.",
+        },
+        {
+          kind: 'list',
+          ordered: true,
+          items: [
+            'Restate the problem and confirm constraints (input size, sorted?, duplicates?, empty input?).',
+            'State a brute-force approach and its Big-O — it shows you understand the baseline.',
+            'Propose an optimisation and name the pattern (two-pointer, hash map, etc.).',
+            'Code it cleanly, narrating each step.',
+            'Test with a normal case and edge cases (empty, single element, all equal).',
+          ],
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'ContainsDuplicate.cs',
+          code: '// Interviewer: "Does this array contain any duplicate?"\n// Out loud: "Brute force is O(n^2). A HashSet gives O(n) time, O(n) space."\npublic bool ContainsDuplicate(int[] nums)\n{\n    var seen = new HashSet<int>();\n    foreach (int n in nums)\n    {\n        if (!seen.Add(n)) return true; // Add returns false if already present\n    }\n    return false;\n}',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'A C# detail that impresses',
+          text: "`HashSet<T>.Add` returns a bool — `false` if the element was already present. Using that return value instead of a separate `Contains` check shows you know the API and avoids hashing the value twice.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Common .NET Fundamentals Questions',
+          id: 'fundamentals',
+        },
+        {
+          kind: 'twoColumn',
+          cards: [
+            {
+              title: 'Be ready to explain',
+              items: [
+                'value type (struct) vs reference type (class)',
+                'async/await and what await actually does',
+                'IEnumerable vs ICollection vs List',
+                'deferred execution in LINQ',
+                'string immutability and StringBuilder',
+              ],
+            },
+            {
+              title: 'Behavioural prompts',
+              items: [
+                'a bug you shipped and how you found it',
+                'disagreeing with a code review',
+                'a deadline you missed',
+                'mentoring or unblocking a teammate',
+                'why C#/.NET (have a real reason)',
+              ],
+            },
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: "Don't go silent",
+          text: "The worst interview habit is staring at the screen in silence. If you are stuck, say what you are considering and why. Interviewers grade communication and problem decomposition, not just the final answer.",
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Interviews test how you think, not just whether you get the answer.',
+            'Use a fixed framework: clarify, brute-force, optimise, code, test.',
+            'State Big-O for both your naive and optimised approaches.',
+            'Know the classic .NET fundamentals (value vs reference, async, LINQ deferral) cold.',
+            'Narrate continuously — silence reads as being stuck.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-mock-interview-q1',
+          kind: 'mcq',
+          prompt: 'In a coding interview, what should you usually do BEFORE writing any code?',
+          options: [
+            { label: 'Immediately type the most optimal solution you can recall' },
+            { label: 'Restate the problem, confirm constraints and edge cases, and describe an approach', correct: true },
+            { label: 'Ask the interviewer for the expected time complexity' },
+            { label: 'Pick a programming language they did not mention' },
+          ],
+          explanation: "Clarifying the problem and constraints prevents you from solving the wrong problem, surfaces edge cases early, and demonstrates the structured thinking interviewers are grading.",
+        },
+        {
+          id: 'capstone-mock-interview-q2',
+          kind: 'mcq',
+          prompt: 'Why use the return value of `HashSet<T>.Add` rather than calling `Contains` first?',
+          options: [
+            { label: 'Contains does not exist on HashSet' },
+            { label: 'Add returns false when the item already existed, doing the check and insert in one O(1) operation', correct: true },
+            { label: 'Add is the only method that is thread-safe' },
+            { label: 'Contains mutates the set' },
+          ],
+          explanation: "Add both inserts and reports whether the value was new, so you avoid hashing the same value twice (once for Contains, once for Add). It is a small detail that signals API fluency.",
+        },
+        {
+          id: 'capstone-mock-interview-q3',
+          kind: 'fill',
+          prompt: 'Complete the framework step that comes right after restating the problem and before optimising:',
+          template: 'State a ___-force approach and its Big-O.',
+          accept: ['brute'],
+          explanation: "Starting from a brute-force baseline shows you understand the problem and gives a complexity to improve on, which frames your optimisation as a deliberate trade-off.",
+        },
+        {
+          id: 'capstone-mock-interview-q4',
+          kind: 'mcq',
+          prompt: 'Which is the best behaviour when you get genuinely stuck mid-problem?',
+          options: [
+            { label: 'Stay silent until you figure it out' },
+            { label: 'Say what approaches you are weighing and why, inviting a hint', correct: true },
+            { label: 'Erase everything and start a completely different problem' },
+            { label: 'Claim the problem is unsolvable' },
+          ],
+          explanation: "Thinking aloud lets the interviewer follow your reasoning and nudge you. Communication and decomposition are explicitly graded, so visible struggle beats silent struggle.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-mock-interview-c1',
+          difficulty: 'easy',
+          title: 'Record your own clarifying questions',
+          prompt: 'Pick any LeetCode "easy" array problem. Before coding, write down 4-5 clarifying questions you would ask (input size, sorting, duplicates, empty input, return shape). Then solve it while typing comments that narrate each step.',
+          hints: ['Edge cases are clarifying-question gold: empty, single element, negatives.', 'Write the brute-force Big-O as a comment first.'],
+        },
+        {
+          id: 'capstone-mock-interview-c2',
+          difficulty: 'medium',
+          title: 'Two-minute fundamentals answers',
+          prompt: 'Write a crisp, two-to-three sentence answer for each: value vs reference types; what await does; deferred execution in LINQ; why StringBuilder over string concatenation in a loop. Practise saying them aloud.',
+          hints: ['For async, mention the state machine and that await yields the thread, not blocks it.', 'For LINQ, mention queries execute when enumerated, not when defined.'],
+        },
+        {
+          id: 'capstone-mock-interview-c3',
+          difficulty: 'hard',
+          title: 'Whiteboard design: tasks API',
+          prompt: 'In 15 minutes, sketch the backend design for a tasks app: entities and relationships, REST endpoints, data store choice, and how you would add authentication. Defend two trade-offs out loud (e.g. SQL vs NoSQL, JWT vs session).',
+          hints: ['Start with the Task entity and its fields, then derive endpoints from CRUD + queries.', 'Name at least one non-functional concern: validation, pagination, or rate limiting.'],
+        },
+      ],
+    },
+    {
+      slug: 'code-review',
+      number: 3,
+      title: "How to Read & Review Other People's Code",
+      objective: 'A practical skill every job posting expects.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "On the job you will read far more code than you write. Reviewing pull requests well — and reading an unfamiliar codebase quickly — is a daily skill, and most listings explicitly ask for it.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Reading an Unfamiliar Codebase',
+          id: 'reading',
+        },
+        {
+          kind: 'paragraph',
+          text: "You do not read a codebase top to bottom like a novel. You navigate it. Start at an entry point and follow the call graph for the one feature you care about.",
+        },
+        {
+          kind: 'list',
+          ordered: true,
+          items: [
+            'Find the entry point — `Program.cs` / the startup file, or the controller for the route you care about.',
+            'Follow one request end to end: controller -> service -> repository -> database.',
+            'Read the data model (the EF Core entities) — it reveals the domain faster than any doc.',
+            'Read the tests — they document intended behaviour and the tricky edge cases.',
+            'Use "go to definition" and "find all references" instead of grepping blindly.',
+          ],
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'What to Look For in a Review',
+          id: 'what-to-look-for',
+        },
+        {
+          kind: 'paragraph',
+          text: "Reviews are not about taste. Prioritise correctness and clarity over personal style. Consider this diff:",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'PullRequest.cs',
+          code: 'public decimal AveragePrice(List<Order> orders)\n{\n    decimal total = 0;\n    foreach (var o in orders)\n        total += o.Price;\n    return total / orders.Count; // <-- review comment?\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: "The bug: if `orders` is empty, `orders.Count` is `0` and this throws `DivideByZeroException` (for the integer count) — and the intent for an empty list is undefined. A good review comment names the case, explains the impact, and suggests a fix.",
+        },
+        {
+          kind: 'callout',
+          tone: 'success',
+          title: 'A good review comment',
+          text: '"What should this return when `orders` is empty? Right now `orders.Count` is 0 and we divide by zero. Suggest guarding: `if (orders.Count == 0) return 0m;` (or throw an explicit ArgumentException if empty is invalid). Could you add a test for the empty case?"',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Give Feedback That Lands',
+          id: 'feedback',
+        },
+        {
+          kind: 'twoColumn',
+          cards: [
+            {
+              title: 'Helpful review habits',
+              items: [
+                'Comment on the code, not the author',
+                'Ask questions instead of issuing orders',
+                'Distinguish blockers from nits (label "nit:")',
+                'Praise good patterns, not just flaws',
+                'Suggest a concrete fix, not just "this is wrong"',
+              ],
+            },
+            {
+              title: 'Review priorities (high to low)',
+              items: [
+                'Correctness and edge cases',
+                'Security (injection, secrets, auth gaps)',
+                'Tests cover the change',
+                'Readability and naming',
+                'Style (defer to the linter/formatter)',
+              ],
+            },
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'Let tools handle style',
+          text: "Don't spend review bandwidth on formatting — that is what `dotnet format` / an `.editorconfig` and the analyzer are for. Reserve human attention for logic, security, and tests.",
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Read code by following one request through the layers, not front to back.',
+            'Tests and the data model are the fastest way into an unfamiliar codebase.',
+            'In reviews prioritise correctness, security, and test coverage over style.',
+            'Phrase feedback as questions, suggest concrete fixes, and label nits as nits.',
+            'Automate formatting so human review focuses on logic.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-code-review-q1',
+          kind: 'mcq',
+          prompt: 'What is usually the fastest way to understand an unfamiliar feature in a large codebase?',
+          options: [
+            { label: 'Read every file alphabetically' },
+            { label: 'Follow a single request through controller -> service -> repository, and read the tests', correct: true },
+            { label: 'Rewrite the feature from scratch to learn it' },
+            { label: 'Read only the README and assume the rest' },
+          ],
+          explanation: "Tracing one real request through the layers shows how the pieces connect, and the tests document expected behaviour and edge cases. Reading everything linearly wastes time on code irrelevant to your task.",
+        },
+        {
+          id: 'capstone-code-review-q2',
+          kind: 'mcq',
+          prompt: 'During a code review, which issue should you flag with the HIGHEST priority?',
+          options: [
+            { label: 'A variable named x instead of count' },
+            { label: 'A method that divides by a collection count without handling the empty case', correct: true },
+            { label: 'Two blank lines where the team uses one' },
+            { label: 'A using statement that could be sorted differently' },
+          ],
+          explanation: "A divide-by-zero on empty input is a correctness bug that can crash in production. Naming and blank lines are low-priority style points best left to the formatter and analyzer.",
+        },
+        {
+          id: 'capstone-code-review-q3',
+          kind: 'fill',
+          prompt: 'Teams commonly prefix a minor, non-blocking style suggestion with this short label:',
+          template: '"___: consider renaming this variable to count."',
+          accept: ['nit', 'Nit'],
+          explanation: "Labelling a comment as a nit signals it is optional and not a blocker, so the author knows they can merge without resolving it. It keeps review noise from looking like a hard requirement.",
+        },
+        {
+          id: 'capstone-code-review-q4',
+          kind: 'mcq',
+          prompt: 'Which is the most constructive way to raise a problem in a review?',
+          options: [
+            { label: '"This is wrong."' },
+            { label: '"What happens when orders is empty here? Suggest guarding with an early return and adding a test."', correct: true },
+            { label: '"Did you even test this?"' },
+            { label: '"Rewrite this, I do not like it."' },
+          ],
+          explanation: "It targets the code (not the author), explains the concern, proposes a concrete fix, and asks for a test. That gives the author everything they need to act without feeling attacked.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-code-review-c1',
+          difficulty: 'easy',
+          title: 'Spot the bug',
+          prompt: 'Take the AveragePrice method from the lesson, write a failing xUnit test for the empty-list case, then fix the method so the test passes. Decide whether empty should return 0 or throw, and justify it in a comment.',
+          hints: ['Use Assert.Throws or assert the returned value depending on your chosen contract.', 'A guard clause at the top reads more clearly than a try/catch.'],
+        },
+        {
+          id: 'capstone-code-review-c2',
+          difficulty: 'medium',
+          title: 'Review a real PR',
+          prompt: 'Find an open pull request in a public .NET repository on GitHub. Write three review comments: one correctness/edge-case concern, one question, and one piece of genuine praise. Keep each comment specific and actionable.',
+          hints: ['Look at the diff first, then open the surrounding file for context.', 'Phrase concerns as questions where you are unsure.'],
+        },
+        {
+          id: 'capstone-code-review-c3',
+          difficulty: 'hard',
+          title: 'Map a codebase in 30 minutes',
+          prompt: 'Clone a small open-source ASP.NET Core project. In 30 minutes, write a one-page summary: the entry point, the main entities, how a single request flows through the layers, and where the tests live. Use go-to-definition, not just text search.',
+          hints: ['Start at Program.cs and the route registrations.', 'The EF Core DbContext lists the entities in one place.'],
+        },
+      ],
+    },
+    {
+      slug: 'capstone-spec',
+      number: 4,
+      title: 'Capstone Spec — Tasks App End-to-End',
+      objective: 'EF Core backend, ASP.NET API, tests, deployment.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "Your capstone is a Tasks app with a real backend: an ASP.NET Core Web API on top of EF Core, covered by tests, and deployable. This lesson is the spec — the contract you will build against in the next lesson.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Domain Model',
+          id: 'domain',
+        },
+        {
+          kind: 'paragraph',
+          text: "Start with the entity. EF Core maps this C# class to a database table. Keep it small and focused — you can always extend it.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Models/TaskItem.cs',
+          code: 'public class TaskItem\n{\n    public int Id { get; set; }\n    public required string Title { get; set; }\n    public string? Description { get; set; }\n    public Priority Priority { get; set; } = Priority.Normal;\n    public DateOnly? DueDate { get; set; }\n    public bool IsDone { get; set; }\n    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;\n}\n\npublic enum Priority { Low, Normal, High }',
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'Why TaskItem, not Task',
+          text: "`Task` is already a core type in .NET (`System.Threading.Tasks.Task`). Naming the entity `TaskItem` avoids a confusing clash — a small but real lesson in working within an existing namespace.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The DbContext',
+          id: 'dbcontext',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Data/AppDbContext.cs',
+          code: 'public class AppDbContext : DbContext\n{\n    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }\n\n    public DbSet<TaskItem> Tasks => Set<TaskItem>();\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: "Register it in `Program.cs` and use a migration to create the schema. For local development SQLite is the lowest-friction choice; you can swap the provider for SQL Server or PostgreSQL in production.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Program.cs',
+          code: 'builder.Services.AddDbContext<AppDbContext>(opt =>\n    opt.UseSqlite(builder.Configuration.GetConnectionString("Default")));\n\nbuilder.Services.AddControllers();\n\n// then: dotnet ef migrations add InitialCreate\n//       dotnet ef database update',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The API Surface',
+          id: 'api',
+        },
+        {
+          kind: 'paragraph',
+          text: "Expose standard REST endpoints. Each maps cleanly to an HTTP verb and a CRUD operation.",
+        },
+        {
+          kind: 'list',
+          items: [
+            'GET /api/tasks — list (with optional filter by priority/done and sort by due date)',
+            'GET /api/tasks/{id} — fetch one, 404 if missing',
+            'POST /api/tasks — create, return 201 with Location header',
+            'PUT /api/tasks/{id} — update, 404 if missing',
+            'DELETE /api/tasks/{id} — delete, 204 on success',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Use DTOs, not entities, on the wire',
+          text: "Accept and return small DTO records (e.g. `record CreateTaskDto(string Title, Priority Priority, DateOnly? DueDate)`), not the EF entity. This decouples your API contract from your database schema and avoids over-posting attacks.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Non-Functional Requirements',
+          id: 'nfr',
+        },
+        {
+          kind: 'list',
+          items: [
+            'Validation: reject empty titles and invalid dates (data annotations or FluentValidation).',
+            'Error handling: a middleware that turns exceptions into ProblemDetails responses.',
+            'Tests: xUnit unit tests for the service layer plus integration tests with WebApplicationFactory and an in-memory/SQLite DB.',
+            'Deployment: containerise with a Dockerfile, or publish to Azure App Service; keep secrets in configuration, not in code.',
+          ],
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Model the domain first (TaskItem) — name it TaskItem to avoid clashing with System.Threading.Tasks.Task.',
+            'A DbContext + a migration creates the schema; SQLite is great for local dev.',
+            'Expose REST endpoints mapping CRUD to HTTP verbs with correct status codes.',
+            'Use DTO records on the wire, not EF entities, to decouple contract from schema.',
+            'Plan validation, error-handling middleware, tests, and a deployment story up front.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-capstone-spec-q1',
+          kind: 'mcq',
+          prompt: 'Why name the entity TaskItem rather than Task?',
+          options: [
+            { label: 'EF Core forbids the name Task' },
+            { label: 'Task already exists in System.Threading.Tasks, so TaskItem avoids a confusing clash', correct: true },
+            { label: 'Entity names must end in Item' },
+            { label: 'Task is a reserved keyword in C#' },
+          ],
+          explanation: "System.Threading.Tasks.Task is a core async type. Reusing the name forces awkward fully-qualified references and confuses readers, so TaskItem is the clearer choice. It is not a keyword and EF Core does not forbid it.",
+        },
+        {
+          id: 'capstone-capstone-spec-q2',
+          kind: 'mcq',
+          prompt: 'A POST that successfully creates a task should return which status code?',
+          options: [
+            { label: '200 OK' },
+            { label: '201 Created, with a Location header pointing at the new resource', correct: true },
+            { label: '204 No Content' },
+            { label: '302 Found' },
+          ],
+          explanation: "201 Created is the correct response for a successful creation and the Location header tells the client where to find the new resource. 204 is for successful requests with no body (like DELETE), and 200 is for general success such as GET.",
+        },
+        {
+          id: 'capstone-capstone-spec-q3',
+          kind: 'mcq',
+          prompt: 'Why expose DTO records on the API instead of the EF Core entity directly?',
+          options: [
+            { label: 'EF entities cannot be serialised to JSON' },
+            { label: 'DTOs decouple the API contract from the DB schema and prevent over-posting of fields', correct: true },
+            { label: 'DTOs are required by the C# compiler for any API' },
+            { label: 'It is the only way to return 201 Created' },
+          ],
+          explanation: "DTOs let the database schema evolve without breaking clients and let you accept only the fields you intend to (no over-posting of Id or IsDone). EF entities can be serialised, but exposing them couples your contract to your storage and risks security issues.",
+        },
+        {
+          id: 'capstone-capstone-spec-q4',
+          kind: 'fill',
+          prompt: 'Complete the EF Core CLI command that creates the database from your migrations:',
+          template: 'dotnet ef database ___',
+          accept: ['update'],
+          explanation: "`dotnet ef database update` applies pending migrations to the database, creating or altering the schema to match your model. `dotnet ef migrations add <Name>` generates the migration first.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-capstone-spec-c1',
+          difficulty: 'easy',
+          title: 'Milestone: model + migration',
+          prompt: 'Create the solution and a Web API project. Add the TaskItem entity and AppDbContext, register SQLite, then run `dotnet ef migrations add InitialCreate` and `dotnet ef database update`. Confirm the .db file and Tasks table exist.',
+          hints: ['Install Microsoft.EntityFrameworkCore.Sqlite and the EF tools (dotnet tool install --global dotnet-ef).', 'Put the connection string in appsettings.json under ConnectionStrings:Default.'],
+        },
+        {
+          id: 'capstone-capstone-spec-c2',
+          difficulty: 'medium',
+          title: 'Milestone: CRUD endpoints with DTOs',
+          prompt: 'Add a TasksController exposing all five REST endpoints. Use CreateTaskDto / UpdateTaskDto records for input and a TaskDto for output. Return correct status codes (201 + Location on create, 404 when missing, 204 on delete).',
+          hints: ['Map between DTO and entity in the controller or a small mapper.', 'Use CreatedAtAction to set the Location header automatically.'],
+        },
+        {
+          id: 'capstone-capstone-spec-c3',
+          difficulty: 'hard',
+          title: 'Milestone: validation + error middleware',
+          prompt: 'Add validation that rejects empty titles and due dates in the past. Write an exception-handling middleware that converts unhandled exceptions into RFC 7807 ProblemDetails JSON with the right status code. Verify with both valid and invalid requests.',
+          hints: ['Data annotations like [Required] plus ModelState handle simple validation.', 'app.UseExceptionHandler or a custom middleware can produce ProblemDetails.'],
+        },
+      ],
+    },
+    {
+      slug: 'capstone-build',
+      number: 5,
+      title: 'Capstone — Build & Iterate',
+      objective: 'Implement, test, refactor.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "With the spec fixed, you build it for real — in thin vertical slices. Get one endpoint working end to end with a test, then the next. Working software at every step beats a half-finished everything.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Build in Vertical Slices',
+          id: 'slices',
+        },
+        {
+          kind: 'paragraph',
+          text: "A vertical slice touches every layer for one feature: route -> controller -> service -> DbContext -> database, plus a test. Ship `POST /api/tasks` completely before starting `GET`.",
+        },
+        {
+          kind: 'list',
+          ordered: true,
+          items: [
+            'Write a failing test for the slice (e.g. creating a task returns 201).',
+            'Implement the minimum to pass it.',
+            'Run the test; commit when green.',
+            'Refactor with the test as a safety net.',
+            'Move to the next slice.',
+          ],
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'A Service Worth Testing',
+          id: 'service',
+        },
+        {
+          kind: 'paragraph',
+          text: "Push logic into a service so it is testable without HTTP. The controller stays thin; the service holds the rules.",
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Services/TaskService.cs',
+          code: 'public class TaskService(AppDbContext db)\n{\n    public async Task<TaskItem> CreateAsync(CreateTaskDto dto)\n    {\n        var task = new TaskItem\n        {\n            Title = dto.Title,\n            Priority = dto.Priority,\n            DueDate = dto.DueDate\n        };\n        db.Tasks.Add(task);\n        await db.SaveChangesAsync();\n        return task;\n    }\n\n    public async Task<List<TaskItem>> GetOpenAsync() =>\n        await db.Tasks.Where(t => !t.IsDone)\n                      .OrderBy(t => t.DueDate)\n                      .ToListAsync();\n}',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Test the Slice',
+          id: 'test',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Tests/TaskServiceTests.cs',
+          code: '[Fact]\npublic async Task CreateAsync_PersistsTask()\n{\n    var options = new DbContextOptionsBuilder<AppDbContext>()\n        .UseSqlite("DataSource=:memory:")\n        .Options;\n    using var db = new AppDbContext(options);\n    db.Database.OpenConnection();\n    db.Database.EnsureCreated();\n\n    var service = new TaskService(db);\n    var task = await service.CreateAsync(new CreateTaskDto("Write tests", Priority.High, null));\n\n    Assert.True(task.Id > 0);\n    Assert.Single(db.Tasks);\n}',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'In-memory SQLite over the InMemory provider',
+          text: "Prefer SQLite with `DataSource=:memory:` over EF's pure InMemory provider for tests. SQLite enforces real relational behaviour (constraints, transactions), so your tests catch bugs the InMemory provider would silently allow.",
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: "Don't gold-plate",
+          text: "Implement exactly what the spec asks, then iterate. Resist adding recurring tasks, tags, and notifications before the core CRUD slices are green and tested — those are stretch goals for after the build works end to end.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Iterate and Refactor',
+          id: 'iterate',
+        },
+        {
+          kind: 'paragraph',
+          text: "Once the slices are green, refactor with confidence: extract a mapper, add filtering query parameters, introduce dependency-injected interfaces if it helps testing. The test suite is your seatbelt — run it after every change.",
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Build vertical slices: one feature through every layer, with a test, before the next.',
+            'Follow red-green-refactor: failing test, minimal pass, then clean up.',
+            'Keep controllers thin and put logic in services so it is testable without HTTP.',
+            'Use in-memory SQLite for fast tests that still enforce real relational rules.',
+            'Ship the spec first; treat extra features as stretch goals.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-capstone-build-q1',
+          kind: 'mcq',
+          prompt: 'What does building in "vertical slices" mean?',
+          options: [
+            { label: 'Finish all controllers, then all services, then all the data layer' },
+            { label: 'Implement one feature through every layer (route to DB) with a test, then the next feature', correct: true },
+            { label: 'Write the entire app, then add all tests at the end' },
+            { label: 'Split the work strictly by file type' },
+          ],
+          explanation: "A vertical slice delivers one working, tested feature across all layers, so you always have running software and fast feedback. Finishing whole horizontal layers first delays any working behaviour until the very end.",
+        },
+        {
+          id: 'capstone-capstone-build-q2',
+          kind: 'fill',
+          prompt: 'Name the test-driven cycle: write a failing test, make it pass, then improve the code.',
+          template: 'red - green - ___',
+          accept: ['refactor', 'Refactor'],
+          explanation: "Red-green-refactor is the TDD loop: a failing (red) test, the minimal change to pass (green), then refactoring safely because the test guards behaviour. The test suite lets you clean up without fear of regressions.",
+        },
+        {
+          id: 'capstone-capstone-build-q3',
+          kind: 'mcq',
+          prompt: 'Why prefer in-memory SQLite over EF Core\'s pure InMemory provider for integration-style tests?',
+          options: [
+            { label: 'The InMemory provider is deprecated and removed in .NET 10' },
+            { label: 'SQLite enforces real relational behaviour (constraints, transactions) so tests catch more bugs', correct: true },
+            { label: 'SQLite tests run on the GPU' },
+            { label: 'The InMemory provider cannot store integers' },
+          ],
+          explanation: "The pure InMemory provider is not a relational database, so it ignores constraints and some query semantics. In-memory SQLite behaves like a real relational DB, giving higher-fidelity tests.",
+        },
+        {
+          id: 'capstone-capstone-build-q4',
+          kind: 'mcq',
+          prompt: 'You have core CRUD working and tested. The spec did not mention tags. What should you do?',
+          options: [
+            { label: 'Add tags immediately because they would be nice' },
+            { label: 'Treat tags as a stretch goal; finish and polish the spec first', correct: true },
+            { label: 'Rewrite the entity model around tags before continuing' },
+            { label: 'Skip the remaining tests to make time for tags' },
+          ],
+          explanation: "Gold-plating beyond the spec risks destabilising working features and delaying delivery. Finishing and polishing the agreed scope first, then treating extras as stretch goals, keeps the project shippable.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-capstone-build-c1',
+          difficulty: 'easy',
+          title: 'Milestone: first green slice',
+          prompt: 'Implement the create-task slice end to end: TaskService.CreateAsync, the POST endpoint, and a passing xUnit test using in-memory SQLite. Commit once the test is green.',
+          hints: ['Open the SQLite connection and call EnsureCreated() in the test setup.', 'Assert the returned task has an Id greater than 0.'],
+        },
+        {
+          id: 'capstone-capstone-build-c2',
+          difficulty: 'medium',
+          title: 'Milestone: list, filter, and sort',
+          prompt: 'Implement GET /api/tasks with optional query parameters: filter by done/priority and sort by due date. Add service methods returning IQueryable or filtered lists, and write tests covering an empty result and a filtered result.',
+          hints: ['Build the query conditionally: only add Where clauses for parameters that are present.', 'Remember LINQ deferral — the query runs when you call ToListAsync.'],
+        },
+        {
+          id: 'capstone-capstone-build-c3',
+          difficulty: 'hard',
+          title: 'Milestone: integration tests + containerise',
+          prompt: 'Write integration tests with WebApplicationFactory that exercise the real HTTP pipeline against a test database. Then add a Dockerfile that builds and runs the API, and confirm it serves requests in a container.',
+          hints: ['WebApplicationFactory<Program> spins up the app in-process; override the DB registration to point at a test database.', 'Use the official mcr.microsoft.com/dotnet/aspnet base image for the runtime stage of a multi-stage build.'],
+        },
+      ],
+    },
+    {
+      slug: 'next-steps',
+      number: 6,
+      title: 'Where to Go From Here',
+      objective: 'Specializations: Unity, mobile (MAUI), cloud (Azure), advanced .NET.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: "You now have the fundamentals, an algorithm toolkit, and a full-stack capstone. The C# ecosystem is broad — this lesson maps the main specialisations so you can choose a direction with intent.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Four Directions',
+          id: 'directions',
+        },
+        {
+          kind: 'twoColumn',
+          cards: [
+            {
+              title: 'Build for people',
+              items: [
+                'Web backend: ASP.NET Core, Minimal APIs, gRPC',
+                'Mobile + desktop: .NET MAUI (one codebase for iOS, Android, Windows, macOS)',
+                'Games + interactive: Unity (C# is its scripting language)',
+                'Real-time apps: SignalR, Blazor',
+              ],
+            },
+            {
+              title: 'Build the system',
+              items: [
+                'Cloud: Azure (App Service, Functions, Container Apps)',
+                'Data: EF Core deep-dive, Dapper, SQL tuning',
+                'Architecture: clean architecture, CQRS, messaging',
+                'Performance: spans, Memory<T>, profiling, AOT',
+              ],
+            },
+          ],
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Advanced .NET Worth Learning Next',
+          id: 'advanced',
+        },
+        {
+          kind: 'paragraph',
+          text: "A few language and runtime features separate intermediate from senior .NET engineers. You do not need them on day one, but they appear in real codebases and senior interviews.",
+        },
+        {
+          kind: 'list',
+          items: [
+            'Span<T> and Memory<T> for zero-allocation slicing of arrays and strings.',
+            'Channels and the broader async/concurrency model beyond simple await.',
+            'Source generators and the Roslyn analyzer API.',
+            'Native AOT compilation for fast-starting, small-footprint services.',
+            'Dependency injection, configuration, and the generic host in depth.',
+          ],
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          filename: 'Span.cs',
+          code: '// Slicing without allocating new strings/arrays.\nReadOnlySpan<char> text = "2026-06-23";\nReadOnlySpan<char> year = text[..4];   // no new string allocated\nint y = int.Parse(year);\nConsole.WriteLine(y);',
+        },
+        {
+          kind: 'output',
+          label: 'Console',
+          output: '2026',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Pick one, go deep, ship something',
+          text: "Breadth is good, but employers hire for demonstrated depth. Choose one direction, build and deploy a small public project in it, and write up what you learned. That portfolio piece beats a long list of tutorials watched.",
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Staying Current',
+          id: 'current',
+        },
+        {
+          kind: 'list',
+          items: [
+            'Follow the official .NET blog and the annual release notes (you are targeting .NET 10 / C# 14).',
+            'Read real source: the .NET runtime and ASP.NET Core are open source on GitHub.',
+            'Contribute: documentation fixes and small issues are a great on-ramp.',
+            'Keep practising algorithms in C# so interview fluency does not fade.',
+          ],
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'C# spans web, mobile/desktop (MAUI), games (Unity), and cloud (Azure).',
+            'Advanced topics like Span<T>, source generators, and Native AOT separate senior engineers.',
+            'Pick ONE direction, build and deploy a public project, and write it up.',
+            'Stay current via the .NET blog, the open-source runtime, and ongoing algorithm practice.',
+            'Demonstrated depth beats a long list of half-finished tutorials.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'capstone-next-steps-q1',
+          kind: 'mcq',
+          prompt: 'Which .NET technology lets you build iOS, Android, Windows, and macOS apps from one C# codebase?',
+          options: [
+            { label: 'ASP.NET Core' },
+            { label: '.NET MAUI', correct: true },
+            { label: 'Unity' },
+            { label: 'SignalR' },
+          ],
+          explanation: ".NET MAUI (Multi-platform App UI) is the cross-platform framework for native mobile and desktop apps from a single codebase. Unity targets games, ASP.NET Core targets web servers, and SignalR adds real-time messaging.",
+        },
+        {
+          id: 'capstone-next-steps-q2',
+          kind: 'predict',
+          prompt: 'What does this Span-slicing snippet print?',
+          code: 'ReadOnlySpan<char> text = "2026-06-23";\nReadOnlySpan<char> year = text[..4];\nConsole.WriteLine(int.Parse(year));',
+          options: [
+            { label: '2026', correct: true },
+            { label: '2026-06-23' },
+            { label: '06' },
+            { label: '4' },
+          ],
+          explanation: "text[..4] takes the first four characters ('2026') as a span without allocating a new string, and int.Parse converts that span to the integer 2026.",
+        },
+        {
+          id: 'capstone-next-steps-q3',
+          kind: 'mcq',
+          prompt: 'What is the single best move to stand out to employers after finishing the course?',
+          options: [
+            { label: 'Watch as many tutorials as possible across every specialisation' },
+            { label: 'Pick one direction, build and deploy a small public project, and write up what you learned', correct: true },
+            { label: 'Memorise every C# language feature' },
+            { label: 'Avoid open-source code until you are hired' },
+          ],
+          explanation: "Employers hire for demonstrated depth. A deployed, public project with a write-up proves you can ship, whereas a long list of consumed tutorials shows no evidence of applied skill.",
+        },
+        {
+          id: 'capstone-next-steps-q4',
+          kind: 'mcq',
+          prompt: 'Why are Span<T> and Memory<T> worth learning for performance-sensitive .NET code?',
+          options: [
+            { label: 'They make code run on the GPU automatically' },
+            { label: 'They allow slicing arrays and strings without allocating new objects, reducing GC pressure', correct: true },
+            { label: 'They replace async/await entirely' },
+            { label: 'They are required to compile any .NET 10 program' },
+          ],
+          explanation: "Span<T> and Memory<T> give a view over existing memory, so operations like slicing avoid allocating new arrays or strings. Fewer allocations means less garbage-collection work, which matters in hot paths.",
+        },
+      ],
+      challenges: [
+        {
+          id: 'capstone-next-steps-c1',
+          difficulty: 'easy',
+          title: 'Map your path',
+          prompt: 'Write a one-page plan: pick one specialisation (web, MAUI, Unity, or cloud), list three concrete things to learn in it, and name one small project you will build and deploy.',
+          hints: ['Choose based on what you actually want to build, not just job count.', 'Keep the project small enough to finish in a week or two.'],
+        },
+        {
+          id: 'capstone-next-steps-c2',
+          difficulty: 'medium',
+          title: 'Deploy the capstone publicly',
+          prompt: 'Deploy your capstone Tasks API to a public host (Azure App Service, a container platform, or similar). Add a README explaining the architecture, how to run it, and what you would improve. Share the link.',
+          hints: ['Keep secrets in configuration/environment variables, never in source.', 'A short architecture diagram in the README goes a long way.'],
+        },
+        {
+          id: 'capstone-next-steps-c3',
+          difficulty: 'hard',
+          title: 'First open-source contribution',
+          prompt: 'Find a beginner-friendly issue (often labelled "good first issue") in a .NET open-source repository, fork it, fix it, and open a pull request following the project\'s contribution guidelines. Respond to review feedback.',
+          hints: ['Start with documentation or a small, well-scoped bug.', 'Read CONTRIBUTING.md and run the existing tests before opening the PR.'],
+        },
+      ],
+    },
+  ],
+  projects: [
+    {
+      id: 'capstone-proj-1',
+      difficulty: 'intermediate',
+      title: 'Tasks App — Backend (EF Core + Services)',
+      brief: 'Build the data layer and service layer for a task-management app, fully unit tested. This is the foundation the full-stack project builds on.',
+      requirements: [
+        'TaskItem entity with title, description, priority, due date, and done flag',
+        'EF Core AppDbContext with a migration that creates the schema (SQLite for local dev)',
+        'A TaskService with CreateAsync, GetAsync, UpdateAsync, DeleteAsync, and a filtered/sorted list query',
+        'Validation rejecting empty titles and past due dates',
+        'xUnit tests using in-memory SQLite covering happy paths and edge cases',
+      ],
+      stretch: ['Tags (many-to-many)', 'Subtasks', 'Recurring tasks', 'Soft delete with a query filter'],
+      concepts: ['EF Core', 'DbContext & migrations', 'Service layer', 'xUnit', 'Validation', 'SOLID'],
+    },
+    {
+      id: 'capstone-proj-2',
+      difficulty: 'advanced',
+      title: 'Tasks App — Full Stack (Web API + Frontend + Deploy)',
+      brief: 'Wrap the backend in an ASP.NET Core Web API with authentication and a simple frontend, then deploy it publicly. The complete portfolio capstone.',
+      requirements: [
+        'ASP.NET Core Web API exposing all CRUD endpoints with DTO records and correct status codes',
+        'JWT authentication so tasks are scoped per user',
+        'Exception-handling middleware returning ProblemDetails, plus request logging',
+        'Integration tests with WebApplicationFactory against a test database',
+        'A small HTML/CSS/JS (or Blazor) frontend that calls the API',
+        'Deployed to a public host (Azure App Service or a container platform)',
+      ],
+      stretch: ['Real-time updates with SignalR', 'A .NET MAUI mobile client', 'Pagination and rate limiting', 'CI/CD pipeline with GitHub Actions'],
+      concepts: ['ASP.NET Core Web API', 'JWT auth', 'Middleware', 'Integration testing', 'Frontend integration', 'Deployment'],
+    },
+  ],
+  outline: [],
 };
-
-export const quiz_capstone = [
-  {
-    "id": "capstone-q1",
-    "kind": "fill",
-    "prompt": "Question 1",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q2",
-    "kind": "predict",
-    "prompt": "Question 2",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q3",
-    "kind": "mcq",
-    "prompt": "Question 3",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q4",
-    "kind": "fill",
-    "prompt": "Question 4",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q5",
-    "kind": "predict",
-    "prompt": "Question 5",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q6",
-    "kind": "mcq",
-    "prompt": "Question 6",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q7",
-    "kind": "fill",
-    "prompt": "Question 7",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q8",
-    "kind": "predict",
-    "prompt": "Question 8",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q9",
-    "kind": "mcq",
-    "prompt": "Question 9",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q10",
-    "kind": "fill",
-    "prompt": "Question 10",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q11",
-    "kind": "predict",
-    "prompt": "Question 11",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q12",
-    "kind": "mcq",
-    "prompt": "Question 12",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q13",
-    "kind": "fill",
-    "prompt": "Question 13",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "capstone-q14",
-    "kind": "predict",
-    "prompt": "Question 14",
-    "explanation": "Covered in lessons."
-  }
-];
-export const practice_capstone = [
-  {
-    "id": "capstone-p1",
-    "difficulty": "easy",
-    "title": "LeetCode Problem 1",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p2",
-    "difficulty": "easy",
-    "title": "LeetCode Problem 2",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p3",
-    "difficulty": "easy",
-    "title": "LeetCode Problem 3",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p4",
-    "difficulty": "medium",
-    "title": "LeetCode Problem 4",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p5",
-    "difficulty": "medium",
-    "title": "LeetCode Problem 5",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p6",
-    "difficulty": "medium",
-    "title": "LeetCode Problem 6",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p7",
-    "difficulty": "hard",
-    "title": "LeetCode Problem 7",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p8",
-    "difficulty": "hard",
-    "title": "LeetCode Problem 8",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p9",
-    "difficulty": "hard",
-    "title": "LeetCode Problem 9",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  },
-  {
-    "id": "capstone-p10",
-    "difficulty": "hard",
-    "title": "LeetCode Problem 10",
-    "prompt": "Solve this algorithm problem in C#.",
-    "hints": [
-      "Think about the data structure",
-      "Time complexity matters"
-    ]
-  }
-];
-export const projects_capstone = [
-  {
-    "id": "capstone-proj-1",
-    "difficulty": "intermediate",
-    "title": "Tasks App — Backend (EF Core)",
-    "brief": "Build the database and services for a task management app.",
-    "requirements": [
-      "Task entity with due date, priority, tags",
-      "EF Core DbContext",
-      "CRUD repositories",
-      "Unit tests with xUnit",
-      "Filter/sort by date and priority"
-    ],
-    "stretch": [
-      "Recurring tasks",
-      "Subtasks",
-      "Notifications"
-    ],
-    "concepts": [
-      "EF Core",
-      "Repositories",
-      "xUnit",
-      "SOLID"
-    ]
-  },
-  {
-    "id": "capstone-proj-2",
-    "difficulty": "advanced",
-    "title": "Tasks App — Full Stack (Web API + Frontend)",
-    "brief": "Complete REST API with authentication, and a simple web UI.",
-    "requirements": [
-      "ASP.NET Core Web API with JWT auth",
-      "All CRUD endpoints tested",
-      "Middleware for logging and error handling",
-      "HTML/CSS/JS frontend to call the API",
-      "Deploy to Azure or similar"
-    ],
-    "stretch": [
-      "Real-time updates with SignalR",
-      "Mobile app with Maui",
-      "Database migrations and rollback strategy",
-      "Performance monitoring"
-    ],
-    "concepts": [
-      "Web API",
-      "JWT",
-      "Middleware",
-      "Frontend integration",
-      "Deployment"
-    ]
-  }
-];

@@ -6,129 +6,1332 @@ export const webApi: Topic = {
   subtitle: 'Build production-grade REST APIs with ASP.NET Core',
   status: 'unlocked',
   lessons: [
-  {
-    "slug": "minimal-api",
-    "number": 1,
-    "title": "Minimal API — Hello World",
-    "objective": "Spin up a web server in 5 lines of code.",
-    "blocks": [
-      {
-        "kind": "lead",
-        "text": "ASP.NET Core minimal APIs let you build production REST APIs in five lines. No controllers, no ceremony—just routes, handlers, and C#. Perfect for microservices, single-endpoint functions, or learning REST basics."
-      },
-      {
-        "kind": "heading",
-        "level": 2,
-        "text": "Your First API",
-        "id": "first-api"
-      },
-      {
-        "kind": "code",
-        "code": "var builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet(\"/\", () => \"Hello, World!\");\n\napp.Run();",
-        "language": "csharp"
-      },
-      {
-        "kind": "paragraph",
-        "text": "That's it. Run `dotnet run` and visit http://localhost:5000. MapGet maps HTTP GET requests to your handler."
-      },
-      {
-        "kind": "heading",
-        "level": 2,
-        "text": "Routes and Responses",
-        "id": "routes"
-      },
-      {
-        "kind": "code",
-        "code": "app.MapGet(\"/users\", () => new[] { \"Alice\", \"Bob\" });\napp.MapGet(\"/users/{id}\", (int id) => $\"User {id}\");",
-        "language": "csharp"
-      },
-      {
-        "kind": "paragraph",
-        "text": "Route parameters are bound automatically from the URL. ASP.NET Core serializes responses to JSON."
-      },
-      {
-        "kind": "heading",
-        "level": 2,
-        "text": "HTTP Verbs",
-        "id": "http-verbs"
-      },
-      {
-        "kind": "code",
-        "code": "app.MapPost(\"/users\", (User user) => user);\napp.MapPut(\"/users/{id}\", (int id, User user) => user);\napp.MapDelete(\"/users/{id}\", (int id) => Results.NoContent());",
-        "language": "csharp"
-      },
-      {
-        "kind": "tip",
-        "tone": "tip",
-        "title": "Minimal APIs are perfect for microservices",
-        "text": "Use MapGet, MapPost, MapPut, MapDelete for REST. MapPost binds JSON request bodies automatically."
-      },
-      {
-        "kind": "warn",
-        "tone": "warn",
-        "title": "Not a replacement for controllers",
-        "text": "For large apps with shared logic and many endpoints, use controller-based APIs. Minimal APIs shine for simple services."
-      },
-      {
-        "kind": "keyTakeaways",
-        "items": [
-          "Minimal APIs: MapGet, MapPost, MapPut, MapDelete for REST",
-          "Route parameters bind from URL; request bodies from JSON",
-          "ASP.NET Core serializes responses to JSON automatically",
-          "Ideal for microservices and learning REST basics"
-        ]
-      }
-    ]
-  },
-  {
-    "slug": "routing",
-    "number": 2,
-    "title": "Routing & HTTP Verbs",
-    "objective": "GET, POST, PUT, DELETE — and route patterns.",
-    "blocks": []
-  },
-  {
-    "slug": "controllers",
-    "number": 3,
-    "title": "Controllers vs Minimal API",
-    "objective": "When to use which.",
-    "blocks": []
-  },
-  {
-    "slug": "model-binding",
-    "number": 4,
-    "title": "Model Binding & Validation",
-    "objective": "How JSON becomes C# objects, and how to reject bad input.",
-    "blocks": []
-  },
-  {
-    "slug": "di",
-    "number": 5,
-    "title": "Dependency Injection",
-    "objective": "The built-in DI container — register, inject, scope.",
-    "blocks": []
-  },
-  {
-    "slug": "middleware",
-    "number": 6,
-    "title": "Middleware Pipeline",
-    "objective": "Authentication, CORS, logging — the pipeline behind every request.",
-    "blocks": []
-  },
-  {
-    "slug": "auth",
-    "number": 7,
-    "title": "Authentication & Authorization",
-    "objective": "JWT tokens, [Authorize], policy-based authz.",
-    "blocks": []
-  },
-  {
-    "slug": "mini-project-api",
-    "number": 8,
-    "title": "Mini-Project — Tasks REST API",
-    "objective": "CRUD a tasks list with EF Core + JWT auth.",
-    "blocks": []
-  }
-],
-  outline: []
+    {
+      slug: 'minimal-api',
+      number: 1,
+      title: 'Minimal API — Hello World',
+      objective: 'Spin up a web server in 5 lines of code.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'ASP.NET Core minimal APIs let you build production REST APIs in just a few lines. No controllers, no ceremony — just routes, handlers, and C#. If you have used FastAPI or Flask in Python, this will feel familiar: you map a URL to a function and return data.',
+        },
+        {
+          kind: 'paragraph',
+          text: 'ASP.NET Core is the web framework that ships with **.NET 10**. It runs on a fast, cross-platform server called **Kestrel**, compiles to native machine code, and is one of the fastest mainstream web stacks in the world — typically far faster than CPython-based frameworks.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Your First API',
+          id: 'first-api',
+        },
+        {
+          kind: 'code',
+          filename: 'Program.cs',
+          language: 'csharp',
+          code: 'var builder = WebApplication.CreateBuilder(args);\nvar app = builder.Build();\n\napp.MapGet("/", () => "Hello, World!");\n\napp.Run();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'That is the whole program. Run `dotnet run` and visit the URL printed in the console (usually `http://localhost:5000`). `MapGet` wires an HTTP GET request for the `/` path to your handler — the lambda `() => "Hello, World!"`. `app.Run()` starts the server and blocks until shutdown, like `uvicorn.run()` in Python.',
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'Where is the boilerplate?',
+          text: 'There is no `Startup` class and no `Main` method — .NET uses **top-level statements**, so `Program.cs` *is* the entry point. The `args` are the command-line arguments, just like `sys.argv`.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Routes and JSON Responses',
+          id: 'routes',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'app.MapGet("/users", () => new[] { "Alice", "Bob" });\napp.MapGet("/users/{id}", (int id) => $"User {id}");',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Route parameters like `{id}` are bound automatically from the URL and converted to the parameter type (here `int`). When you return an object or array, ASP.NET Core serializes it to JSON for you using `System.Text.Json` — no `jsonify()` call needed. A plain `string` is returned as `text/plain`.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'All the HTTP Verbs',
+          id: 'http-verbs',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'app.MapPost("/users", (User user) => user);\napp.MapPut("/users/{id}", (int id, User user) => user);\napp.MapDelete("/users/{id}", (int id) => Results.NoContent());\n\nrecord User(int Id, string Name);',
+        },
+        {
+          kind: 'paragraph',
+          text: 'For `MapPost` and `MapPut`, a complex parameter like `User` is bound from the JSON request body automatically. `Results.NoContent()` returns an HTTP 204 with no body — one of many helpers on the `Results` class for returning correct status codes.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Minimal APIs are perfect for microservices',
+          text: 'Use `MapGet`, `MapPost`, `MapPut`, and `MapDelete` to express a REST resource. They are ideal for small services, serverless functions, and learning REST without framework noise.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'Not always a replacement for controllers',
+          text: 'For large apps with many endpoints that share filters, attributes, and conventions, controller-based APIs can be easier to organize. You will compare both in Lesson 3.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Minimal APIs map a URL + verb directly to a handler: `MapGet`, `MapPost`, `MapPut`, `MapDelete`.',
+            '`Program.cs` is the entry point — top-level statements, no `Main`, no `Startup`.',
+            'Route parameters bind from the URL; complex parameters bind from the JSON body.',
+            'Returned objects are serialized to JSON automatically; use `Results.*` for explicit status codes.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-minimal-api-q1',
+          kind: 'mcq',
+          prompt: 'In a minimal API, what does `app.MapGet("/", () => "Hello")` do?',
+          options: [
+            { label: 'Registers a handler for HTTP GET requests to the `/` path', correct: true },
+            { label: 'Registers a handler for all HTTP verbs at `/`' },
+            { label: 'Immediately sends "Hello" to the console' },
+            { label: 'Maps a static file named `Hello` to the root URL' },
+          ],
+          explanation: '`MapGet` registers a route handler that runs only for the GET verb on the given path. The lambda is the handler, similar to a FastAPI route function decorated with `@app.get("/")`. Nothing executes until a request actually arrives.',
+        },
+        {
+          id: 'web-api-minimal-api-q2',
+          kind: 'predict',
+          prompt: 'What does this endpoint return when you GET `/users`?',
+          code: 'app.MapGet("/users", () => new[] { "Alice", "Bob" });',
+          options: [
+            { label: '["Alice","Bob"] as JSON', correct: true },
+            { label: 'Alice,Bob as plain text' },
+            { label: 'A 500 error — arrays cannot be returned' },
+            { label: 'new[] { "Alice", "Bob" }' },
+          ],
+          explanation: 'When a handler returns an object or array, ASP.NET Core serializes it to JSON using `System.Text.Json` and sets the `application/json` content type. A `string[]` becomes a JSON array of strings. Only a bare `string` return value is sent as plain text.',
+        },
+        {
+          id: 'web-api-minimal-api-q3',
+          kind: 'fill',
+          prompt: 'Complete the call that returns an HTTP 204 No Content response.',
+          template: 'app.MapDelete("/users/{id}", (int id) => Results.___());',
+          accept: ['NoContent'],
+          explanation: '`Results.NoContent()` produces an HTTP 204 status with an empty body, the conventional response for a successful DELETE that has nothing to return. The `Results` class also has `Ok`, `NotFound`, `BadRequest`, `Created`, and more.',
+        },
+        {
+          id: 'web-api-minimal-api-q4',
+          kind: 'mcq',
+          prompt: 'Where does the `User` parameter come from in `app.MapPost("/users", (User user) => user)`?',
+          options: [
+            { label: 'It is deserialized from the JSON request body', correct: true },
+            { label: 'It is read from the query string' },
+            { label: 'It is injected from the DI container' },
+            { label: 'It is bound from a route segment' },
+          ],
+          explanation: 'For complex types, minimal APIs bind the parameter from the JSON request body by default. Simple types like `int id` bind from the route or query string. This mirrors how FastAPI binds a Pydantic model from the body.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-minimal-api-c1',
+          difficulty: 'easy',
+          title: 'Ping endpoint',
+          prompt: 'Create a minimal API with a single GET endpoint at `/ping` that returns the string `"pong"`. Run it and hit the URL in a browser.',
+          hints: ['Start from `WebApplication.CreateBuilder(args)`.', 'Use `app.MapGet("/ping", () => "pong")`.'],
+        },
+        {
+          id: 'web-api-minimal-api-c2',
+          difficulty: 'medium',
+          title: 'Greeting with a route parameter',
+          prompt: 'Add a GET endpoint at `/hello/{name}` that returns `Hello, {name}!`. Test it with several names in the URL.',
+          hints: ['Add `string name` as the handler parameter.', 'Use string interpolation: `$"Hello, {name}!"`.'],
+        },
+        {
+          id: 'web-api-minimal-api-c3',
+          difficulty: 'hard',
+          title: 'In-memory echo resource',
+          prompt: 'Define a `record Item(int Id, string Name)`. Add a POST `/items` endpoint that accepts an `Item` in the body and returns it with `Results.Created($"/items/{item.Id}", item)`, and a GET `/items/{id}` that returns `Results.Ok` with a fake item.',
+          hints: ['Complex parameters bind from the JSON body.', '`Results.Created(location, value)` returns 201 with a Location header.'],
+        },
+      ],
+    },
+    {
+      slug: 'routing',
+      number: 2,
+      title: 'Routing & HTTP Verbs',
+      objective: 'GET, POST, PUT, DELETE — and route patterns.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'A REST API is a set of resources addressed by URLs and acted on with HTTP verbs. Routing is how ASP.NET Core matches an incoming request to the right handler. Get the verbs and route patterns right and your API becomes predictable and self-documenting.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Verbs and What They Mean',
+          id: 'verbs',
+        },
+        {
+          kind: 'list',
+          items: [
+            '**GET** — read a resource. Safe and idempotent; never changes state.',
+            '**POST** — create a new resource. Not idempotent (two POSTs make two records).',
+            '**PUT** — replace a resource entirely. Idempotent.',
+            '**PATCH** — partially update a resource.',
+            '**DELETE** — remove a resource. Idempotent.',
+          ],
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'app.MapGet("/products", () => Results.Ok(allProducts));\napp.MapGet("/products/{id}", (int id) => Results.Ok(Find(id)));\napp.MapPost("/products", (Product p) => Results.Created($"/products/{p.Id}", p));\napp.MapPut("/products/{id}", (int id, Product p) => Results.Ok(p));\napp.MapDelete("/products/{id}", (int id) => Results.NoContent());',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Notice the URL design: a **collection** (`/products`) and an **item** (`/products/{id}`). The verb decides the action, not the URL. You never name a route `/getProducts` or `/deleteProduct` — that is the verb’s job.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Route Patterns and Constraints',
+          id: 'patterns',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: '// Route constraint: only match if id is an integer\napp.MapGet("/products/{id:int}", (int id) => $"Product {id}");\n\n// Optional segment and a default\napp.MapGet("/search/{term?}", (string? term) => term ?? "all");\n\n// Catch-all\napp.MapGet("/files/{*path}", (string path) => $"File at {path}");',
+        },
+        {
+          kind: 'paragraph',
+          text: 'A **route constraint** like `{id:int}` makes the route match only when the segment parses as an integer; otherwise ASP.NET Core moves on and may return 404. Common constraints include `:int`, `:guid`, `:bool`, `:datetime`, `:min(1)`, and `:alpha`. The `?` marks an optional segment, and `{*path}` is a catch-all that captures the rest of the URL.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Reading Query Strings and Headers',
+          id: 'binding-sources',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'using Microsoft.AspNetCore.Mvc;\n\n// /products?page=2&size=20\napp.MapGet("/products", (int page = 1, int size = 10) =>\n    $"page {page}, size {size}");\n\n// Force a source explicitly\napp.MapGet("/report", ([FromQuery] string year, [FromHeader(Name = "X-Tenant")] string tenant) =>\n    $"{year} for {tenant}");',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Simple parameters that are not in the route are read from the **query string** by default, and a default value makes them optional. You can be explicit with attributes: `[FromQuery]`, `[FromRoute]`, `[FromHeader]`, and `[FromBody]`. This is the equivalent of FastAPI’s `Query(...)`, `Path(...)`, and `Header(...)` helpers.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Group related routes',
+          text: 'Use `var products = app.MapGroup("/products");` then call `products.MapGet("/{id}", ...)`. A group lets you share a URL prefix, filters, and authorization across many endpoints in one place.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'The verb defines the action; the URL names the resource — never put verbs in URLs.',
+            'Use `/things` for the collection and `/things/{id}` for one item.',
+            'Route constraints like `{id:int}` restrict what a route will match.',
+            'Non-route simple params come from the query string; use `[FromQuery]`, `[FromHeader]`, `[FromBody]` to be explicit.',
+            'Use `MapGroup` to share a prefix and policies across endpoints.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-routing-q1',
+          kind: 'mcq',
+          prompt: 'Which URL + verb pair is the correct REST design for deleting product 42?',
+          options: [
+            { label: 'DELETE `/products/42`', correct: true },
+            { label: 'GET `/deleteProduct/42`' },
+            { label: 'POST `/products/42/delete`' },
+            { label: 'DELETE `/getProducts?id=42`' },
+          ],
+          explanation: 'In REST the URL names the resource (`/products/42`) and the HTTP verb specifies the action (DELETE). Putting the action in the URL (`/deleteProduct`) duplicates what the verb already expresses and breaks REST conventions.',
+        },
+        {
+          id: 'web-api-routing-q2',
+          kind: 'predict',
+          prompt: 'A request comes in for GET `/products/abc`. What happens?',
+          code: 'app.MapGet("/products/{id:int}", (int id) => $"Product {id}");',
+          options: [
+            { label: 'The route does not match, so the request gets a 404', correct: true },
+            { label: 'id is set to 0 and the handler runs' },
+            { label: 'A 500 error is thrown converting "abc" to int' },
+            { label: 'id is set to "abc" as a string' },
+          ],
+          explanation: 'The `{id:int}` constraint only matches when the segment parses as an integer. Because `abc` is not an integer, this route is skipped during matching. With no other matching route, the framework returns 404 Not Found rather than throwing.',
+        },
+        {
+          id: 'web-api-routing-q3',
+          kind: 'fill',
+          prompt: 'Complete the attribute that forces the `tenant` parameter to bind from a request header.',
+          template: 'app.MapGet("/report", ([___(Name = "X-Tenant")] string tenant) => tenant);',
+          accept: ['FromHeader'],
+          explanation: '`[FromHeader]` tells model binding to read the value from the named HTTP request header instead of the route or query string. The `Name` property maps the C# parameter to the actual header key `X-Tenant`.',
+        },
+        {
+          id: 'web-api-routing-q4',
+          kind: 'mcq',
+          prompt: 'Why is GET considered "safe and idempotent"?',
+          options: [
+            { label: 'It does not change server state, and repeating it gives the same result', correct: true },
+            { label: 'It encrypts the response by default' },
+            { label: 'It can only return strings, not objects' },
+            { label: 'It cannot accept any parameters' },
+          ],
+          explanation: 'GET is meant only to read data, so it should not modify server state (safe), and calling it repeatedly returns the same resource without side effects (idempotent). Caches and clients rely on this, which is why you must never mutate data inside a GET handler.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-routing-c1',
+          difficulty: 'easy',
+          title: 'Full CRUD route set',
+          prompt: 'For a `/books` resource, declare the five route handlers (GET collection, GET by id, POST, PUT, DELETE) returning placeholder values with the correct `Results.*` helpers.',
+          hints: ['Use `Results.Ok`, `Results.Created`, and `Results.NoContent`.', 'Item routes need `/{id}`.'],
+        },
+        {
+          id: 'web-api-routing-c2',
+          difficulty: 'medium',
+          title: 'Constrained and paged',
+          prompt: 'Add a GET `/books/{id:int}` and a GET `/books` that accepts `page` and `size` query parameters with defaults of 1 and 10. Return the values so you can verify binding.',
+          hints: ['Use the `:int` route constraint.', 'Give the query params default values to make them optional.'],
+        },
+        {
+          id: 'web-api-routing-c3',
+          difficulty: 'hard',
+          title: 'Refactor with MapGroup',
+          prompt: 'Refactor your `/books` routes to use `app.MapGroup("/books")`. Call `MapGet("/")`, `MapGet("/{id:int}")`, `MapPost("/")`, etc. on the group so the prefix is declared once.',
+          hints: ['`var books = app.MapGroup("/books");`', 'Relative paths on the group are appended to the prefix.'],
+        },
+      ],
+    },
+    {
+      slug: 'controllers',
+      number: 3,
+      title: 'Controllers vs Minimal API',
+      objective: 'When to use which.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'ASP.NET Core gives you two ways to build APIs: lightweight minimal APIs and class-based controllers. They produce the same HTTP behavior — the difference is organization. Knowing when to reach for each keeps your codebase clean as it grows.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Same Endpoint, Two Styles',
+          id: 'two-styles',
+        },
+        {
+          kind: 'code',
+          filename: 'Minimal API',
+          language: 'csharp',
+          code: 'app.MapGet("/products/{id:int}", (int id) =>\n    id > 0 ? Results.Ok(new { id }) : Results.NotFound());',
+        },
+        {
+          kind: 'code',
+          filename: 'ProductsController.cs',
+          language: 'csharp',
+          code: 'using Microsoft.AspNetCore.Mvc;\n\n[ApiController]\n[Route("products")]\npublic class ProductsController : ControllerBase\n{\n    [HttpGet("{id:int}")]\n    public IActionResult GetById(int id)\n    {\n        return id > 0 ? Ok(new { id }) : NotFound();\n    }\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: 'A controller is a class that groups related endpoints as methods (called **actions**). `[ApiController]` opts into helpful conventions — automatic 400 responses for invalid models, inferred binding sources, and more. `[Route]` and `[HttpGet]` attributes declare the path and verb. `ControllerBase` gives you helpers like `Ok()`, `NotFound()`, and `CreatedAtAction()` — the same results as `Results.Ok` and friends.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Wiring Controllers Up',
+          id: 'wiring',
+        },
+        {
+          kind: 'code',
+          filename: 'Program.cs',
+          language: 'csharp',
+          code: 'var builder = WebApplication.CreateBuilder(args);\nbuilder.Services.AddControllers();\n\nvar app = builder.Build();\napp.MapControllers();\napp.Run();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Controllers need two extra lines compared to minimal APIs: `AddControllers()` registers the MVC services, and `MapControllers()` discovers every `[ApiController]` class by reflection and wires up its routes. Minimal APIs need neither — they are registered inline.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Choosing Between Them',
+          id: 'choosing',
+        },
+        {
+          kind: 'twoColumn',
+          cards: [
+            {
+              title: 'Reach for Minimal APIs',
+              items: [
+                'Small services and microservices',
+                'A handful of endpoints',
+                'Serverless / function-style handlers',
+                'Lowest overhead and fastest startup',
+                'Learning REST without ceremony',
+              ],
+            },
+            {
+              title: 'Reach for Controllers',
+              items: [
+                'Large APIs with many related endpoints',
+                'Shared filters, conventions, and attributes',
+                'Teams that prefer class-based organization',
+                'Heavy use of MVC features (model state, action filters)',
+                'Migrating an older ASP.NET MVC codebase',
+              ],
+            },
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'It is not either/or',
+          text: 'A single app can host both. You might serve a large product catalog with controllers while exposing a tiny health-check endpoint as a minimal `app.MapGet("/health", ...)`. Pick per feature, not per project.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Performance is essentially equal',
+          text: 'Both compile down to similar routing. Choose based on code organization and team preference, not micro-benchmarks. Minimal APIs have a slight edge in startup and allocations, rarely decisive.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Controllers group endpoints as action methods in an `[ApiController]` class inheriting `ControllerBase`.',
+            'Controllers require `AddControllers()` and `MapControllers()`; minimal APIs do not.',
+            '`Ok()`/`NotFound()` on a controller are equivalent to `Results.Ok`/`Results.NotFound`.',
+            'Use minimal APIs for small/simple services, controllers for large/structured ones — and you can mix both.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-controllers-q1',
+          kind: 'mcq',
+          prompt: 'What does the `[ApiController]` attribute add to a controller?',
+          options: [
+            { label: 'API conventions like automatic 400 responses for invalid models and inferred binding sources', correct: true },
+            { label: 'It serves an HTML page instead of JSON' },
+            { label: 'It makes all actions require authentication' },
+            { label: 'It disables routing for the class' },
+          ],
+          explanation: '`[ApiController]` opts the class into REST-friendly conventions: automatic `400 Bad Request` when model validation fails, inferred binding sources (complex types from body, simple from route/query), and attribute routing requirements. It does not handle authentication or content negotiation by itself.',
+        },
+        {
+          id: 'web-api-controllers-q2',
+          kind: 'mcq',
+          prompt: 'Which two `Program.cs` calls are required to use controllers but NOT for minimal APIs?',
+          options: [
+            { label: '`builder.Services.AddControllers()` and `app.MapControllers()`', correct: true },
+            { label: '`app.MapGet()` and `app.Run()`' },
+            { label: '`builder.Build()` and `app.UseRouting()`' },
+            { label: '`AddSwaggerGen()` and `UseSwagger()`' },
+          ],
+          explanation: '`AddControllers()` registers the MVC services in DI, and `MapControllers()` scans for controller classes and wires their attribute routes. Minimal APIs register routes inline with `app.MapGet`/`MapPost`, so they need neither call.',
+        },
+        {
+          id: 'web-api-controllers-q3',
+          kind: 'fill',
+          prompt: 'Complete the base class that gives a controller helpers like `Ok()` and `NotFound()` without view support.',
+          template: 'public class ProductsController : ___ { }',
+          accept: ['ControllerBase'],
+          explanation: '`ControllerBase` provides the action result helpers (`Ok`, `NotFound`, `CreatedAtAction`, etc.) used by APIs. The fuller `Controller` class adds view-rendering support you do not need for a JSON API, so `ControllerBase` is the correct choice.',
+        },
+        {
+          id: 'web-api-controllers-q4',
+          kind: 'mcq',
+          prompt: 'Your service has just three endpoints and is deployed as a tiny microservice. Which approach fits best?',
+          options: [
+            { label: 'Minimal APIs — least ceremony, fast startup', correct: true },
+            { label: 'Controllers — you always need the structure' },
+            { label: 'Neither; you must use a separate framework' },
+            { label: 'Both at once for every endpoint' },
+          ],
+          explanation: 'A few endpoints in a small service is the textbook case for minimal APIs: no extra registration, minimal boilerplate, and fast startup. Controllers pay off when there are many related endpoints sharing conventions, which is not the case here.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-controllers-c1',
+          difficulty: 'easy',
+          title: 'Write a controller',
+          prompt: 'Create a `GreetingsController` with `[ApiController]` and `[Route("greet")]`. Add a GET action `Hello(string name)` returning `Ok($"Hi {name}")`. Register controllers in `Program.cs`.',
+          hints: ['Inherit from `ControllerBase`.', 'Remember `AddControllers()` and `MapControllers()`.'],
+        },
+        {
+          id: 'web-api-controllers-c2',
+          difficulty: 'medium',
+          title: 'Translate both ways',
+          prompt: 'Take a minimal API GET-by-id endpoint that returns `Ok` or `NotFound`, and rewrite it as a controller action. Then take a controller POST action and rewrite it as a minimal API.',
+          hints: ['Controller `Ok()` maps to `Results.Ok()`.', '`[HttpGet("{id:int}")]` maps to the route in `MapGet`.'],
+        },
+        {
+          id: 'web-api-controllers-c3',
+          difficulty: 'hard',
+          title: 'Mixed-mode app',
+          prompt: 'Build one app that uses a controller for a `/products` resource (full CRUD) and a minimal API for a `/health` endpoint returning `Results.Ok(new { status = "ok" })`. Confirm both respond.',
+          hints: ['Both styles coexist in the same `Program.cs`.', 'Call `MapControllers()` and `app.MapGet("/health", ...)` together.'],
+        },
+      ],
+    },
+    {
+      slug: 'model-binding',
+      number: 4,
+      title: 'Model Binding & Validation',
+      objective: 'How JSON becomes C# objects, and how to reject bad input.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'Model binding is the bridge between an HTTP request and your C# code: it reads JSON, route values, query strings, and headers and turns them into typed parameters. Validation then guarantees the data is sane before your handler runs — so you never trust raw input.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'JSON Into Objects',
+          id: 'json-binding',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'record CreateProduct(string Name, decimal Price, int Stock);\n\napp.MapPost("/products", (CreateProduct input) =>\n{\n    // input.Name, input.Price, input.Stock are already populated\n    return Results.Created($"/products/1", input);\n});',
+        },
+        {
+          kind: 'paragraph',
+          text: 'When a complex type is a handler parameter, ASP.NET Core deserializes the request body’s JSON into it with `System.Text.Json`. Property matching is case-insensitive by default, so the JSON key `"name"` binds to the C# property `Name`. This is the direct analog of FastAPI deserializing a request body into a Pydantic model.',
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'DTOs, not entities',
+          text: 'Bind to a dedicated request type (a **DTO** like `CreateProduct`) rather than your database entity. It keeps clients from setting fields they should not — like `Id` or `IsAdmin` — and decouples your API shape from your storage shape.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Validating With Data Annotations',
+          id: 'validation',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'using System.ComponentModel.DataAnnotations;\n\npublic class CreateProduct\n{\n    [Required]\n    [StringLength(100, MinimumLength = 2)]\n    public string Name { get; set; } = "";\n\n    [Range(0.01, 100_000)]\n    public decimal Price { get; set; }\n\n    [Range(0, int.MaxValue)]\n    public int Stock { get; set; }\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Data annotations declare the rules right on the model: `[Required]`, `[StringLength]`, `[Range]`, `[EmailAddress]`, `[RegularExpression]`, and more. They are similar to Pydantic field validators. The attributes describe *what* valid data looks like; the framework checks them for you.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Rejecting Bad Input',
+          id: 'rejecting',
+        },
+        {
+          kind: 'code',
+          filename: 'Controller (automatic)',
+          language: 'csharp',
+          code: '[ApiController]\n[Route("products")]\npublic class ProductsController : ControllerBase\n{\n    [HttpPost]\n    public IActionResult Create(CreateProduct input)\n    {\n        // With [ApiController], an invalid model already returned 400\n        // before this line ever runs.\n        return Created($"/products/1", input);\n    }\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: 'On an `[ApiController]`, validation runs automatically: if the model is invalid, the framework returns a `400 Bad Request` with a `ValidationProblemDetails` body **before your action executes**. Minimal APIs do not validate annotations out of the box — you either add the validation filter or check explicitly, as below.',
+        },
+        {
+          kind: 'code',
+          filename: 'Minimal API (explicit)',
+          language: 'csharp',
+          code: 'using System.ComponentModel.DataAnnotations;\n\napp.MapPost("/products", (CreateProduct input) =>\n{\n    var ctx = new ValidationContext(input);\n    var results = new List<ValidationResult>();\n    if (!Validator.TryValidateObject(input, ctx, results, true))\n        return Results.ValidationProblem(\n            results.ToDictionary(r => r.MemberNames.First(), r => new[] { r.ErrorMessage! }));\n\n    return Results.Created("/products/1", input);\n});',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'Never trust client input',
+          text: 'Binding succeeding does not mean the data is valid — only that it parsed. Always validate ranges, lengths, and required fields server-side. Client-side checks are a convenience, not a security boundary.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Complex parameters are deserialized from the JSON body; matching is case-insensitive.',
+            'Bind to DTOs, not database entities, to control the exposed shape.',
+            'Data annotations (`[Required]`, `[Range]`, `[StringLength]`) declare validation rules on the model.',
+            '`[ApiController]` returns 400 automatically for invalid models; minimal APIs need an explicit check or filter.',
+            'Use `Results.ValidationProblem` (or a `ValidationProblemDetails`) to report errors in a standard shape.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-model-binding-q1',
+          kind: 'mcq',
+          prompt: 'A JSON body `{ "name": "Pen" }` is posted. Which C# property does `name` bind to by default?',
+          options: [
+            { label: '`Name` — matching is case-insensitive', correct: true },
+            { label: 'It does not bind; keys must match case exactly' },
+            { label: 'A field literally called `name`' },
+            { label: 'It throws because JSON keys must be PascalCase' },
+          ],
+          explanation: 'System.Text.Json property matching in ASP.NET Core is case-insensitive by default, so the camelCase JSON key `name` maps to the PascalCase C# property `Name`. This lets JavaScript clients send camelCase while your C# uses idiomatic PascalCase.',
+        },
+        {
+          id: 'web-api-model-binding-q2',
+          kind: 'mcq',
+          prompt: 'On an `[ApiController]`, a POST arrives with an invalid model (a `[Required]` field is missing). What happens?',
+          options: [
+            { label: 'The framework returns 400 Bad Request before the action method runs', correct: true },
+            { label: 'The action runs and you must check validity yourself' },
+            { label: 'A 500 Internal Server Error is thrown' },
+            { label: 'The missing field is silently set to null and the action runs' },
+          ],
+          explanation: '`[ApiController]` enables automatic model validation: when `ModelState` is invalid, it short-circuits with a `400 Bad Request` containing `ValidationProblemDetails`, and your action body never executes. This is one of the main conveniences the attribute provides.',
+        },
+        {
+          id: 'web-api-model-binding-q3',
+          kind: 'fill',
+          prompt: 'Complete the annotation that limits `Price` to the range 0.01 through 100000.',
+          template: '[___(0.01, 100_000)]\npublic decimal Price { get; set; }',
+          accept: ['Range'],
+          explanation: 'The `[Range(min, max)]` data annotation constrains a numeric value to an inclusive range. When validation runs, a `Price` outside `0.01`–`100000` is reported as a model error and (on an `[ApiController]`) produces a 400 response.',
+        },
+        {
+          id: 'web-api-model-binding-q4',
+          kind: 'mcq',
+          prompt: 'Why bind to a DTO like `CreateProduct` instead of your `Product` database entity?',
+          options: [
+            { label: 'It stops clients from setting fields they should not (e.g. Id) and decouples API from storage', correct: true },
+            { label: 'DTOs are required by the C# compiler for binding' },
+            { label: 'Entities cannot be serialized to JSON' },
+            { label: 'DTOs make the API run faster at runtime' },
+          ],
+          explanation: 'A DTO exposes only the fields a client is allowed to send, preventing over-posting attacks where a client sets `Id`, `IsAdmin`, or other sensitive properties. It also separates the API contract from the database schema so each can change independently.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-model-binding-c1',
+          difficulty: 'easy',
+          title: 'Annotate a model',
+          prompt: 'Create a `RegisterUser` class with `Email` (`[Required]`, `[EmailAddress]`) and `Age` (`[Range(13, 120)]`). Bind it in a POST endpoint.',
+          hints: ['Import `System.ComponentModel.DataAnnotations`.', 'Use a class with `{ get; set; }` properties so attributes apply.'],
+        },
+        {
+          id: 'web-api-model-binding-c2',
+          difficulty: 'medium',
+          title: 'Auto-400 with a controller',
+          prompt: 'Put your `RegisterUser` POST inside an `[ApiController]`. Send an invalid body (bad email, age 5) and confirm you get a 400 with validation details without writing any check yourself.',
+          hints: ['`[ApiController]` validates automatically.', 'Inspect the JSON error body it returns.'],
+        },
+        {
+          id: 'web-api-model-binding-c3',
+          difficulty: 'hard',
+          title: 'Validate in a minimal API',
+          prompt: 'Recreate the same validation in a minimal API endpoint. Use `Validator.TryValidateObject` and return `Results.ValidationProblem` with the collected errors when the model is invalid; otherwise `Results.Ok`.',
+          hints: ['Build a `ValidationContext` and a `List<ValidationResult>`.', 'Pass `validateAllProperties: true` as the last argument.'],
+        },
+      ],
+    },
+    {
+      slug: 'di',
+      number: 5,
+      title: 'Dependency Injection',
+      objective: 'The built-in DI container — register, inject, scope.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'Dependency injection (DI) means your classes ask for the things they need instead of creating them. ASP.NET Core has a built-in DI container baked into the framework — no third-party library required. It makes code testable, swappable, and decoupled.',
+        },
+        {
+          kind: 'paragraph',
+          text: 'In Python you might pass dependencies to a constructor manually or use a framework like FastAPI’s `Depends`. ASP.NET Core does this for you: you **register** a service once, then any handler or class that declares it as a parameter gets it **injected** automatically.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Register an Interface and Implementation',
+          id: 'register',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'public interface IGreeter\n{\n    string Greet(string name);\n}\n\npublic class FriendlyGreeter : IGreeter\n{\n    public string Greet(string name) => $"Hello, {name}!";\n}\n\n// In Program.cs\nbuilder.Services.AddScoped<IGreeter, FriendlyGreeter>();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'You register a mapping: "when something asks for `IGreeter`, give it a `FriendlyGreeter`." Coding against the interface means you can swap the implementation — for example a `TestGreeter` in unit tests — without touching the consumers.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Injecting the Service',
+          id: 'inject',
+        },
+        {
+          kind: 'code',
+          filename: 'Minimal API',
+          language: 'csharp',
+          code: '// The container supplies IGreeter automatically\napp.MapGet("/hello/{name}", (string name, IGreeter greeter) =>\n    greeter.Greet(name));',
+        },
+        {
+          kind: 'code',
+          filename: 'Controller (constructor injection)',
+          language: 'csharp',
+          code: 'public class HelloController : ControllerBase\n{\n    private readonly IGreeter _greeter;\n    public HelloController(IGreeter greeter) => _greeter = greeter;\n\n    [HttpGet("/hello/{name}")]\n    public IActionResult Hello(string name) => Ok(_greeter.Greet(name));\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: 'In a minimal API, just add the service as a handler parameter. In a controller, take it in the constructor — the container builds the controller and passes in every registered dependency it needs. You never call `new FriendlyGreeter()` yourself.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Three Lifetimes',
+          id: 'lifetimes',
+        },
+        {
+          kind: 'twoColumn',
+          cards: [
+            {
+              title: 'Lifetimes',
+              items: [
+                '**Transient** — `AddTransient`: a new instance every time it is requested.',
+                '**Scoped** — `AddScoped`: one instance per HTTP request, shared within that request.',
+                '**Singleton** — `AddSingleton`: one instance for the entire application lifetime.',
+              ],
+            },
+            {
+              title: 'Rules of thumb',
+              items: [
+                'EF Core `DbContext` → Scoped (the default).',
+                'Stateless helpers / clients → Transient or Singleton.',
+                'Caches and config → Singleton.',
+                'Never inject a Scoped service into a Singleton.',
+              ],
+            },
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'The captive dependency trap',
+          text: 'A Singleton lives forever, so if it holds a Scoped service that service is captured beyond its intended request lifetime — a bug. The framework can detect some of these at startup in development; respect the lifetimes.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Default to Scoped',
+          text: 'For per-request work (database access, request-specific state) Scoped is almost always the right answer. Reach for Singleton only for genuinely shared, thread-safe state.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'Register services in `builder.Services` with `AddTransient`, `AddScoped`, or `AddSingleton`.',
+            'Code against interfaces so implementations can be swapped (and mocked in tests).',
+            'Minimal APIs inject via handler parameters; controllers via the constructor.',
+            'Transient = per request-for-it, Scoped = per HTTP request, Singleton = whole app.',
+            'Never inject a shorter-lived (Scoped) service into a longer-lived (Singleton) one.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-di-q1',
+          kind: 'mcq',
+          prompt: 'You register `builder.Services.AddScoped<IClock, SystemClock>()`. What does a handler need to do to use it?',
+          options: [
+            { label: 'Declare an `IClock` parameter (or constructor arg) — the container injects it', correct: true },
+            { label: 'Call `new SystemClock()` inside the handler' },
+            { label: 'Read it from a global static field' },
+            { label: 'Import the SystemClock namespace and nothing else' },
+          ],
+          explanation: 'After registration, the DI container resolves `IClock` automatically wherever it is requested — as a minimal API handler parameter or a controller constructor argument. You never instantiate it manually, which is exactly what keeps the code decoupled and testable.',
+        },
+        {
+          id: 'web-api-di-q2',
+          kind: 'mcq',
+          prompt: 'Which lifetime creates exactly one instance shared across the entire application?',
+          options: [
+            { label: 'Singleton (`AddSingleton`)', correct: true },
+            { label: 'Scoped (`AddScoped`)' },
+            { label: 'Transient (`AddTransient`)' },
+            { label: 'Request (`AddRequest`)' },
+          ],
+          explanation: 'A Singleton is instantiated once and reused for the whole application lifetime, so it must be thread-safe. Scoped gives one instance per HTTP request, and Transient gives a fresh instance each time it is resolved. There is no `AddRequest` lifetime.',
+        },
+        {
+          id: 'web-api-di-q3',
+          kind: 'fill',
+          prompt: 'Complete the registration so EF Core gets one DbContext per HTTP request.',
+          template: 'builder.Services.Add___<IRepo, EfRepo>();',
+          accept: ['Scoped'],
+          explanation: 'Scoped lifetime creates a single instance per HTTP request, which matches how a `DbContext` should be used — one unit of work per request. Using Singleton here would share one context across all requests (and threads), causing concurrency bugs.',
+        },
+        {
+          id: 'web-api-di-q4',
+          kind: 'mcq',
+          prompt: 'Why is injecting a Scoped service into a Singleton a problem?',
+          options: [
+            { label: 'The Singleton captures the Scoped instance forever, outliving its intended per-request lifetime', correct: true },
+            { label: 'It causes a compile-time error in every case' },
+            { label: 'Scoped services cannot be injected at all' },
+            { label: 'It makes the Singleton transient instead' },
+          ],
+          explanation: 'A Singleton is created once and held for the app’s lifetime, so any Scoped dependency it holds is "captured" and reused far beyond the single request it was meant for. This captive dependency leads to stale data and threading bugs; the framework flags many such cases at startup in development.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-di-c1',
+          difficulty: 'easy',
+          title: 'Register and inject',
+          prompt: 'Define `IGreeter` with a `Greet(string)` method and a `FriendlyGreeter` implementation. Register it as Scoped and inject it into a minimal API GET `/hello/{name}` endpoint.',
+          hints: ['Use `AddScoped<IGreeter, FriendlyGreeter>()`.', 'Add `IGreeter greeter` as a handler parameter.'],
+        },
+        {
+          id: 'web-api-di-c2',
+          difficulty: 'medium',
+          title: 'Prove the lifetimes',
+          prompt: 'Create a service that exposes a `Guid` set in its constructor. Register it once as Transient and once (a second type) as Scoped. Inject each twice into one request and log the Guids to see which match.',
+          hints: ['Transient: two different Guids in one request.', 'Scoped: the same Guid within one request.'],
+        },
+        {
+          id: 'web-api-di-c3',
+          difficulty: 'hard',
+          title: 'Swap implementation for tests',
+          prompt: 'Build a `WeatherController` that depends on `IWeatherClient`. Provide a real `HttpWeatherClient` and a `FakeWeatherClient`. Show registering the fake in a test setup so the controller works without the network.',
+          hints: ['Both clients implement the same interface.', 'In tests, register the fake before building the service provider.'],
+        },
+      ],
+    },
+    {
+      slug: 'middleware',
+      number: 6,
+      title: 'Middleware Pipeline',
+      objective: 'Authentication, CORS, logging — the pipeline behind every request.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'Every request flows through a pipeline of middleware components before it reaches your handler — and the response flows back out through them. Logging, CORS, authentication, error handling: all of it is middleware. Understanding the pipeline is understanding how ASP.NET Core actually works.',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Think of middleware like Python WSGI/ASGI middleware or a chain of decorators wrapping your view. Each component can inspect the request, do work, pass control to the next component, and then inspect or modify the response on the way back.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Order Is Everything',
+          id: 'order',
+        },
+        {
+          kind: 'code',
+          filename: 'Program.cs',
+          language: 'csharp',
+          code: 'var app = builder.Build();\n\napp.UseExceptionHandler("/error"); // 1. catch everything below\napp.UseHttpsRedirection();         // 2. force HTTPS\napp.UseCors("AllowFrontend");      // 3. CORS headers\napp.UseAuthentication();           // 4. who are you?\napp.UseAuthorization();            // 5. are you allowed?\n\napp.MapGet("/secret", () => "shh").RequireAuthorization(); // endpoint\n\napp.Run();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'The order you call `app.Use...` is the order requests pass through. It matters: authentication must come **before** authorization (you cannot check permissions before knowing who the user is), and exception handling goes near the top so it can catch errors from everything below it.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Writing Custom Middleware',
+          id: 'custom',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'app.Use(async (context, next) =>\n{\n    var start = DateTime.UtcNow;\n    await next(context); // call the rest of the pipeline\n    var ms = (DateTime.UtcNow - start).TotalMilliseconds;\n    app.Logger.LogInformation("{Method} {Path} -> {Status} in {Ms}ms",\n        context.Request.Method, context.Request.Path,\n        context.Response.StatusCode, ms);\n});',
+        },
+        {
+          kind: 'paragraph',
+          text: 'A middleware is a function that takes the `HttpContext` and a `next` delegate. Calling `await next(context)` runs the rest of the pipeline; the code after it runs on the way back out. If you do **not** call `next`, you short-circuit the pipeline — useful for returning early, like blocking an unauthorized request.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Enabling CORS',
+          id: 'cors',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'builder.Services.AddCors(options =>\n{\n    options.AddPolicy("AllowFrontend", policy =>\n        policy.WithOrigins("https://app.example.com")\n              .AllowAnyHeader()\n              .AllowAnyMethod());\n});\n\n// later in the pipeline\napp.UseCors("AllowFrontend");',
+        },
+        {
+          kind: 'paragraph',
+          text: 'CORS (Cross-Origin Resource Sharing) controls which browser origins may call your API. You define a named policy at registration, then apply it with `UseCors`. This is essential when a frontend on one domain talks to your API on another.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'Short-circuiting changes the response',
+          text: 'If a middleware writes to the response and returns without calling `next`, no later middleware or endpoint runs. Be careful not to write to the response body and *then* call `next`, which can corrupt the output.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Use built-ins before writing your own',
+          text: 'ASP.NET Core ships middleware for logging, exception handling, CORS, auth, static files, and rate limiting. Reach for the built-in `app.Use...` first; write custom middleware only for genuinely app-specific cross-cutting concerns.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'A request flows through middleware in registration order, and the response flows back out in reverse.',
+            'A middleware is `(context, next) => ...`; `await next(context)` runs the rest of the pipeline.',
+            'Not calling `next` short-circuits the pipeline (early return / blocking).',
+            '`UseAuthentication` must come before `UseAuthorization`; exception handling goes near the top.',
+            'CORS, HTTPS redirection, logging, and auth are all middleware — order them deliberately.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-middleware-q1',
+          kind: 'mcq',
+          prompt: 'In the pipeline, which must be registered first?',
+          options: [
+            { label: '`UseAuthentication` before `UseAuthorization`', correct: true },
+            { label: '`UseAuthorization` before `UseAuthentication`' },
+            { label: 'They can be in any order' },
+            { label: '`UseCors` must always be last' },
+          ],
+          explanation: 'Authentication establishes *who* the user is (it sets `HttpContext.User`); authorization then decides *what* they may do. You cannot evaluate permissions before identity is known, so `UseAuthentication` must run first. The order of `app.Use...` calls is the order requests flow through.',
+        },
+        {
+          id: 'web-api-middleware-q2',
+          kind: 'mcq',
+          prompt: 'What happens if a middleware does NOT call `await next(context)`?',
+          options: [
+            { label: 'It short-circuits — the rest of the pipeline and the endpoint do not run', correct: true },
+            { label: 'The request is automatically retried' },
+            { label: 'It throws a NullReferenceException' },
+            { label: 'The next middleware runs twice' },
+          ],
+          explanation: 'Calling `next` is what passes control deeper into the pipeline. Skipping it short-circuits the request: no later middleware or endpoint executes, and whatever the current middleware wrote becomes the response. This is how you implement early returns like blocking an unauthorized request.',
+        },
+        {
+          id: 'web-api-middleware-q3',
+          kind: 'fill',
+          prompt: 'Complete the call that enables a named CORS policy in the pipeline.',
+          template: 'app.Use___("AllowFrontend");',
+          accept: ['Cors'],
+          explanation: '`app.UseCors("AllowFrontend")` activates a previously registered CORS policy in the middleware pipeline. The policy itself is defined with `AddCors` in `builder.Services`; `UseCors` is where it takes effect for incoming requests.',
+        },
+        {
+          id: 'web-api-middleware-q4',
+          kind: 'mcq',
+          prompt: 'In `app.Use(async (context, next) => { ...; await next(context); ... })`, when does the code AFTER `await next(context)` run?',
+          options: [
+            { label: 'On the way back out, after the rest of the pipeline has produced a response', correct: true },
+            { label: 'Before any other middleware runs' },
+            { label: 'Never — code after next is unreachable' },
+            { label: 'Only if an exception is thrown' },
+          ],
+          explanation: 'A middleware wraps the rest of the pipeline. Code before `await next` runs on the way in; `await next` runs everything deeper; then control returns and code after `await next` runs on the way out — when the response is available. This is why response-timing and logging middleware put their measurement after the `next` call.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-middleware-c1',
+          difficulty: 'easy',
+          title: 'Request logger',
+          prompt: 'Write an inline `app.Use` middleware that logs the HTTP method and path of every request, then calls `next` so the request proceeds normally.',
+          hints: ['Signature is `async (context, next) => { ... }`.', 'Read `context.Request.Method` and `context.Request.Path`.'],
+        },
+        {
+          id: 'web-api-middleware-c2',
+          difficulty: 'medium',
+          title: 'Timing middleware',
+          prompt: 'Extend your logger to measure how long each request takes. Capture a timestamp before `await next`, compute the elapsed milliseconds after it, and log it with the status code.',
+          hints: ['Code after `await next` runs on the way out.', 'Use `DateTime.UtcNow` or a `Stopwatch`.'],
+        },
+        {
+          id: 'web-api-middleware-c3',
+          difficulty: 'hard',
+          title: 'API-key gate',
+          prompt: 'Write middleware that checks for an `X-Api-Key` header equal to a known value. If missing or wrong, write a 401 and short-circuit (do NOT call next). Otherwise call next. Wire up CORS and your gate in the correct order.',
+          hints: ['Short-circuit by returning without calling `next`.', 'Set `context.Response.StatusCode = 401` before writing.'],
+        },
+      ],
+    },
+    {
+      slug: 'auth',
+      number: 7,
+      title: 'Authentication & Authorization',
+      objective: 'JWT tokens, [Authorize], policy-based authz.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'Authentication answers "who are you?"; authorization answers "what are you allowed to do?". The modern way to secure a REST API is with JWT bearer tokens: the client logs in once, gets a signed token, and sends it on every request. ASP.NET Core validates it for you.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'How JWT Bearer Auth Works',
+          id: 'jwt-flow',
+        },
+        {
+          kind: 'list',
+          ordered: true,
+          items: [
+            'Client POSTs credentials to a `/login` endpoint.',
+            'Server verifies them and returns a signed **JWT** (a JSON Web Token).',
+            'Client stores the token and sends it on every request as `Authorization: Bearer <token>`.',
+            'Server validates the signature and expiry on each request — no session storage needed.',
+            'The token’s **claims** (user id, roles) become `HttpContext.User`.',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'Stateless by design',
+          text: 'Because the token is signed and self-contained, the server does not store sessions — it just verifies the signature. This is what makes JWTs scale horizontally across many server instances.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Registering JWT Authentication',
+          id: 'register-jwt',
+        },
+        {
+          kind: 'code',
+          filename: 'Program.cs',
+          language: 'csharp',
+          code: 'using Microsoft.AspNetCore.Authentication.JwtBearer;\nusing Microsoft.IdentityModel.Tokens;\nusing System.Text;\n\nvar key = builder.Configuration["Jwt:Key"]!;\n\nbuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)\n    .AddJwtBearer(options =>\n    {\n        options.TokenValidationParameters = new TokenValidationParameters\n        {\n            ValidateIssuer = true,\n            ValidateAudience = true,\n            ValidateLifetime = true,\n            ValidateIssuerSigningKey = true,\n            ValidIssuer = "my-api",\n            ValidAudience = "my-client",\n            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))\n        };\n    });\n\nbuilder.Services.AddAuthorization();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'You register the JWT bearer scheme and tell it how to validate tokens: check the signature with your secret key, the issuer, the audience, and the expiry. Then add `app.UseAuthentication()` and `app.UseAuthorization()` to the pipeline (in that order, as you learned in Lesson 6).',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Protecting Endpoints',
+          id: 'protect',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: '// Minimal API\napp.MapGet("/me", (ClaimsPrincipal user) => user.Identity!.Name)\n   .RequireAuthorization();\n\n// Controller\n[Authorize]\n[HttpGet("orders")]\npublic IActionResult MyOrders() => Ok();\n\n// Anonymous escape hatch\n[AllowAnonymous]\n[HttpPost("login")]\npublic IActionResult Login(Credentials c) => Ok();',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Use `[Authorize]` on a controller or action — or `.RequireAuthorization()` on a minimal API endpoint — to require a valid token. `[AllowAnonymous]` opts a specific endpoint (like login) out. The signed-in user is available as a `ClaimsPrincipal`.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Roles and Policy-Based Authorization',
+          id: 'policies',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: '// Require a role\n[Authorize(Roles = "Admin")]\npublic IActionResult DeleteUser(int id) => Ok();\n\n// Define a policy from claims\nbuilder.Services.AddAuthorization(options =>\n{\n    options.AddPolicy("Adults", policy =>\n        policy.RequireClaim("age").RequireAssertion(ctx =>\n            int.Parse(ctx.User.FindFirst("age")!.Value) >= 18));\n});\n\n// Apply the policy\napp.MapGet("/lounge", () => "welcome").RequireAuthorization("Adults");',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Beyond a simple yes/no, authorization can require **roles** (`[Authorize(Roles = "Admin")]`) or named **policies** built from claims and custom logic. Policies centralize the rules — define `"Adults"` once and apply it anywhere — instead of scattering checks through your handlers.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'Protect your signing key',
+          text: 'The JWT signing key is a secret. Never hardcode it in source or commit it. Load it from configuration, environment variables, or a secret store. Anyone with the key can forge valid tokens.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'JWT bearer auth is stateless: the client sends `Authorization: Bearer <token>` on every request.',
+            'Register with `AddAuthentication(...).AddJwtBearer(...)` and validate signature, issuer, audience, and lifetime.',
+            'Add `UseAuthentication()` then `UseAuthorization()` to the pipeline.',
+            '`[Authorize]` / `.RequireAuthorization()` protect endpoints; `[AllowAnonymous]` opts out.',
+            'Use roles or named policies for fine-grained, reusable authorization rules — and keep the signing key secret.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-auth-q1',
+          kind: 'mcq',
+          prompt: 'What is the difference between authentication and authorization?',
+          options: [
+            { label: 'Authentication = who you are; authorization = what you are allowed to do', correct: true },
+            { label: 'They are two names for the same thing' },
+            { label: 'Authentication = permissions; authorization = identity' },
+            { label: 'Authorization always runs before authentication' },
+          ],
+          explanation: 'Authentication establishes identity (verifying credentials, reading the token into `HttpContext.User`), while authorization decides what that identity may do (roles, policies, `[Authorize]`). Because permissions depend on identity, authentication must happen first.',
+        },
+        {
+          id: 'web-api-auth-q2',
+          kind: 'mcq',
+          prompt: 'How does a client send a JWT on each request?',
+          options: [
+            { label: 'In the `Authorization: Bearer <token>` HTTP header', correct: true },
+            { label: 'As a `?token=` query parameter only' },
+            { label: 'In a server-side session cookie the API stores' },
+            { label: 'Embedded in the URL path' },
+          ],
+          explanation: 'JWT bearer authentication expects the token in the `Authorization` header with the `Bearer` scheme. Because the token is self-contained and signed, the server validates it without storing any session — making the approach stateless and scalable.',
+        },
+        {
+          id: 'web-api-auth-q3',
+          kind: 'fill',
+          prompt: 'Complete the minimal API call that requires a valid token to access an endpoint.',
+          template: 'app.MapGet("/me", () => "hi").Require___();',
+          accept: ['Authorization'],
+          explanation: '`.RequireAuthorization()` attaches an authorization requirement to a minimal API endpoint, rejecting requests without a valid authenticated principal. It is the minimal-API equivalent of putting `[Authorize]` on a controller action.',
+        },
+        {
+          id: 'web-api-auth-q4',
+          kind: 'mcq',
+          prompt: 'Why use a named policy like `RequireAuthorization("Adults")` instead of inline checks in each handler?',
+          options: [
+            { label: 'It centralizes the rule so it is defined once and reused, not scattered across handlers', correct: true },
+            { label: 'Inline checks are not allowed by the compiler' },
+            { label: 'Policies run faster than any other approach' },
+            { label: 'Policies remove the need for authentication' },
+          ],
+          explanation: 'A named policy defines the authorization logic in one place; every endpoint just references the name. This avoids duplicating claim checks throughout your code, makes the rules easy to audit, and lets you change the requirement in a single spot.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-auth-c1',
+          difficulty: 'easy',
+          title: 'Lock down an endpoint',
+          prompt: 'Register JWT bearer authentication and authorization, add `UseAuthentication`/`UseAuthorization`, and protect a GET `/me` endpoint with `.RequireAuthorization()`. Confirm an unauthenticated request gets 401.',
+          hints: ['Order matters: authentication before authorization.', 'Use `AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(...)`.'],
+        },
+        {
+          id: 'web-api-auth-c2',
+          difficulty: 'medium',
+          title: 'Issue a token at login',
+          prompt: 'Add a POST `/login` (marked `[AllowAnonymous]`) that, on valid fake credentials, builds and returns a signed JWT containing a `name` claim and a 1-hour expiry. Use it to call `/me`.',
+          hints: ['Use `JwtSecurityTokenHandler` and `SigningCredentials`.', 'Add claims like `new Claim(ClaimTypes.Name, username)`.'],
+        },
+        {
+          id: 'web-api-auth-c3',
+          difficulty: 'hard',
+          title: 'Role and policy authorization',
+          prompt: 'Add an `Admin`-only endpoint with `[Authorize(Roles = "Admin")]`, and define a named policy `"Adults"` that requires an `age` claim of 18+. Apply the policy to a `/lounge` endpoint and test both pass and fail cases.',
+          hints: ['Add the role/age claims when issuing the token.', 'Define the policy in `AddAuthorization(options => ...)`.'],
+        },
+      ],
+    },
+    {
+      slug: 'mini-project-api',
+      number: 8,
+      title: 'Mini-Project — Tasks REST API',
+      objective: 'CRUD a tasks list with EF Core + JWT auth.',
+      blocks: [
+        {
+          kind: 'lead',
+          text: 'Time to combine everything: routing, model binding, validation, dependency injection, EF Core persistence, and JWT authentication into one real Tasks REST API. By the end you will have a secured, database-backed service you could actually deploy.',
+        },
+        {
+          kind: 'paragraph',
+          text: 'The API lets an authenticated user create, read, update, and delete their own tasks. Each user only sees their own tasks. We will use **EF Core** for persistence (the .NET ORM, similar to SQLAlchemy) and JWT bearer tokens for auth.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The Entity and DbContext',
+          id: 'data-model',
+        },
+        {
+          kind: 'code',
+          filename: 'Data.cs',
+          language: 'csharp',
+          code: 'using Microsoft.EntityFrameworkCore;\n\npublic class TaskItem\n{\n    public int Id { get; set; }\n    public string Title { get; set; } = "";\n    public bool IsDone { get; set; }\n    public string OwnerId { get; set; } = "";\n}\n\npublic class AppDbContext : DbContext\n{\n    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }\n    public DbSet<TaskItem> Tasks => Set<TaskItem>();\n}',
+        },
+        {
+          kind: 'paragraph',
+          text: 'A `DbContext` is your gateway to the database; each `DbSet<T>` maps to a table. EF Core translates your LINQ queries into SQL. Register it in DI as Scoped (its default) so each request gets its own unit of work.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'Wiring It Up',
+          id: 'wiring',
+        },
+        {
+          kind: 'code',
+          filename: 'Program.cs',
+          language: 'csharp',
+          code: 'var builder = WebApplication.CreateBuilder(args);\n\nbuilder.Services.AddDbContext<AppDbContext>(o =>\n    o.UseSqlite("Data Source=tasks.db"));\n\nbuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)\n    .AddJwtBearer(/* validation params as in Lesson 7 */);\nbuilder.Services.AddAuthorization();\n\nvar app = builder.Build();\napp.UseAuthentication();\napp.UseAuthorization();',
+        },
+        {
+          kind: 'paragraph',
+          text: '`AddDbContext` registers the context and its database provider (SQLite here for simplicity — swap for `UseNpgsql` or `UseSqlServer` in production). Authentication and authorization are wired exactly as in Lesson 7.',
+        },
+        {
+          kind: 'heading',
+          level: 2,
+          text: 'The CRUD Endpoints',
+          id: 'endpoints',
+        },
+        {
+          kind: 'code',
+          language: 'csharp',
+          code: 'var tasks = app.MapGroup("/tasks").RequireAuthorization();\n\ntasks.MapGet("/", async (AppDbContext db, ClaimsPrincipal user) =>\n{\n    var owner = user.Identity!.Name!;\n    return Results.Ok(await db.Tasks.Where(t => t.OwnerId == owner).ToListAsync());\n});\n\ntasks.MapGet("/{id:int}", async (int id, AppDbContext db, ClaimsPrincipal user) =>\n{\n    var task = await db.Tasks.FindAsync(id);\n    if (task is null || task.OwnerId != user.Identity!.Name) return Results.NotFound();\n    return Results.Ok(task);\n});\n\ntasks.MapPost("/", async (CreateTask input, AppDbContext db, ClaimsPrincipal user) =>\n{\n    var task = new TaskItem { Title = input.Title, OwnerId = user.Identity!.Name! };\n    db.Tasks.Add(task);\n    await db.SaveChangesAsync();\n    return Results.Created($"/tasks/{task.Id}", task);\n});\n\ntasks.MapPut("/{id:int}", async (int id, UpdateTask input, AppDbContext db, ClaimsPrincipal user) =>\n{\n    var task = await db.Tasks.FindAsync(id);\n    if (task is null || task.OwnerId != user.Identity!.Name) return Results.NotFound();\n    task.Title = input.Title;\n    task.IsDone = input.IsDone;\n    await db.SaveChangesAsync();\n    return Results.Ok(task);\n});\n\ntasks.MapDelete("/{id:int}", async (int id, AppDbContext db, ClaimsPrincipal user) =>\n{\n    var task = await db.Tasks.FindAsync(id);\n    if (task is null || task.OwnerId != user.Identity!.Name) return Results.NotFound();\n    db.Tasks.Remove(task);\n    await db.SaveChangesAsync();\n    return Results.NoContent();\n});\n\nrecord CreateTask(string Title);\nrecord UpdateTask(string Title, bool IsDone);',
+        },
+        {
+          kind: 'paragraph',
+          text: 'Every endpoint is in a `MapGroup("/tasks")` that requires authorization, so a token is mandatory for all of them. Each query is filtered by `OwnerId == user.Identity.Name`, so users only ever touch their own tasks. The `DbContext` is injected per request, EF Core tracks changes, and `SaveChangesAsync` writes them in one transaction.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'Always scope by owner',
+          text: 'Filtering every query by the authenticated user’s id is what enforces data isolation. Forgetting it is a classic vulnerability (insecure direct object reference) — checking the token is not enough if any user can read any record by guessing an id.',
+        },
+        {
+          kind: 'callout',
+          tone: 'note',
+          title: 'Migrations create the schema',
+          text: 'Run `dotnet ef migrations add Init` then `dotnet ef database update` to create the SQLite database from your entities — the EF Core equivalent of Alembic migrations in Python.',
+        },
+        {
+          kind: 'keyTakeaways',
+          items: [
+            'A `DbContext` + `DbSet<T>` maps entities to tables; register it with `AddDbContext` (Scoped).',
+            'Use `MapGroup("/tasks").RequireAuthorization()` to secure a whole resource at once.',
+            'Filter every query by the authenticated owner to enforce data isolation.',
+            'EF Core tracks changes; `SaveChangesAsync` persists them in a transaction.',
+            'Use migrations (`dotnet ef ...`) to create and evolve the database schema.',
+          ],
+        },
+      ],
+      questions: [
+        {
+          id: 'web-api-mini-project-api-q1',
+          kind: 'mcq',
+          prompt: 'What is the role of a `DbContext` in EF Core?',
+          options: [
+            { label: 'It is the gateway to the database; its `DbSet<T>` properties map to tables and track changes', correct: true },
+            { label: 'It stores JWT tokens for the session' },
+            { label: 'It is the middleware that handles CORS' },
+            { label: 'It is a controller base class' },
+          ],
+          explanation: 'A `DbContext` represents a session with the database. Each `DbSet<T>` corresponds to a table, change tracking records modifications to loaded entities, and `SaveChangesAsync` flushes them as SQL in a transaction. It is roughly the SQLAlchemy `Session` of the .NET world.',
+        },
+        {
+          id: 'web-api-mini-project-api-q2',
+          kind: 'mcq',
+          prompt: 'Why does every task query include `Where(t => t.OwnerId == user.Identity.Name)`?',
+          options: [
+            { label: 'To ensure each user can only access their own tasks (data isolation)', correct: true },
+            { label: 'To make the SQL query run faster' },
+            { label: 'Because EF Core requires a Where on every query' },
+            { label: 'To convert the token into a database row' },
+          ],
+          explanation: 'Requiring a valid token proves identity but does not stop user A from requesting user B’s task by id. Filtering by `OwnerId` enforces that users only see their own data, closing an insecure-direct-object-reference hole. This owner-scoping must be applied on every read and write.',
+        },
+        {
+          id: 'web-api-mini-project-api-q3',
+          kind: 'fill',
+          prompt: 'Complete the call that persists tracked changes to the database asynchronously.',
+          template: 'db.Tasks.Add(task);\nawait db.___();',
+          accept: ['SaveChangesAsync'],
+          explanation: '`SaveChangesAsync` flushes all tracked inserts, updates, and deletes to the database in a single transaction. Until you call it, `Add`/`Remove`/property edits only change EF Core’s in-memory tracking, not the actual database.',
+        },
+        {
+          id: 'web-api-mini-project-api-q4',
+          kind: 'mcq',
+          prompt: 'What does `app.MapGroup("/tasks").RequireAuthorization()` accomplish?',
+          options: [
+            { label: 'It prefixes all the group’s routes with /tasks and requires a valid token for every one', correct: true },
+            { label: 'It creates the tasks database table' },
+            { label: 'It disables authentication for the tasks routes' },
+            { label: 'It registers the DbContext in DI' },
+          ],
+          explanation: '`MapGroup` shares a common URL prefix across endpoints, and chaining `RequireAuthorization()` applies the auth requirement to the entire group at once. This is cleaner than annotating each endpoint individually and guarantees none of the tasks routes is accidentally left open.',
+        },
+      ],
+      challenges: [
+        {
+          id: 'web-api-mini-project-api-c1',
+          difficulty: 'easy',
+          title: 'Step 1 — Project and data model',
+          prompt: 'Create a new web API project. Define the `TaskItem` entity and `AppDbContext` with a `DbSet<TaskItem>`. Register it with `AddDbContext` using SQLite, then add an EF Core migration and update the database.',
+          hints: ['`AddDbContext<AppDbContext>(o => o.UseSqlite("Data Source=tasks.db"))`.', 'Run `dotnet ef migrations add Init` and `dotnet ef database update`.'],
+        },
+        {
+          id: 'web-api-mini-project-api-c2',
+          difficulty: 'medium',
+          title: 'Step 2 — CRUD endpoints',
+          prompt: 'Build the five endpoints under a `MapGroup("/tasks")`: list, get-by-id, create, update, delete. Inject the `AppDbContext`, use async EF Core methods, and return the correct `Results.*` (Ok, Created, NoContent, NotFound). Use a `CreateTask` DTO with validation on Title.',
+          hints: ['Inject `AppDbContext db` into each handler.', 'Use `await db.SaveChangesAsync()` after every mutation.'],
+        },
+        {
+          id: 'web-api-mini-project-api-c3',
+          difficulty: 'hard',
+          title: 'Step 3 — Secure it with JWT + owner scoping',
+          prompt: 'Add JWT bearer auth and a `/login` endpoint that issues a token with a name claim. Call `.RequireAuthorization()` on the tasks group, set `OwnerId` from `user.Identity.Name` on create, and filter every query by owner so users only access their own tasks. Verify another user cannot read or delete your tasks.',
+          hints: ['Reuse the JWT setup from Lesson 7.', 'Add `.Where(t => t.OwnerId == owner)` to reads and check ownership before update/delete.'],
+        },
+      ],
+    },
+  ],
+  projects: [
+    {
+      id: 'web-api-project-tasks-api',
+      difficulty: 'intermediate',
+      title: 'Production-Ready Tasks API',
+      brief:
+        'Take the mini-project Tasks API to production quality: full CRUD, JWT auth with login, EF Core persistence, validation, and proper status codes. Each user manages only their own tasks.',
+      requirements: [
+        'EF Core `DbContext` with a `TaskItem` entity, registered as Scoped via `AddDbContext`.',
+        'A `/login` endpoint that verifies credentials and returns a signed JWT with a name claim and expiry.',
+        'CRUD endpoints under a `MapGroup("/tasks").RequireAuthorization()` group.',
+        'Request DTOs with data-annotation validation; reject invalid input with 400.',
+        'Every query scoped to the authenticated owner; return 404 (not 403) for tasks owned by others.',
+        'Correct status codes: 200, 201 (with Location), 204, 400, 401, 404.',
+      ],
+      stretch: [
+        'Add paging and filtering (e.g. `?done=true`) to the list endpoint.',
+        'Add a refresh-token flow so access tokens can be short-lived.',
+        'Add request-timing and structured logging middleware.',
+        'Swap SQLite for PostgreSQL with `UseNpgsql` and a connection string from configuration.',
+      ],
+      concepts: ['Minimal APIs', 'EF Core', 'JWT auth', 'Model binding & validation', 'Dependency injection', 'Middleware'],
+    },
+    {
+      id: 'web-api-project-url-shortener',
+      difficulty: 'starter',
+      title: 'URL Shortener Microservice',
+      brief:
+        'Build a small public microservice that shortens URLs. POST a long URL and get a short code back; GET the short code to be redirected. A great minimal-API-first project.',
+      requirements: [
+        'POST `/shorten` accepts a JSON body with a `url`, validates it, stores it, and returns a short code.',
+        'GET `/{code}` looks up the code and returns `Results.Redirect(longUrl)` (or 404 if unknown).',
+        'Persist mappings (in-memory dictionary to start, then EF Core).',
+        'Validate the incoming URL with a data annotation or explicit check.',
+      ],
+      stretch: [
+        'Add a hit counter per short code and a GET `/{code}/stats` endpoint.',
+        'Add CORS so a browser frontend on another origin can call it.',
+        'Add simple rate limiting middleware.',
+      ],
+      concepts: ['Minimal APIs', 'Routing', 'Model binding & validation', 'Middleware', 'EF Core'],
+    },
+  ],
+  outline: [],
 };
