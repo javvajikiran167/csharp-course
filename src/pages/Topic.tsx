@@ -13,6 +13,7 @@ import {
   ProgressBar,
 } from '@/components/primitives';
 import { LessonTimeline } from '@/components/course/LessonTimeline';
+import { ProjectList } from '@/components/course/ProjectList';
 import { LockedNotice } from '@/components/course/LockedNotice';
 import { inline } from '@/lib/inline';
 import { isLessonComplete, QUIZ_PASS_PCT } from '@/lib/completion';
@@ -219,6 +220,11 @@ export function Topic() {
             )}
           </div>
         </section>
+      )}
+
+      {/* ── Topic projects (larger end-of-topic builds) ──────── */}
+      {topic.projects && topic.projects.length > 0 && (
+        <ProjectList projects={topic.projects} />
       )}
     </div>
   );

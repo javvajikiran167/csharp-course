@@ -210,4 +210,101 @@ switch (score)
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `int day = 5;
+
+switch (day)
+{
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        Console.WriteLine("Weekday");
+        break;
+    case 6:
+    case 7:
+        Console.WriteLine("Weekend");
+        break;
+    default:
+        Console.WriteLine("?");
+        break;
+}`,
+      options: [
+        { label: 'Weekday', correct: true },
+        { label: 'Weekend' },
+        { label: '?' },
+        { label: 'Weekday\\nWeekend' },
+      ],
+      explanation:
+        '`day = 5` matches `case 5`. The cases `1, 2, 3, 4` above are stacked with empty bodies — execution falls into the shared body that prints `"Weekday"`, then `break` exits.',
+    },
+    {
+      id: 'q2',
+      kind: 'mcq',
+      prompt: 'What happens if you remove the `break` from `case 1` in a C# `switch`?',
+      options: [
+        { label: 'It falls through to case 2 silently.' },
+        { label: 'It causes a compile error.', correct: true },
+        { label: 'It throws an exception at runtime.' },
+        { label: 'Nothing — break is optional.' },
+      ],
+      explanation:
+        'Unlike C and Java, C# **forbids implicit fall-through**. The compiler issues error **CS0163**: *"Control cannot fall through from one case label to another"*. This prevents the entire class of fall-through bugs.',
+    },
+    {
+      id: 'q3',
+      kind: 'mcq',
+      prompt: "Which of these will **not** compile in a `switch`?",
+      options: [
+        { label: '`int`' },
+        { label: '`string`' },
+        { label: '`enum`' },
+        { label: '`double` with non-constant case values', correct: true },
+      ],
+      explanation:
+        'You CAN switch on `double`, but each case must be a **constant**. Switching on a value where cases are non-constant expressions (`case someVariable:`) won\'t work. For ranges or computed conditions, use `when` clauses or `switch` expressions (next lesson).',
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'Day name from number',
+      prompt:
+        'Read an integer 1-7. Print the matching day name (`Monday` through `Sunday`). For any other number, print `Invalid day`. Use a single `switch`.',
+      hints: [
+        'Seven `case` blocks plus `default`.',
+        'Each ends with `break`.',
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'Calculator with operators',
+      prompt:
+        'Read two numbers and an operator (`+`, `-`, `*`, `/`). Use a `switch` on the operator to compute and print the result. For unknown operators, print an error. For division, watch out for divide-by-zero.',
+      hints: [
+        '`switch` on the operator character — `case "+":`, `case "-":`, etc.',
+        'In the `/` case, check `if (b == 0) { Console.WriteLine("Cannot divide by zero"); break; }`.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Grade with `when`',
+      prompt:
+        'Read a score (0-100). Use a single `switch` with `when` clauses to classify it as A (90+), B (80+), C (70+), D (60+), F (below 60), or `Invalid` (out of range).',
+      hints: [
+        '`case int n when n >= 90:` and so on.',
+        'Make `Invalid` the `default` or use `when` for `< 0 || > 100`.',
+      ],
+    },
+  ],
 };

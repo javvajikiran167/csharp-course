@@ -239,4 +239,106 @@ static string Discount(int age, bool isMember, double total)
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `int score = 85;
+
+if (score >= 50)
+{
+    Console.WriteLine("Pass");
+}
+else if (score >= 80)
+{
+    Console.WriteLine("Excellent");
+}
+else
+{
+    Console.WriteLine("Fail");
+}`,
+      options: [
+        { label: 'Pass', correct: true },
+        { label: 'Excellent' },
+        { label: 'Pass\\nExcellent' },
+        { label: 'Fail' },
+      ],
+      explanation:
+        '`85 >= 50` is true, so the first branch matches — and **the first matching branch wins**. The `>= 80` branch never executes even though it would also be true. Reorder to `>= 80` first if you want the more specific case to win.',
+    },
+    {
+      id: 'q2',
+      kind: 'mcq',
+      prompt:
+        "Which of these is the strongest reason to use guard clauses (early `return`) instead of nested `if` blocks?",
+      options: [
+        { label: 'Guard clauses are faster at runtime.' },
+        {
+          label: 'Guard clauses keep the happy path flat and readable, easier to maintain.',
+          correct: true,
+        },
+        { label: 'Nested ifs are a compile warning.' },
+        { label: 'Guard clauses use less memory.' },
+      ],
+      explanation:
+        'Performance is identical. The win is **readability** — the main success path stays at one indentation level, and each pre-condition exits immediately. This is one of the most common style-related interview discussions.',
+    },
+    {
+      id: 'q3',
+      kind: 'predict',
+      prompt: "What's wrong with this code?",
+      code: `int age = 15;
+if (age >= 18)
+    Console.WriteLine("Adult");
+    Console.WriteLine("Welcome");`,
+      options: [
+        { label: 'Compile error — missing braces' },
+        {
+          label: 'Always prints "Welcome", even for age 15 — only the first line is inside the if',
+          correct: true,
+        },
+        { label: 'Prints both lines for any age' },
+        { label: 'Prints nothing' },
+      ],
+      explanation:
+        'Without braces, only the **next statement** is inside the `if`. The indentation is misleading — `Console.WriteLine("Welcome")` always runs. This is the kind of bug braces prevent.',
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'FizzBuzz mini',
+      prompt:
+        "Read a number. If it's divisible by 3, print `Fizz`. If divisible by 5, print `Buzz`. If divisible by both, print `FizzBuzz`. Otherwise print the number. Use `if/else if/else`.",
+      hints: [
+        '**Check the both case first** — that\'s the most specific.',
+        '`n % 3 == 0 && n % 5 == 0` for "both"; `n % 15 == 0` works too.',
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'Grade calculator with guard clauses',
+      prompt:
+        'Read a score (0-100). If the input is outside that range, print `Invalid score` and exit. Otherwise print the letter grade (A 90+, B 80+, C 70+, D 60+, F below). Use **guard clauses** for the invalid case, not nested ifs.',
+      hints: [
+        '`if (score < 0 || score > 100) { Console.WriteLine("..."); return; }` — guard first, then the grade chain.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Triangle classifier',
+      prompt:
+        "Read three side lengths. First check whether they form a valid triangle (sum of any two > the third). If invalid, print `Not a triangle`. If valid, classify as `Equilateral` (all three equal), `Isosceles` (exactly two equal), or `Scalene` (none equal).",
+      hints: [
+        'Validity check is a single bool: `a + b > c && a + c > b && b + c > a`.',
+        'For classification, use `else if` from most specific (equilateral) to least specific (scalene).',
+      ],
+    },
+  ],
 };

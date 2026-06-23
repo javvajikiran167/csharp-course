@@ -215,4 +215,93 @@ Console.WriteLine(arr1.SequenceEqual(arr2));  // True (content comparison)`,
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `int x = 5;
+int y = 5;
+Console.WriteLine(x == y);
+Console.WriteLine(x.Equals(y));`,
+      options: [
+        { label: 'True\\nTrue', correct: true },
+        { label: 'True\\nFalse' },
+        { label: 'False\\nTrue' },
+        { label: 'Compile error' },
+      ],
+      explanation:
+        'For value types like `int`, both `==` and `.Equals()` compare values — they give the same result. The trickiness only appears for reference types like custom classes or arrays.',
+    },
+    {
+      id: 'q2',
+      kind: 'mcq',
+      prompt:
+        "You write `if (age > 0 < 100)` to check that age is between 0 and 100. What happens?",
+      options: [
+        { label: 'It works correctly.' },
+        {
+          label: 'It is a compile error — comparison results cannot be compared again.',
+          correct: true,
+        },
+        { label: 'It compiles but always returns true.' },
+        { label: 'It compiles but is a runtime error.' },
+      ],
+      explanation:
+        '`age > 0` returns a `bool`, and you cannot compare a `bool` to an `int` with `<`. C# rejects this at compile time. The fix is `age > 0 && age < 100`.',
+    },
+    {
+      id: 'q3',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `int[] a = { 1, 2, 3 };
+int[] b = { 1, 2, 3 };
+Console.WriteLine(a == b);`,
+      options: [
+        { label: 'True' },
+        { label: 'False', correct: true },
+        { label: 'Throws an exception' },
+        { label: '1, 2, 3' },
+      ],
+      explanation:
+        'Arrays are reference types. `a` and `b` are two different arrays in memory with the same contents — `==` compares references, so this is `False`. To compare contents, use `a.SequenceEqual(b)` (from `System.Linq`).',
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'Voting age check',
+      prompt:
+        'Read the user\'s age (or hard-code it for now). Compute `bool canVote = age >= 18;` and print it with a label, for example `Console.WriteLine($"Can vote: {canVote}");` — the output will be `Can vote: True` or `Can vote: False`. (You\'ll turn this into a proper two-way message next lesson.)',
+      hints: [
+        'Use `>= 18`.',
+        '`Console.WriteLine` accepts a bool and prints `True`/`False` — embed it in an interpolated string with a label.',
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'Comfortable room',
+      prompt:
+        'Read a temperature in Celsius. Print `Too cold`, `Comfortable`, or `Too hot`. Comfortable is **18 to 26 (inclusive)**. Use comparison + `&&` rather than nested ifs (you will learn `if/else` next lesson — for now, three boolean variables and three `WriteLine` calls work fine).',
+      hints: [
+        'Three booleans: `tooCold`, `comfortable`, `tooHot`.',
+        'Range check: `temp >= 18 && temp <= 26`.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Triangle validity',
+      prompt:
+        "Read three side lengths. A triangle is valid if **every pair of sides sums to more than the third side**. Print whether the three lengths can form a triangle. Combine three comparisons with `&&`.",
+      hints: [
+        'a + b > c AND a + c > b AND b + c > a',
+        'Read sides as `double`.',
+      ],
+    },
+  ],
 };

@@ -217,4 +217,102 @@ Console.WriteLine(IsValidEmail("a@b.co"));   // True`,
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt:
+        "Given `input` is `null`, what happens?",
+      code: `string? input = null;
+if (input != null && input.Length > 0)
+{
+    Console.WriteLine("has input");
+}
+else
+{
+    Console.WriteLine("no input");
+}`,
+      options: [
+        { label: 'Prints `has input`' },
+        { label: 'Prints `no input`', correct: true },
+        { label: 'Throws NullReferenceException' },
+        { label: 'Compile error' },
+      ],
+      explanation:
+        'Short-circuit `&&` evaluates `input != null` first → `false` → skips `input.Length`. No crash. The `else` branch runs. This is the exact reason short-circuit exists.',
+    },
+    {
+      id: 'q2',
+      kind: 'predict',
+      prompt: "Same scenario, but with `&` (single):",
+      code: `string? input = null;
+if (input != null & input.Length > 0)
+{
+    Console.WriteLine("has input");
+}
+else
+{
+    Console.WriteLine("no input");
+}`,
+      options: [
+        { label: 'Prints `no input`' },
+        { label: 'Prints `has input`' },
+        { label: 'Throws NullReferenceException', correct: true },
+        { label: 'Compile error' },
+      ],
+      explanation:
+        '`&` does NOT short-circuit. Both `input != null` AND `input.Length > 0` are evaluated — and `input.Length` on a null reference throws `NullReferenceException`. **Always prefer `&&` over `&` for boolean logic.**',
+    },
+    {
+      id: 'q3',
+      kind: 'mcq',
+      prompt:
+        'Which expression is logically equivalent to `!(a >= 0 && a <= 100)`?',
+      options: [
+        { label: '`a > 0 && a < 100`' },
+        { label: '`a > 0 || a < 100`' },
+        { label: '`a < 0 || a > 100`', correct: true },
+        { label: '`!a >= 0 && !a <= 100`' },
+      ],
+      explanation:
+        "By De Morgan's law: `!(A && B) ≡ !A || !B`. So `!(a >= 0 && a <= 100)` becomes `a < 0 || a > 100`. This refactor comes up constantly when simplifying validation logic.",
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'Print only valid input',
+      prompt:
+        "Read a line of input (which is `string?`). Print it ONLY if it is not null and is at least 3 characters long. Otherwise print `Invalid`. Use a single `if` with `&&`.",
+      hints: [
+        '`if (input != null && input.Length >= 3)` — order matters!',
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'Email looks valid?',
+      prompt:
+        "Write a method `bool LooksValid(string? email)` that returns `true` only if email is non-empty, contains `@`, and is at least 5 characters long. Use `&&` and short-circuit. Test with `null`, `\"\"`, `\"a@b.co\"`, `\"nope\"`.",
+      hints: [
+        'First condition: `!string.IsNullOrWhiteSpace(email)` — this also handles null',
+        'Order: null/empty check → contains check → length check.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Side-effect demo',
+      prompt:
+        "Write a method `bool Loud(string label, bool result)` that prints `→ {label}` and returns `result`. Then write three `bool` lines:\n\n1. `bool a = Loud(\"A\", false) && Loud(\"B\", true);`\n2. `bool b = Loud(\"A\", true) || Loud(\"B\", false);`\n3. `bool c = Loud(\"A\", true) & Loud(\"B\", false);`\n\nObserve the order of printed labels to prove short-circuit behavior. Explain in comments what each one shows.",
+      hints: [
+        'Test 1: only `→ A` should print (false short-circuits `&&`).',
+        'Test 2: only `→ A` should print (true short-circuits `||`).',
+        'Test 3: both print (`&` is eager).',
+      ],
+    },
+  ],
 };

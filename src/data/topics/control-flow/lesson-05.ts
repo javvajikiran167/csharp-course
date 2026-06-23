@@ -227,4 +227,105 @@ Console.WriteLine(shipping);   // express`,
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `int n = 75;
+string label = n switch
+{
+    >= 90 => "A",
+    >= 80 => "B",
+    >= 70 => "C",
+    _     => "F"
+};
+Console.WriteLine(label);`,
+      options: [
+        { label: 'A' },
+        { label: 'B' },
+        { label: 'C', correct: true },
+        { label: 'F' },
+      ],
+      explanation:
+        'Arms are evaluated **top-to-bottom**. `75` is not `>= 90`, not `>= 80`, but is `>= 70` — the third arm matches and returns `"C"`. Once an arm matches, the rest are skipped.',
+    },
+    {
+      id: 'q2',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `bool isAdmin = false;
+bool isPremium = false;
+
+string tier = (isAdmin, isPremium) switch
+{
+    (true, _)      => "admin",
+    (false, true)  => "premium",
+    (false, false) => "free"
+};
+Console.WriteLine(tier);`,
+      options: [
+        { label: 'admin' },
+        { label: 'premium' },
+        { label: 'free', correct: true },
+        { label: 'Compile error' },
+      ],
+      explanation:
+        'The tuple `(false, false)` matches the third arm. `(true, _)` is "admin is true, premium is anything" — does not match. The compiler also approves the switch as exhaustive because every `bool` × `bool` combination is covered.',
+    },
+    {
+      id: 'q3',
+      kind: 'mcq',
+      prompt:
+        "Your switch expression maps a status code (`int`) to a message and returns it from a method. You forget the `_` (discard) arm. What happens?",
+      options: [
+        { label: 'It compiles; unknown codes return null.' },
+        { label: 'It compiles; unknown codes return 0.' },
+        {
+          label: 'You get a compile warning about non-exhaustive patterns; at runtime, an unknown code throws `SwitchExpressionException`.',
+          correct: true,
+        },
+        { label: 'Compile error — you cannot have a non-exhaustive switch.' },
+      ],
+      explanation:
+        'The compiler warns that the switch is **non-exhaustive** for `int`. At runtime, an unmatched value throws `SwitchExpressionException`. **Always include `_`** for any switch on `int`, `string`, or other open-ended types.',
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'Color hex lookup',
+      prompt:
+        'Read a color name (`red`, `green`, `blue`, `white`, `black`). Use a switch **expression** to return its hex string. Unknown colors return `"#????"`.',
+      hints: [
+        '`string hex = color switch { "red" => "#FF0000", ... };`',
+        "Don't forget the `_` arm.",
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'FizzBuzz with switch expression',
+      prompt:
+        'Print the FizzBuzz output for numbers 1 to 20 using a switch expression that returns the right string per number. Use the `when` clause or modulo arms.',
+      hints: [
+        '`var line = i switch { _ when i % 15 == 0 => "FizzBuzz", _ when i % 3 == 0 => "Fizz", ... };`',
+        'Loop with `for (int i = 1; i <= 20; i++)`.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Login outcome tuple',
+      prompt:
+        "Imagine three booleans: `validUser`, `correctPassword`, `accountLocked`. Use a tuple pattern switch expression to return one of: `\"Welcome\"`, `\"Invalid credentials\"`, `\"Account locked\"`, `\"Unknown error\"`. List the cases in a sensible priority order.",
+      hints: [
+        '`(validUser, correctPassword, accountLocked) switch { (_, _, true) => "Account locked", ... };`',
+        '`accountLocked` should win over the others — check it first.',
+      ],
+    },
+  ],
 };

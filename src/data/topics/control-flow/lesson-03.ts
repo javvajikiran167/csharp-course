@@ -203,4 +203,92 @@ Console.WriteLine(realLen);           // 5`,
       ],
     },
   ],
+
+  questions: [
+    {
+      id: 'q1',
+      kind: 'predict',
+      prompt: 'What does this print?',
+      code: `string? name = null;
+string display = name ?? "Guest";
+Console.WriteLine(display);`,
+      options: [
+        { label: 'null' },
+        { label: 'Guest', correct: true },
+        { label: 'Empty line' },
+        { label: 'Throws NullReferenceException' },
+      ],
+      explanation:
+        '`name` is `null`, so `??` returns the right side: `"Guest"`. No crash, no null check needed — that\'s the win.',
+    },
+    {
+      id: 'q2',
+      kind: 'predict',
+      prompt: 'What does `result` equal?',
+      code: `string? a = null;
+string? b = "second";
+string? c = "third";
+string result = a ?? b ?? c;`,
+      options: [
+        { label: '"second"', correct: true },
+        { label: '"third"' },
+        { label: 'null' },
+        { label: 'A combined string "secondthird"' },
+      ],
+      explanation:
+        '`??` is **right-associative** and **short-circuits** at the first non-null. `a` is null, so check `b`; `b` is `"second"` (non-null) — return it. `c` is never evaluated.',
+    },
+    {
+      id: 'q3',
+      kind: 'mcq',
+      prompt:
+        "Your colleague writes `int max = a > b ? a > c ? a : c : b > c ? b : c;`. What should you suggest in code review?",
+      options: [
+        { label: 'Looks good — concise.' },
+        {
+          label: 'Refactor with `Math.Max` or an `if/else` — nested ternaries hurt readability.',
+          correct: true,
+        },
+        { label: 'Add a comment and merge it.' },
+        { label: 'Inline the values to make it shorter.' },
+      ],
+      explanation:
+        "Nested ternaries are notorious for being write-once, read-never. Suggest `Math.Max(a, Math.Max(b, c))` or three lines of `if/else`. **One level deep is the limit** for ternaries.",
+    },
+  ],
+
+  challenges: [
+    {
+      id: 'c1',
+      difficulty: 'easy',
+      title: 'Even/odd ternary',
+      prompt:
+        "Read an integer. Use a single line with `?:` to print `Even` or `Odd`.",
+      hints: [
+        '`Console.WriteLine(n % 2 == 0 ? "Even" : "Odd");`',
+      ],
+    },
+    {
+      id: 'c2',
+      difficulty: 'medium',
+      title: 'Friendly username',
+      prompt:
+        "Ask the user for their name. Use `??` to turn the `string?` from `Console.ReadLine()` into a non-null string, then use a ternary with `string.IsNullOrWhiteSpace` to substitute `Friend` when they just pressed Enter. (Notice why `??` alone is not enough: an empty Enter gives `\"\"`, not `null`.)",
+      hints: [
+        '`Console.ReadLine()` returns `string?` in modern .NET.',
+        '`string? typed = Console.ReadLine(); string name = string.IsNullOrWhiteSpace(typed) ? "Friend" : typed;` — combine with a ternary because `??` only catches null, not empty strings.',
+      ],
+    },
+    {
+      id: 'c3',
+      difficulty: 'hard',
+      title: 'Lazy welcome message',
+      prompt:
+        "Declare `string? message = null;`. Use `??=` to assign `\"Welcome\"` to it the first time, then `??=` to *try* to assign `\"Hello again\"` — show that the second assignment does nothing. Print `message` after each step.",
+      hints: [
+        '`??=` only assigns if the left side is currently null.',
+        'Two `Console.WriteLine` calls to prove the second assignment was a no-op.',
+      ],
+    },
+  ],
 };
