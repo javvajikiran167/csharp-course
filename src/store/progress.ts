@@ -91,6 +91,20 @@ function mergeRecords(a?: LessonRecord, b?: LessonRecord): LessonRecord {
   };
 }
 
+// Compare the meaningful fields of two records (ignoring the informational
+// visitedAt) so hydrate only re-uploads rows that actually differ from the
+// server — avoids a redundant write per lesson on every sign-in.
+function recordsEqual(a?: LessonRecord, b?: LessonRecord): boolean {
+  if (!a || !b) return false;
+  return (
+    a.visited === b.visited &&
+    a.quizDone === b.quizDone &&
+    a.practiceDone === b.practiceDone &&
+    a.quizScore === b.quizScore &&
+    a.totalQuestions === b.totalQuestions
+  );
+}
+
 function readLegacyLocal(): Record<string, LessonRecord> {
   try {
     const raw = localStorage.getItem(LEGACY_KEY);
@@ -124,17 +138,32 @@ export const useProgress = create<ProgressState>()((set, get) => {
       const legacy = readLegacyLocal();
       const legacySlugs = Object.keys(legacy);
 
-      const slugs = new Set([...Object.keys(server), ...legacySlugs]);
+      // Optimistic records made BEFORE hydrate set userId — e.g. the visit to
+      // the lesson the learner deep-linked to or refreshed on. markLessonVisited
+      // ran while userId was still null, so sync() skipped the write. Fold those
+      // in here (don't clobber them with server-only data) and push them up below.
+      const local = get().lessons;
+
+      const slugs = new Set([
+        ...Object.keys(server),
+        ...legacySlugs,
+        ...Object.keys(local),
+      ]);
       const lessons: Record<string, LessonRecord> = {};
       for (const slug of slugs) {
-        lessons[slug] = mergeRecords(server[slug], legacy[slug]);
+        lessons[slug] = mergeRecords(mergeRecords(server[slug], legacy[slug]), local[slug]);
       }
       set({ lessons, hydrated: true });
 
-      // One-time migration of pre-account progress: push the merged result up so
-      // the server becomes authoritative, then drop the old local blob.
+      // Persist anything the server doesn't already have in identical form:
+      // legacy pre-account progress AND pre-hydrate optimistic visits. Without
+      // this, the lesson a learner lands on directly never gets recorded.
+      for (const slug of slugs) {
+        if (!recordsEqual(server[slug], lessons[slug])) {
+          void upsertLessonProgress(userId, slug, lessons[slug]);
+        }
+      }
       if (legacySlugs.length) {
-        for (const slug of slugs) void upsertLessonProgress(userId, slug, lessons[slug]);
         try {
           localStorage.removeItem(LEGACY_KEY);
         } catch {
