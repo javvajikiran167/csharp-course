@@ -5,9 +5,19 @@ people coming from Python or no programming background at all — all the way to
 **job-ready .NET developer**. Every lesson works two ways: as a script a teacher
 can teach live from, and as standalone reading a student can self-study.
 
-**▶ Live site: https://javvajikiran167.github.io/csharp-course/**
+## ▶ Start learning
 
-Built and taught by **Kiran Javvaji**, targeting modern **.NET 10 / C# 14**.
+**Access the course here → https://javvajikiran167.github.io/csharp-course/**
+
+No setup, no cost. Open the link in any browser and start from the first lesson.
+
+What to expect:
+- **Free, forever** — no ads, no paywall, no sign-up required to read.
+- **Beginner-friendly** — starts before C# itself, with programming foundations.
+- **Hands-on** — quizzes, practice problems, and projects in every topic.
+- **Modern** — built on **.NET 10 / C# 14**, the current long-term-support release.
+
+Built and taught by **Kiran Javvaji**.
 
 ---
 
