@@ -9,6 +9,8 @@ import { lesson07 } from './lesson-07';
 import { lesson08 } from './lesson-08';
 import { lesson09 } from './lesson-09';
 
+// Assessment is per-lesson (each lesson carries its own inline quiz + practice).
+// The topic keeps the larger end-of-topic projects, shown on the topic overview page.
 export const foundations: Topic = {
   slug: 'foundations',
   title: 'Foundations of C#',
@@ -26,224 +28,58 @@ export const foundations: Topic = {
     lesson08,
     lesson09,
   ],
+  projects: [
+    {
+      id: 'foundations-proj-1',
+      difficulty: 'starter',
+      title: 'Receipt & Change Calculator',
+      brief:
+        'Build a console program that prices a small shopping basket — subtotal, tax, total, and the change owed from cash tendered. It is the most realistic first program you can write with only variables, arithmetic, and formatting, and it forces you to pick the right numeric type for money.',
+      requirements: [
+        'Declare a `const decimal TaxRate` (e.g. 0.08m) at the top — a named constant, not a magic number.',
+        'Hardcode (or read) 2-3 items as `(name, unitPrice, quantity)` and compute the subtotal with `decimal` arithmetic — explain in a comment why `decimal` is correct for money and `double` is not.',
+        'Compute tax = subtotal * TaxRate and total = subtotal + tax.',
+        'Read a `cashGiven` amount and compute change = cashGiven - total; if it is negative, print `"Insufficient funds"` instead.',
+        'Print a tidy, aligned receipt using string interpolation with currency formatting (`{total:C}`), one line per item plus subtotal, tax, total, and change.',
+      ],
+      stretch: [
+        'Add a tip: read a tip percentage and add a tip line before the total.',
+        'Round half-to-even and show the rounding behaviour with `Math.Round(value, 2, MidpointRounding.ToEven)`.',
+        'Support a discount code that takes a flat amount or a percentage off the subtotal.',
+      ],
+      concepts: [
+        'variables and the decimal type for money',
+        'named constants (const)',
+        'arithmetic operators and precedence',
+        'string interpolation + currency formatting ({0:C})',
+        'basic validation (negative change)',
+      ],
+    },
+    {
+      id: 'foundations-proj-2',
+      difficulty: 'intermediate',
+      title: 'Interactive Profile Card Generator',
+      brief:
+        'Build a program that interviews the user (name, birth year, city, favourite language), validates the input, then prints a neatly formatted multi-line "profile card". This is the canonical input → process → output program every developer writes first, and it makes you handle the reality that user input is text that might be wrong.',
+      requirements: [
+        'Read several values with `Console.ReadLine()`. Parse the birth year with `int.TryParse` (the Try-pattern) and re-prompt or print a clear error on bad input — never let the program crash on `"abc"`.',
+        'Compute the user\'s age from the birth year and a `const int CurrentYear`.',
+        'Guard against nonsense: a birth year in the future or more than 120 years ago prints a friendly message instead of a silly age.',
+        'Print a bordered, aligned profile card using string interpolation and `\\n`, e.g. a box with name, age, city, and language.',
+        'Keep all the "magic" values (current year, max age) as named constants at the top.',
+      ],
+      stretch: [
+        'Loop the whole interview until the user types `done`, collecting several profiles.',
+        'Add string polish: trim whitespace, title-case the name, and reject an empty name.',
+        'Print the card width dynamically so the border matches the longest line.',
+      ],
+      concepts: [
+        'Console input and the input → process → output shape',
+        'int.TryParse (Try-pattern) for expected bad input',
+        'string interpolation, escapes, and formatting',
+        'named constants and simple validation/guards',
+        'computing derived values (age)',
+      ],
+    },
+  ],
 };
-
-
-export const quiz_foundations = [
-  {
-    "id": "foundations-q1",
-    "kind": "fill",
-    "prompt": "Question 1",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q2",
-    "kind": "predict",
-    "prompt": "Question 2",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q3",
-    "kind": "mcq",
-    "prompt": "Question 3",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q4",
-    "kind": "fill",
-    "prompt": "Question 4",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q5",
-    "kind": "predict",
-    "prompt": "Question 5",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q6",
-    "kind": "mcq",
-    "prompt": "Question 6",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q7",
-    "kind": "fill",
-    "prompt": "Question 7",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q8",
-    "kind": "predict",
-    "prompt": "Question 8",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q9",
-    "kind": "mcq",
-    "prompt": "Question 9",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q10",
-    "kind": "fill",
-    "prompt": "Question 10",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q11",
-    "kind": "predict",
-    "prompt": "Question 11",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q12",
-    "kind": "mcq",
-    "prompt": "Question 12",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q13",
-    "kind": "fill",
-    "prompt": "Question 13",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "foundations-q14",
-    "kind": "predict",
-    "prompt": "Question 14",
-    "explanation": "Covered in lessons."
-  }
-];
-export const practice_foundations = [
-  {
-    "id": "foundations-p1",
-    "difficulty": "easy",
-    "title": "Practice 1",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p2",
-    "difficulty": "easy",
-    "title": "Practice 2",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p3",
-    "difficulty": "easy",
-    "title": "Practice 3",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p4",
-    "difficulty": "medium",
-    "title": "Practice 4",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p5",
-    "difficulty": "medium",
-    "title": "Practice 5",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p6",
-    "difficulty": "medium",
-    "title": "Practice 6",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p7",
-    "difficulty": "hard",
-    "title": "Practice 7",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p8",
-    "difficulty": "hard",
-    "title": "Practice 8",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p9",
-    "difficulty": "hard",
-    "title": "Practice 9",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  },
-  {
-    "id": "foundations-p10",
-    "difficulty": "hard",
-    "title": "Practice 10",
-    "prompt": "Write C# code to solve this problem.",
-    "hints": [
-      "Use variables and operators"
-    ]
-  }
-];
-export const projects_foundations = [
-  {
-    "id": "foundations-proj-1",
-    "difficulty": "starter",
-    "title": "Calculator",
-    "brief": "Build a simple calculator with basic operations.",
-    "requirements": [
-      "Add, subtract, multiply, divide"
-    ],
-    "stretch": [
-      "Power function",
-      "Modulo"
-    ],
-    "concepts": [
-      "Variables",
-      "Operators",
-      "Methods"
-    ]
-  },
-  {
-    "id": "foundations-proj-2",
-    "difficulty": "intermediate",
-    "title": "Temperature Converter",
-    "brief": "Convert between Celsius and Fahrenheit with validation.",
-    "requirements": [
-      "C to F conversion",
-      "F to C conversion",
-      "Input validation"
-    ],
-    "stretch": [
-      "Kelvin conversion",
-      "Format output"
-    ],
-    "concepts": [
-      "Math",
-      "Validation",
-      "User input"
-    ]
-  }
-];

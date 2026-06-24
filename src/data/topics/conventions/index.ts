@@ -1,14 +1,8 @@
 import type { Topic } from '@/data/types';
 import { lesson01 } from './lesson-01';
 
-// The first lesson is fully authored — it introduces the topic and shows
-// every convention in one example. Lessons 2–7 are listed in the topic
-// outline so students see the full path; their full content lands in the
-// next authoring sessions.
-//
-// To unlock more lessons: drop `lesson-NN.ts` into this folder, import here,
-// add to `lessons:` array.
-
+// Assessment is per-lesson (the lesson carries its own inline quiz + practice).
+// The topic keeps a hands-on project, shown on the topic overview page.
 export const conventions: Topic = {
   slug: 'conventions',
   title: 'C# Conventions & Style',
@@ -60,236 +54,32 @@ export const conventions: Topic = {
         'Brace style, 4-space indent, blank lines, `using` ordering — and how `.editorconfig` automates the rules across your team.',
     },
   ],
+  projects: [
+    {
+      id: 'conventions-proj-1',
+      difficulty: 'starter',
+      title: 'Refactor a Messy File to C# Conventions',
+      brief:
+        'Take a deliberately badly-styled C# file and bring it fully in line with Microsoft conventions — names, layout, and structure — then lock the rules in with an `.editorconfig`. Reading and cleaning code to a standard is a daily professional skill, and doing it by hand once is how the conventions actually stick.',
+      requirements: [
+        'Start from a small program (~40-60 lines) with wrong-cased names: `snake_case` locals, lowercase method names, an interface without `I`, a private field without `_`, a `const` in lower case, and inconsistent braces/indentation. (Write this messy version yourself first, or use one provided.)',
+        'Rename everything to convention: `PascalCase` for types/methods/properties/consts, `camelCase` for locals and parameters, `_camelCase` for private fields, `I`-prefixed interfaces, boolean names like `isValid`/`hasItems`.',
+        'Fix layout: Allman braces, 4-space indentation, one statement per line, a blank line between members, and `using` directives sorted with `System` first.',
+        'Split the file so there is one public type per file, with each file name matching its type and the namespace matching the folder.',
+        'Add an `.editorconfig` that encodes these rules (naming styles, indent_size = 4, `dotnet_sort_system_directives_first = true`) and run `dotnet format` to prove the file is now clean.',
+      ],
+      stretch: [
+        'Turn on `<TreatWarningsAsErrors>` and resolve any analyzer/style warnings the build surfaces.',
+        'Add a few `// before / after` notes explaining why each rename improves readability.',
+        'Configure a couple of naming rules in `.editorconfig` as warnings and watch the IDE flag a deliberate violation.',
+      ],
+      concepts: [
+        'PascalCase vs camelCase vs _camelCase by member kind',
+        'interface (I) and boolean (is/has/can) naming',
+        'code layout: braces, indentation, using ordering',
+        'one-public-type-per-file & namespace/folder matching',
+        '.editorconfig and dotnet format to automate the rules',
+      ],
+    },
+  ],
 };
-
-
-export const quiz_conventions = [
-  {
-    "id": "conventions-q1",
-    "kind": "fill",
-    "prompt": "Question 1",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q2",
-    "kind": "predict",
-    "prompt": "Question 2",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q3",
-    "kind": "mcq",
-    "prompt": "Question 3",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q4",
-    "kind": "fill",
-    "prompt": "Question 4",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q5",
-    "kind": "predict",
-    "prompt": "Question 5",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q6",
-    "kind": "mcq",
-    "prompt": "Question 6",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q7",
-    "kind": "fill",
-    "prompt": "Question 7",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q8",
-    "kind": "predict",
-    "prompt": "Question 8",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q9",
-    "kind": "mcq",
-    "prompt": "Question 9",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q10",
-    "kind": "fill",
-    "prompt": "Question 10",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q11",
-    "kind": "predict",
-    "prompt": "Question 11",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q12",
-    "kind": "mcq",
-    "prompt": "Question 12",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q13",
-    "kind": "fill",
-    "prompt": "Question 13",
-    "explanation": "Covered in lessons."
-  },
-  {
-    "id": "conventions-q14",
-    "kind": "predict",
-    "prompt": "Question 14",
-    "explanation": "Covered in lessons."
-  }
-];
-export const practice_conventions = [
-  {
-    "id": "conventions-p1",
-    "difficulty": "easy",
-    "title": "Practice 1",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p2",
-    "difficulty": "easy",
-    "title": "Practice 2",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p3",
-    "difficulty": "easy",
-    "title": "Practice 3",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p4",
-    "difficulty": "medium",
-    "title": "Practice 4",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p5",
-    "difficulty": "medium",
-    "title": "Practice 5",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p6",
-    "difficulty": "medium",
-    "title": "Practice 6",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p7",
-    "difficulty": "hard",
-    "title": "Practice 7",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p8",
-    "difficulty": "hard",
-    "title": "Practice 8",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p9",
-    "difficulty": "hard",
-    "title": "Practice 9",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  },
-  {
-    "id": "conventions-p10",
-    "difficulty": "hard",
-    "title": "Practice 10",
-    "prompt": "Refactor this code to follow C# conventions.",
-    "hints": [
-      "Apply naming conventions",
-      "Format properly"
-    ]
-  }
-];
-export const projects_conventions = [
-  {
-    "id": "conventions-proj-1",
-    "difficulty": "starter",
-    "title": "Code Style Audit",
-    "brief": "Review and refactor poorly-styled code to follow C# conventions.",
-    "requirements": [
-      "Apply PascalCase/camelCase",
-      "Format code",
-      "Add documentation"
-    ],
-    "stretch": [
-      "Enable code analysis",
-      "Fix warnings"
-    ],
-    "concepts": [
-      "Naming conventions",
-      "Formatting",
-      "Documentation"
-    ]
-  },
-  {
-    "id": "conventions-proj-2",
-    "difficulty": "intermediate",
-    "title": "Linter Configuration",
-    "brief": "Set up EditorConfig and code analysis rules for a project.",
-    "requirements": [
-      "Create .editorconfig",
-      "Configure StyleCop",
-      "Document standards"
-    ],
-    "stretch": [
-      "Team style guide",
-      "CI integration"
-    ],
-    "concepts": [
-      "EditorConfig",
-      "Code analysis",
-      "Team standards"
-    ]
-  }
-];

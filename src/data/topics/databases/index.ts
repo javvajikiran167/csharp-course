@@ -457,5 +457,61 @@ export const databases: Topic = {
     ]
   }
 ],
+  projects: [
+    {
+      id: 'databases-proj-1',
+      difficulty: 'intermediate',
+      title: 'Bookshelf — A SQLite-backed Catalog with EF Core',
+      brief:
+        'Build a console app that manages a personal book catalog stored in a real SQLite database via Entity Framework Core: add books and authors, list and search them, and update or delete records. This is the canonical first EF Core project — it covers a full code-first model, migrations, and CRUD against an actual file on disk.',
+      requirements: [
+        'Define entities `Author` and `Book` with a one-to-many relationship (an author has many books); use sensible types (`required string`, `int` keys, a `DateOnly Published`).',
+        'Create a `DbContext` (`CatalogContext`) with `DbSet<Author>` and `DbSet<Book>`, configured to use SQLite (`UseSqlite("Data Source=catalog.db")`).',
+        'Use code-first **migrations** (`dotnet ef migrations add Initial`, `dotnet ef database update`) to create the schema — do not hand-write SQL.',
+        'Implement full CRUD: add an author and books, list all books with their author (a navigation property / `Include`), update a book\'s title, and delete one — calling `SaveChanges()` (or `SaveChangesAsync`).',
+        'Add a search that uses a LINQ `Where` translated to SQL (e.g. books whose title contains a term), and print how EF turns it into a query (enable logging).',
+        'Guard input and handle the not-found case (updating/deleting an id that does not exist) gracefully.',
+      ],
+      stretch: [
+        'Add a many-to-many `Tag`–`Book` relationship and query books by tag.',
+        'Switch all data access to async (`ToListAsync`, `FirstOrDefaultAsync`) and `await` it.',
+        'Add a second migration that introduces a new column and run it, showing migrations evolve a live database without data loss.',
+      ],
+      concepts: [
+        'EF Core code-first entities & relationships (one-to-many)',
+        'DbContext + DbSet configuration (SQLite provider)',
+        'migrations (add / update)',
+        'CRUD with SaveChanges / async',
+        'LINQ queries translated to SQL + Include for navigation',
+      ],
+    },
+    {
+      id: 'databases-proj-2',
+      difficulty: 'advanced',
+      title: 'Expense Tracker API with EF Core + Repository',
+      brief:
+        'Build a small ASP.NET Core API that records expenses and reports monthly totals, backed by EF Core, with the data access hidden behind a repository so the endpoints stay clean. This mirrors a real production slice: layered architecture, async data access, and aggregate queries pushed down to the database.',
+      requirements: [
+        'Model `Expense` (amount, category, date, note) and `Category` with a one-to-many relationship; use EF Core with SQLite (or in-memory for tests) and migrations.',
+        'Put all data access behind an `IExpenseRepository` (add, list, by-category, monthly-total) so the API/endpoints never touch the `DbContext` directly — register it with DI (`AddScoped`).',
+        'Expose endpoints: create an expense, list expenses (optionally filtered by category or month), and a `/reports/monthly` endpoint that returns totals per category for a given month.',
+        'Compute the monthly report with a LINQ `GroupBy` + `Sum` that EF Core translates into a single grouped SQL query — not by loading every row and summing in memory.',
+        'Make all data access async end-to-end (`async`/`await`, `ToListAsync`).',
+        'Seed a few categories on startup and handle validation (negative amount, unknown category) with clear error responses.',
+      ],
+      stretch: [
+        'Add pagination to the list endpoint (`Skip`/`Take`).',
+        'Add a unit test that swaps the SQLite provider for the EF Core in-memory provider to test the repository without a real database.',
+        'Add an index on `Expense.Date` via the model configuration and observe the effect on the report query.',
+      ],
+      concepts: [
+        'layered data access (repository pattern + DI)',
+        'EF Core relationships, migrations, seeding',
+        'async data access end-to-end',
+        'aggregate queries (GroupBy/Sum) translated to SQL',
+        'validation and clean API responses',
+      ],
+    },
+  ],
   outline: []
 };
