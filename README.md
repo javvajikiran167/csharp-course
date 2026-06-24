@@ -32,29 +32,6 @@ a student's history.
 
 ---
 
-## Tech stack
-
-- **React 19** + **TypeScript** + **Vite**
-- **Tailwind CSS** for styling
-- **Supabase** for student logins and per-chapter access control
-- Deployed as a static build to **GitHub Pages** (CI in `.github/workflows/`)
-
-## Run it locally
-
-```bash
-npm install
-npm run dev        # http://localhost:5173
-```
-
-```bash
-npm run build      # production build → dist/
-npm run preview    # preview the production build
-```
-
-Copy `.env.example` to `.env` and fill in your Supabase values if you want auth
-to work locally. The public Supabase keys are safe to commit — access is enforced
-server-side by Row Level Security.
-
 ## For instructors
 
 The course supports student logins with chapters you unlock one at a time as the
