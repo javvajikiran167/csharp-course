@@ -69,7 +69,6 @@ Questions, feedback, a typo you spotted, or want to use this with your own class
 **I'd love to hear from you** — please reach out:
 
 - **LinkedIn:** [linkedin.com/in/kiranjavvaji](https://www.linkedin.com/in/kiranjavvaji/)
-- **Email:** [javvajikiran167@gmail.com](mailto:javvajikiran167@gmail.com)
 
 If this course helped you, a note or a connection on LinkedIn means a lot. 🙏
 
